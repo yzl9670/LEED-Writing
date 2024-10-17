@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Feedback System</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+        .left-menu {
+            width: 20%;
+            background-color: #4a76a8;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .left-menu button {
+            padding: 10px;
+            font-size: 18px;
+            background-color: #fff;
+            color: #4a76a8;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .left-menu button:hover {
+            background-color: #3b5c85;
+            color: #fff;
+        }
+        .content {
+            width: 60%;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: #e9ecef;
+            padding: 20px;
+            padding-bottom: 80px;
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            max-width: 70%;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .chat-message.user {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .chat-message.ai {
+            background-color: #d0e2f2;
+            align-self: flex-start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 10px 0;
+            z-index: 2;
+        }
+        .input-container textarea {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+            min-height: 50px;
+            max-height: 50%;
+            overflow-y: auto;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* 上传按钮样式 */
+        .upload-button {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-button input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .rubrics-container {
+            width: 20%;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+        .rubrics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rubrics-header h3 {
+            margin: 0;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .rubrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 80vh; /* 根据需要调整最大高度 */
+        }
+        .rubrics-list div {
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 5px;
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .rubrics-list textarea {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            resize: none;
+            overflow-y: hidden;
+            min-height: 50px;
+            margin-right: 10px;
+            background-color: transparent;
+        }
+        .rubrics-list textarea:focus {
+            outline: none;
+        }
+        .rubric-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: none;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .rubric-button:hover {
+            background-color: #c0392b;
+        }
+        /* 文件输入框样式 */
+        #file-input {
+            display: none;
+        }
+        /* 反馈面板样式 */
+        .feedback-panel {
+            position: absolute;
+            bottom: 0;
+            left: calc(100% + 10px);
+            width: 175px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 100;
+        }
+        .feedback-panel h4 {
+            margin-top: 0;
+        }
+        .feedback-panel .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+        .feedback-panel .stars {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .feedback-panel .stars span {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .feedback-panel .stars span.selected {
+            color: gold;
+        }
+        .feedback-panel textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 50px;
+            margin-top: 10px;
+        }
+        .feedback-panel button.submit-feedback {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* 反馈按钮样式 */
+        .feedback-button {
+            margin-top: 10px;
+            align-self: flex-end;
+            font-size: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        /* LEED 页面样式 */
+        #leed-page {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+        #leed-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        #leed-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        #leed-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #leed-table th, #leed-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+        #leed-table th {
+            background-color: #e9ecef;
+        }
+        #leed-table .section-header {
+            background-color: #d0e2f2;
+            font-weight: bold;
+        }
+        #leed-table input[type="number"] {
+            width: 80px;
+        }
+        /* 按钮容器样式 */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        /* 左侧菜单的 Back 按钮样式 */
+        .left-menu button.back-button {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+        .left-menu button.back-button:hover {
+            background-color: #c0392b;
+        }
+        /* 只读的 textarea 样式 */
+        .rubrics-list textarea[readonly] {
+            background-color: transparent;
+            cursor: default;
+        }
+        /* 拖拽上传文件的样式 */
+        .chat-container.dragover {
+            background-color: #c8e6c9;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container" id="main-container">
+        <!-- 左侧按钮部分 -->
+        <div class="left-menu">
+            <button id="leed-btn" onclick="handleLeedButton()">LEED</button>
+            <button id="writing-btn" onclick="showWritingMode()">Writing</button>
+        </div>
+
+        <!-- 中间聊天内容部分 -->
+        <div class="content">
+            <div class="chat-container" id="chat-container">
+                <div class="chat-message ai">Welcome to the AI feedback system!</div>
+            </div>
+            <div class="input-container">
+                <!-- 美化的上传按钮 -->
+                <label class="upload-button">
+                    Upload
+                    <input type="file" id="file-input" accept=".docx,.pdf">
+                </label>
+                <textarea id="user-input" placeholder="Type your message here..." oninput="autoResizeTextarea(this)"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <!-- 右侧 Rubrics 管理部分 -->
+        <div class="rubrics-container" id="rubrics-container">
+            <!-- Writing Rubrics Header -->
+            <div class="rubrics-header" id="writing-rubrics-header">
+                <h3>Custom Rubrics</h3>
+                <div class="actions" id="writing-rubrics-actions">
+                    <button class="rubric-button" onclick="addRubric()">+</button>
+                </div>
+            </div>
+            <!-- Writing Rubrics List -->
+            <div class="rubrics-list" id="writing-rubrics-list">
+                {% for rubric in rubrics %}
+                <div>
+                    <textarea>{{ rubric }}</textarea>
+                    <button class="rubric-button remove" onclick="removeRubric(this)">&#x2716;</button>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- LEED Rubrics Header -->
+            <div class="rubrics-header" id="leed-rubrics-header" style="display:none;">
+                <h3>LEED Rubrics</h3>
+                <div class="actions" id="leed-rubrics-actions">
+                    <button class="rubric-button" onclick="resubmitLeed()">Resubmit LEED</button>
+                </div>
+            </div>
+            <!-- LEED Rubrics List -->
+            <div class="rubrics-list" id="leed-rubrics-list" style="display:none;">
+                <!-- LEED rubrics will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- LEED 页面 -->
+    <div id="leed-page" class="main-container">
+        <!-- 左侧菜单 -->
+        <div class="left-menu">
+            <!-- Back 按钮已移动到内容区域 -->
+        </div>
+
+        <!-- LEED 表格内容 -->
+        <div class="content" id="leed-content">
+            <h2>LEED Certification Form</h2>
+            <div id="leed-table-container">
+                <form id="leed-form">
+                    <!-- LEED 表格将在此生成 -->
+                    <table id="leed-table">
+                        <!-- 表头 -->
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Prereq/Credit</th>
+                                <th>Title</th>
+                                <th>Points</th>
+                                <th>Earned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 表格内容将在 JavaScript 中生成 -->
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <!-- 按钮容器 -->
+            <div class="button-container">
+                <button class="back-button" onclick="returnToMain()">Back</button>
+                <button id="leed-submit-button" onclick="submitLeedForm()">Submit LEED Scores</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentChatHistoryId = null;  // 当前正在反馈的聊天记录ID
+        let currentMode = 'Writing'; // 当前模式：'Writing' 或 'LEED'
+
+        // 自动调整输入框高度
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * 0.5) + 'px';
+        }
+
+        // 获取当前的 Rubrics（仅在 Writing 模式下）
+        function getCurrentRubrics() {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            const rubricTextareas = rubricsList.querySelectorAll('textarea');
+            let rubrics = '';
+            rubricTextareas.forEach(textarea => {
+                rubrics += textarea.value + '\n\n';
+            });
+            return rubrics.trim();
+        }
+
+        // 发送消息到聊天窗口，并将 Rubrics 一起发送到后端
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const fileInput = document.getElementById('file-input');
+            const message = input.value;
+            const file = fileInput.files[0];
+
+            if (!message.trim() && !file) {
+                alert("Please enter a message or upload a file.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('message', message);
+
+            if (currentMode === 'LEED') {
+                if (sessionStorage.getItem('leedSubmitted') === 'true') {
+                    const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
+                    formData.append('leed_scores', JSON.stringify(leedScores));
+                } else {
+                    alert('Please submit LEED scores first.');
+                    return;
+                }
+            } else {
+                const rubrics = getCurrentRubrics();
+                formData.append('rubrics', rubrics);
+            }
+
+            if (file) {
+                formData.append('file', file);
+            }
+
+            // 将用户输入的消息和 Rubrics 发送到后端
+            fetch('/get_feedback', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === false) {
+                    alert(data.error);
+                    return;
+                }
+                const chatContainer = document.getElementById('chat-container');
+
+                // 显示用户消息
+                if (message.trim()) {
+                    const userMessageElem = document.createElement('div');
+                    userMessageElem.classList.add('chat-message', 'user');
+                    userMessageElem.textContent = message;
+                    chatContainer.appendChild(userMessageElem);
+                } else if (file) {
+                    const userMessageElem = document.createElement('div');
+                    userMessageElem.classList.add('chat-message', 'user');
+                    userMessageElem.textContent = `Uploaded file: ${file.name}`;
+                    chatContainer.appendChild(userMessageElem);
+                }
+
+                // 显示 AI 反馈
+                const aiMessageElem = document.createElement('div');
+                aiMessageElem.classList.add('chat-message', 'ai');
+
+                // 创建内容容器，避免 Feedback 按钮遮挡内容
+                const aiContent = document.createElement('div');
+                aiContent.textContent = data.feedback;
+                aiMessageElem.appendChild(aiContent);
+
+                // 添加反馈按钮
+                const feedbackBtn = document.createElement('button');
+                feedbackBtn.classList.add('feedback-button');
+                feedbackBtn.textContent = 'Feedback';
+                feedbackBtn.onclick = function() {
+                    toggleFeedbackPanel(aiMessageElem, data.chat_history_id, feedbackBtn);
+                };
+                aiMessageElem.appendChild(feedbackBtn);
+
+                chatContainer.appendChild(aiMessageElem);
+
+                // 重置输入框和文件输入
+                input.value = '';
+                input.style.height = '50px';
+                fileInput.value = '';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // 切换反馈面板的显示
+        function toggleFeedbackPanel(aiMessageElem, chatHistoryId, feedbackBtn) {
+            let feedbackPanel = aiMessageElem.querySelector('.feedback-panel');
+            if (feedbackPanel) {
+                feedbackPanel.remove();
+            } else {
+                feedbackPanel = document.createElement('div');
+                feedbackPanel.classList.add('feedback-panel');
+
+                // 关闭按钮
+                const closeButton = document.createElement('button');
+                closeButton.classList.add('close-button');
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = function() {
+                    feedbackPanel.remove();
+                };
+                feedbackPanel.appendChild(closeButton);
+
+                const title = document.createElement('h4');
+                title.textContent = 'How do you like this response?';
+                feedbackPanel.appendChild(title);
+
+                // 星级评分
+                const starsDiv = document.createElement('div');
+                starsDiv.classList.add('stars');
+                for (let i = 1; i <= 5; i++) {
+                    const starSpan = document.createElement('span');
+                    starSpan.textContent = '★';
+                    starSpan.dataset.value = i;
+                    starSpan.onclick = function() {
+                        selectStars(starsDiv, i);
+                    };
+                    starsDiv.appendChild(starSpan);
+                }
+                feedbackPanel.appendChild(starsDiv);
+
+                // 反馈文本框
+                const feedbackTextarea = document.createElement('textarea');
+                feedbackTextarea.placeholder = 'Enter your feedback...';
+                feedbackPanel.appendChild(feedbackTextarea);
+
+                // 提交按钮
+                const submitButton = document.createElement('button');
+                submitButton.classList.add('submit-feedback');
+                submitButton.textContent = 'Submit';
+                submitButton.onclick = function() {
+                    submitFeedback(chatHistoryId, getSelectedStars(starsDiv), feedbackTextarea.value);
+                    feedbackPanel.remove();
+                    feedbackBtn.style.display = 'none';
+                };
+                feedbackPanel.appendChild(submitButton);
+
+                aiMessageElem.appendChild(feedbackPanel);
+
+                // 检查反馈面板是否超出可视区域，调整位置
+                const rect = feedbackPanel.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    feedbackPanel.style.left = 'auto';
+                    feedbackPanel.style.right = 'calc(100% + 10px)';
+                }
+            }
+        }
+
+        // 选择星星评分
+        function selectStars(starsDiv, rating) {
+            const stars = starsDiv.querySelectorAll('span');
+            stars.forEach(star => {
+                if (parseInt(star.dataset.value) <= rating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        // 获取选中的星星数
+        function getSelectedStars(starsDiv) {
+            const selectedStars = starsDiv.querySelectorAll('span.selected');
+            return selectedStars.length;
+        }
+
+        // 提交用户对 AI 回复的反馈
+        function submitFeedback(chatHistoryId, rating, feedback) {
+            fetch('/submit_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_history_id: chatHistoryId,
+                    rating: rating,
+                    feedback: feedback
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thank you for your feedback!');
+                } else {
+                    alert('Failed to submit feedback: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // 显示 Writing Rubrics
+        function displayWritingRubrics(rubrics) {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            rubricsList.innerHTML = '';
+
+            rubrics.forEach(rubric => {
+                createRubricElement(rubricsList, rubric);
+            });
+        }
+
+        // 显示 LEED Rubrics
+        function displayLeedRubrics(rubrics) {
+            const rubricsList = document.getElementById('leed-rubrics-list');
+            rubricsList.innerHTML = '';
+
+            rubrics.forEach(rubricText => {
+                createRubricElement(rubricsList, rubricText, true);
+            });
+        }
+
+        // 创建 Rubric 元素
+        function createRubricElement(container, rubricText, readOnly = false) {
+            const rubricElem = document.createElement('div');
+            const rubricTextarea = document.createElement('textarea');
+            rubricTextarea.value = rubricText;
+            rubricTextarea.readOnly = readOnly;
+
+            // 自动调整高度
+            rubricTextarea.style.height = 'auto';
+            rubricTextarea.style.height = rubricTextarea.scrollHeight + 'px';
+
+            // 监听输入事件，自动调整高度
+            rubricTextarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+
+            if (readOnly) {
+                rubricTextarea.style.backgroundColor = '#e9ecef';
+                rubricTextarea.style.cursor = 'default';
+            } else {
+                rubricTextarea.onchange = saveRubrics;
+            }
+
+            if (!readOnly) {
+                const removeButton = document.createElement('button');
+                removeButton.textContent = '-';
+                removeButton.classList.add('rubric-button', 'remove');
+                removeButton.onclick = () => {
+                    removeRubric(removeButton);
+                    saveRubrics();
+                };
+                rubricElem.appendChild(removeButton);
+            }
+
+            rubricElem.insertBefore(rubricTextarea, rubricElem.firstChild);
+            container.appendChild(rubricElem);
+        }
+
+        // 添加一个新的 Rubric
+        function addRubric() {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            createRubricElement(rubricsList, '');
+            saveRubrics();
+        }
+
+        // 删除 Rubric
+        function removeRubric(button) {
+            const rubricElem = button.parentElement;
+            rubricElem.remove();
+        }
+
+        // 保存 Rubrics 到后端
+        function saveRubrics() {
+            const rubrics = getCurrentRubrics();
+
+            fetch('/save_rubrics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rubrics: rubrics })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert('Failed to save rubrics: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // 页面加载时加载服务器上的 Rubrics
+        window.onload = function() {
+            // 从服务器传递的 rubrics 加载
+            let rubricsFromServer = {{ rubrics|tojson|safe }};
+
+            // 默认显示 Writing Rubrics
+            currentMode = 'Writing';
+            displayWritingRubrics(rubricsFromServer);
+
+            // 监听输入框的变化以自动调整高度
+            const userInput = document.getElementById('user-input');
+            userInput.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+
+            // 检查是否提交了 LEED 表格
+            if (sessionStorage.getItem('leedSubmitted') === 'true') {
+                // 如果已提交 LEED 表格，加载 LEED Rubrics
+                const leedRubrics = JSON.parse(sessionStorage.getItem('leedRubrics'));
+                displayLeedRubrics(leedRubrics);
+            }
+
+            // 初始化拖拽上传文件功能
+            initDragAndDrop();
+        }
+
+        // 处理 LEED 按钮点击事件
+        function handleLeedButton() {
+            currentMode = 'LEED';
+
+            // 隐藏 Writing Rubrics
+            document.getElementById('writing-rubrics-header').style.display = 'none';
+            document.getElementById('writing-rubrics-list').style.display = 'none';
+
+            // 显示 LEED Rubrics
+            document.getElementById('leed-rubrics-header').style.display = 'flex';
+            document.getElementById('leed-rubrics-list').style.display = 'flex';
+
+            if (sessionStorage.getItem('leedSubmitted') === 'true') {
+                const leedRubrics = JSON.parse(sessionStorage.getItem('leedRubrics'));
+                displayLeedRubrics(leedRubrics);
+            } else {
+                showLeedPage();
+            }
+        }
+
+        // 显示 LEED 页面
+        function showLeedPage() {
+            // 隐藏主界面，显示 LEED 页面
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('leed-page').style.display = 'flex';
+
+            // 生成 LEED 表格
+            generateLeedTable();
+
+            // 如果已填写过数据，填充表格
+            const leedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
+            if (Object.keys(leedScores).length > 0) {
+                fillLeedForm(leedScores);
+            }
+        }
+
+        // 填充 LEED 表格
+        function fillLeedForm(leedScores) {
+            const form = document.getElementById('leed-form');
+            for (let [key, value] of Object.entries(leedScores)) {
+                const input = form.querySelector(`input[name="${key}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            }
+        }
+
+        // 返回主界面
+        function returnToMain() {
+            // 显示主界面，隐藏 LEED 页面
+            document.getElementById('main-container').style.display = 'flex';
+            document.getElementById('leed-page').style.display = 'none';
+
+            // 根据当前模式显示相应的 Rubrics
+            if (currentMode === 'LEED') {
+                document.getElementById('writing-rubrics-header').style.display = 'none';
+                document.getElementById('writing-rubrics-list').style.display = 'none';
+                document.getElementById('leed-rubrics-header').style.display = 'flex';
+                document.getElementById('leed-rubrics-list').style.display = 'flex';
+            } else {
+                document.getElementById('writing-rubrics-header').style.display = 'flex';
+                document.getElementById('writing-rubrics-list').style.display = 'flex';
+                document.getElementById('leed-rubrics-header').style.display = 'none';
+                document.getElementById('leed-rubrics-list').style.display = 'none';
+            }
+        }
+
+        // 生成 LEED 表格
+        function generateLeedTable() {
+            const tbody = document.querySelector('#leed-table tbody');
+            tbody.innerHTML = '';
+
+            LEED_TABLE_DATA.forEach(row => {
+                if (row.section) {
+                    const tr = document.createElement('tr');
+                    tr.classList.add('section-header');
+                    const td = document.createElement('td');
+                    td.colSpan = '5';
+                    td.textContent = row.section;
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                } else {
+                    const tr = document.createElement('tr');
+
+                    const tdCategory = document.createElement('td');
+                    tdCategory.textContent = row.category || '';
+                    tr.appendChild(tdCategory);
+
+                    const tdType = document.createElement('td');
+                    tdType.textContent = row.type || '';
+                    tr.appendChild(tdType);
+
+                    const tdTitle = document.createElement('td');
+                    tdTitle.textContent = row.title || '';
+                    tr.appendChild(tdTitle);
+
+                    const tdPoints = document.createElement('td');
+                    tdPoints.textContent = row.points || '';
+                    tr.appendChild(tdPoints);
+
+                    const tdEarned = document.createElement('td');
+                    if (row.type && row.type.toLowerCase() === 'prereq') {
+                        tdEarned.textContent = 'Required';
+                    } else if (row.points && row.points > 0) {
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.name = row.title;
+                        input.min = 0;
+                        input.max = row.points;
+                        input.step = 0.5;
+                        tdEarned.appendChild(input);
+                    } else {
+                        tdEarned.textContent = '';
+                    }
+                    tr.appendChild(tdEarned);
+
+                    tbody.appendChild(tr);
+                }
+            });
+        }
+
+        // 提交 LEED 表格
+        function submitLeedForm() {
+            const form = document.getElementById('leed-form');
+            const formData = new FormData(form);
+
+            const leedScores = {};
+            for (let [key, value] of formData.entries()) {
+                if (value) {
+                    leedScores[key] = parseFloat(value);
+                }
+            }
+
+            if (Object.keys(leedScores).length === 0) {
+                alert('Please enter at least one score.');
+                return;
+            }
+
+            fetch('/submit_leed_scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ leed_scores: leedScores })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('leedSubmitted', 'true');
+                    sessionStorage.setItem('leedScores', JSON.stringify(leedScores));
+                    sessionStorage.setItem('leedRubrics', JSON.stringify(data.rubrics));
+
+                    returnToMain();
+                    displayLeedRubrics(data.rubrics);
+                } else {
+                    alert('Failed to submit LEED scores: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // 重新提交 LEED 表格
+        function resubmitLeed() {
+            // 清除 LEED 数据
+            sessionStorage.removeItem('leedSubmitted');
+            sessionStorage.removeItem('leedScores');
+            sessionStorage.removeItem('leedRubrics');
+
+            // 显示 LEED 表格页面
+            showLeedPage();
+        }
+
+        // 切换到 Writing 模式
+        function showWritingMode() {
+            currentMode = 'Writing';
+
+            // 隐藏 LEED Rubrics
+            document.getElementById('leed-rubrics-header').style.display = 'none';
+            document.getElementById('leed-rubrics-list').style.display = 'none';
+
+            // 显示 Writing Rubrics
+            document.getElementById('writing-rubrics-header').style.display = 'flex';
+            document.getElementById('writing-rubrics-list').style.display = 'flex';
+
+            // 加载用户自定义的 Rubrics
+            fetch('/get_user_rubrics')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayWritingRubrics(data.rubrics);
+                } else {
+                    alert('Failed to load rubrics: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // 初始化拖拽上传文件功能
+        function initDragAndDrop() {
+            const chatContainer = document.getElementById('chat-container');
+            const fileInput = document.getElementById('file-input');
+
+            chatContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.add('dragover');
+            });
+
+            chatContainer.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.remove('dragover');
+            });
+
+            chatContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    sendMessage();
+                }
+            });
+        }
+
+        // 加载 LEED 数据
+        const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
+
+    </script>
+</body>
+</html>
