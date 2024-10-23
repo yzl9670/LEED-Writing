@@ -1,0 +1,3203 @@
+{
+  "LOCATION AND TRANSPORATION (LT)": [
+    {
+      "name": "LEED for Neighborhood Development Location",
+      "type": "Credit",
+      "points": {
+        "New Construction": [8, 16],
+        "Core & Shell": [8, 20],
+        "Schools": [8, 15],
+        "Retail": [8, 16],
+        "Data Centers": [8, 16],
+        "Warehouses & Distribution Centers": [8, 16],
+        "Hospitality": [8, 16],
+        "Healthcare": [5, 9]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To avoid development on inappropriate sites. To reduce vehicle distance traveled. To enhance livability and improve human health by encouraging daily physical activity.",
+      "requirements": {
+        "description": "Locate the project within the boundary of a development certified under LEED for Neighborhood Development (Stage 2 or Stage 3 under the Pilot or 2009 rating systems, Certified Plan or Certified Project under the LEED v4 rating system). Projects attempting this credit are not eligible to earn points under other Location and Transportation credits.",
+        "points_table": [
+          {
+            "certification_level": "Certified",
+            "points": {
+              "New Construction": 8,
+              "Core & Shell": 8,
+              "Schools": 8,
+              "Healthcare": 5
+            }
+          },
+          {
+            "certification_level": "Silver",
+            "points": {
+              "New Construction": 10,
+              "Core & Shell": 12,
+              "Schools": 10,
+              "Healthcare": 6
+            }
+          },
+          {
+            "certification_level": "Gold",
+            "points": {
+              "New Construction": 12,
+              "Core & Shell": 16,
+              "Schools": 12,
+              "Healthcare": 7
+            }
+          },
+          {
+            "certification_level": "Platinum",
+            "points": {
+              "New Construction": 16,
+              "Core & Shell": 20,
+              "Schools": 15,
+              "Healthcare": 9
+            }
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Minimum points",
+          "criteria": "The project is located within the boundary of a LEED for Neighborhood Development certified plan or project at the Certified level."
+        },
+        {
+          "score": "Mid-level points",
+          "criteria": "The project is located within a LEED-ND plan or project certified at the Silver or Gold level."
+        },
+        {
+          "score": "Maximum points",
+          "criteria": "The project is located within a LEED-ND plan or project certified at the Platinum level."
+        }
+      ]
+    },
+    {
+      "name": "Sensitive Land Protection",
+      "type": "Credit",
+      "points": {
+        "New Construction": 1,
+        "Core & Shell": 2,
+        "Others": 1
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To avoid the development of environmentally sensitive lands and reduce the environmental impact from the location of a building on a site.",
+      "requirements": {
+        "options": [
+          {
+            "option": 1,
+            "description": "Locate the development footprint on land that has been previously developed."
+          },
+          {
+            "option": 2,
+            "description": "Locate the development footprint on land that has been previously developed or that does not meet the criteria for sensitive land, which includes prime farmland, floodplains, habitat for endangered species, water bodies, and wetlands."
+          }
+        ],
+        "definitions": {
+          "sensitive_land": [
+            "Prime farmland",
+            "Floodplains",
+            "Habitat for threatened or endangered species",
+            "Water bodies (within 100 feet or 30 meters)",
+            "Wetlands (within 50 feet or 15 meters)"
+          ],
+          "minor_improvements": [
+            "Bicycle and pedestrian pathways",
+            "Maintenance or restoration activities",
+            "Limited structures",
+            "Grade changes for public access",
+            "Selective tree removal",
+            "Brownfield remediation activities"
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "For projects other than Core & Shell: The project locates the development footprint on previously developed land or meets Option 2 criteria."
+        },
+        {
+          "score": 2,
+          "criteria": "For Core & Shell projects: The project meets the same criteria as above but earns an additional point due to project type."
+        }
+      ]
+    },
+    {
+      "name": "High-Priority Site",
+      "type": "Credit",
+      "points": {
+        "New Construction": [1, 2],
+        "Core & Shell": [2, 3],
+        "Others": [1, 2]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage project location in areas with development constraints and promote the health of the surrounding area.",
+      "requirements": {
+        "options": [
+          {
+            "option": 1,
+            "description": "Locate the project on an infill location in a historic district.",
+            "points": {
+              "New Construction": 1,
+              "Core & Shell": 2,
+              "Others": 1
+            }
+          },
+          {
+            "option": 2,
+            "description": "Locate the project on a site listed as a priority designation, such as EPA National Priorities List, Federal Empowerment Zone, etc.",
+            "points": {
+              "New Construction": 1,
+              "Core & Shell": 2,
+              "Others": 1
+            }
+          },
+          {
+            "option": 3,
+            "description": "Locate on a brownfield where soil or groundwater contamination has been identified, and remediation is required and performed.",
+            "points": {
+              "New Construction": 2,
+              "Core & Shell": 3,
+              "Others": 2
+            }
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets the requirements of Option 1 or Option 2 for the applicable project type."
+        },
+        {
+          "score": 2,
+          "criteria": "The project meets the requirements of Option 3 for the applicable project type (higher points awarded)."
+        },
+        {
+          "score": 3,
+          "criteria": "For Core & Shell projects only: The project meets Option 3 requirements and earns maximum points."
+        }
+      ]
+    },
+    {
+      "name": "Surrounding Density and Diverse Uses",
+      "type": "Credit",
+      "points": {
+        "New Construction": [1, 5],
+        "Core & Shell": [1, 6],
+        "Others": [1, 5],
+        "Healthcare": 1
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To conserve land and protect farmland and wildlife habitat by encouraging development in areas with existing infrastructure. To promote walkability, and transportation efficiency and reduce vehicle distance traveled. To improve public health by encouraging daily physical activity.",
+      "requirements": {
+        "options": [
+          {
+            "option": 1,
+            "description": "Surrounding Density: Locate on a site whose surrounding existing density within a 1/4-mile radius meets specified density thresholds. Points are awarded based on the level of density achieved.",
+            "density_requirements": {
+              "Residential Density": "Measured in dwelling units per acre (DU/acre)",
+              "Nonresidential Density": "Measured in floor-area ratio (FAR)",
+              "Combined Density": "Measured in square feet per acre of buildable land"
+            },
+            "points_table": {
+              "New Construction": {
+                "2 Points": {
+                  "Combined Density": "22,000 sq ft/acre",
+                  "Residential Density": "7 DU/acre",
+                  "Nonresidential Density": "0.5 FAR"
+                },
+                "3 Points": {
+                  "Combined Density": "35,000 sq ft/acre",
+                  "Residential Density": "12 DU/acre",
+                  "Nonresidential Density": "0.8 FAR"
+                }
+              },
+              "Core & Shell": {
+                "2 Points": {
+                  "Combined Density": "22,000 sq ft/acre",
+                  "Residential Density": "7 DU/acre",
+                  "Nonresidential Density": "0.5 FAR"
+                },
+                "4 Points": {
+                  "Combined Density": "35,000 sq ft/acre",
+                  "Residential Density": "12 DU/acre",
+                  "Nonresidential Density": "0.8 FAR"
+                }
+              }
+            }
+          },
+          {
+            "option": 2,
+            "description": "Diverse Uses: Construct or renovate a building such that the main entrance is within a 1/2-mile walking distance of existing and publicly available diverse uses. Points are awarded based on the number of uses and must meet specific criteria.",
+            "points": {
+              "1 Point": "Access to 4-7 diverse uses",
+              "2 Points": "Access to 8 or more diverse uses"
+            },
+            "use_restrictions": [
+              "A use counts as only one type, even if it sells products in several categories.",
+              "No more than two uses in each use type may be counted.",
+              "The counted uses must represent at least three of the five categories, exclusive of the building’s primary use."
+            ]
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets the minimum requirements of either Option 1 or Option 2 for 1 point."
+        },
+        {
+          "score": 2,
+          "criteria": "The project exceeds the minimum requirements in Option 1 or Option 2 for additional points."
+        },
+        {
+          "score": "Maximum points",
+          "criteria": "The project meets the highest density thresholds in Option 1 and/or accesses the maximum number of diverse uses in Option 2, earning the maximum available points."
+        }
+      ]
+    },
+    {
+      "name": "Access to Quality Transit",
+      "type": "Credit",
+      "points": {
+        "New Construction": [1, 5],
+        "Core & Shell": [1, 6],
+        "Schools": [1, 4],
+        "Data Centers": [1, 5],
+        "Warehouses & Distribution Centers": [1, 5],
+        "Hospitality": [1, 5],
+        "Retail": [1, 5],
+        "Healthcare": [1, 2]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Retail",
+        "Healthcare"
+      ],
+      "intent": "To encourage development in locations shown to have multimodal transportation choices or otherwise reduced motor vehicle use, thereby reducing greenhouse gas emissions, air pollution, and other environmental and public health harms associated with motor vehicle use.",
+      "requirements": {
+        "description": "Locate any functional entry of the project within a specified walking distance of existing or planned transit stops. The transit service must meet minimum daily trip requirements, and points are awarded based on the level of transit service available.",
+        "transit_service_requirements": {
+          "Walking Distance": {
+            "Bus, Streetcar, Rideshare Stops": "1/4-mile (400 meters)",
+            "Bus Rapid Transit, Light or Heavy Rail, Commuter Rail, Ferry Terminals": "1/2-mile (800 meters)"
+          },
+          "Minimum Daily Transit Service": "Tables specify required weekday and weekend trips for different point levels.",
+          "Additional Point": "Projects served by two or more transit routes such that no one route provides more than 60% of the documented levels may earn one additional point."
+        },
+        "tables": [
+          {
+            "table_name": "Minimum daily transit service for projects with multiple transit types",
+            "entries": [
+              {
+                "Weekday Trips": 72,
+                "Weekend Trips": 40,
+                "Points": {
+                  "New Construction": 1,
+                  "Core & Shell": 1
+                }
+              },
+              {
+                "Weekday Trips": 144,
+                "Weekend Trips": 108,
+                "Points": {
+                  "New Construction": 3,
+                  "Core & Shell": 3
+                }
+              },
+              {
+                "Weekday Trips": 360,
+                "Weekend Trips": 216,
+                "Points": {
+                  "New Construction": 5,
+                  "Core & Shell": 6
+                }
+              }
+            ]
+          },
+          {
+            "table_name": "Minimum daily transit service for projects with commuter rail or ferry service only",
+            "entries": [
+              {
+                "Weekday Trips": 24,
+                "Weekend Trips": 6,
+                "Points": {
+                  "New Construction": 1
+                }
+              },
+              {
+                "Weekday Trips": 40,
+                "Weekend Trips": 8,
+                "Points": {
+                  "New Construction": 2
+                }
+              },
+              {
+                "Weekday Trips": 60,
+                "Weekend Trips": 12,
+                "Points": {
+                  "New Construction": 3
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets the minimum transit service requirements for 1 point."
+        },
+        {
+          "score": "Mid-level points",
+          "criteria": "The project has higher levels of transit service, meeting the criteria for additional points as specified in the tables."
+        },
+        {
+          "score": "Maximum points",
+          "criteria": "The project meets the highest transit service thresholds and may earn an additional point if served by multiple transit routes as specified."
+        }
+      ]
+    },
+    {
+      "name": "Bicycle Facilities",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Retail",
+        "Healthcare"
+      ],
+      "intent": "To promote bicycling and transportation efficiency and reduce vehicle distance traveled. To improve public health by encouraging utilitarian and recreational physical activity.",
+      "requirements": {
+        "bicycle_network": {
+          "description": "Design or locate the project such that a functional entry or bicycle storage is within a 200-yard (180-meter) walking or bicycling distance from a bicycle network that connects to at least one of the following: at least 10 diverse uses, a school or employment center if residential, or a transit stop."
+        },
+        "bicycle_storage_and_showers": {
+          "cases": [
+            {
+              "case": "Commercial or Institutional Projects",
+              "requirements": [
+                "Short-term bicycle storage for at least 2.5% of all peak visitors, minimum four spaces.",
+                "Long-term bicycle storage for at least 5% of regular building occupants, minimum four spaces.",
+                "At least one on-site shower with changing facility for the first 100 regular building occupants and one additional shower for every 150 thereafter."
+              ]
+            },
+            {
+              "case": "Residential Projects",
+              "requirements": [
+                "Short-term bicycle storage for at least 2.5% of all peak visitors, minimum four spaces.",
+                "Long-term bicycle storage for at least 30% of regular building occupants, minimum one per residential unit."
+              ]
+            },
+            {
+              "case": "Mixed-Use Projects",
+              "requirements": "Meet the storage requirements for both nonresidential and residential portions as applicable."
+            }
+          ],
+          "additional_requirements": [
+            "Short-term storage within 100 feet (30 meters) of main entrance.",
+            "Long-term storage within 100 feet (30 meters) of any functional entry.",
+            "Bicycle storage capacity may not be double-counted."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets all requirements for bicycle network connectivity and provides the required bicycle storage and shower facilities appropriate to its project type."
+        }
+      ]
+    },
+    {
+      "name": "Reduced Parking Footprint",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Retail",
+        "Healthcare"
+      ],
+      "intent": "To minimize the environmental harms associated with parking facilities, including automobile dependence, land consumption, and rainwater runoff.",
+      "requirements": {
+        "description": "Do not exceed the minimum local code requirements for parking capacity. Provide parking capacity that is a percentage reduction below the base ratios recommended by the Parking Consultants Council, as shown in the Institute of Transportation Engineers’ Transportation Planning Handbook.",
+        "cases": [
+          {
+            "case": 1,
+            "description": "Baseline Location: Projects that have not earned points under LT Credit Surrounding Density and Diverse Uses or LT Credit Access to Quality Transit must achieve a 20% reduction from the base ratios."
+          },
+          {
+            "case": 2,
+            "description": "Dense and/or Transit-Served Location: Projects earning 1 or more points under LT Credit Surrounding Density and Diverse Uses or LT Credit Access to Quality Transit must achieve a 40% reduction from the base ratios."
+          }
+        ],
+        "additional_requirements": [
+          "Include all existing and new off-street parking spaces in calculations.",
+          "Provide preferred parking for carpools for 5% of the total parking spaces after reductions."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets the required parking reductions based on its location category and provides preferred parking for carpools as specified."
+        }
+      ]
+    },
+    {
+      "name": "Green Vehicles",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Data Centers",
+        "Hospitality",
+        "Retail",
+        "Healthcare",
+        "Schools",
+        "Warehouses & Distribution Centers"
+      ],
+      "intent": "To reduce pollution by promoting alternatives to conventionally fueled automobiles.",
+      "requirements": {
+        "description": "Designate 5% of all parking spaces as preferred parking for green vehicles achieving a minimum green score of 45 on the ACEEE annual vehicle rating guide. Provide one of the following options for alternative-fuel fueling stations.",
+        "options": [
+          {
+            "option": 1,
+            "description": "Electric Vehicle Charging: Install EVSE in 2% of all parking spaces, with Level 2 charging capacity, compliant connectors, and network capabilities."
+          },
+          {
+            "option": 2,
+            "description": "Liquid, gas, or battery facilities: Install alternative fuel fueling facilities or a battery switching station capable of refueling at least 2% of all parking spaces."
+          }
+        ],
+        "additional_requirements": [
+          "Preferred parking spaces must be clearly identified and enforced.",
+          "A discounted parking rate of at least 20% for green vehicles is acceptable in lieu of preferred parking."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project designates preferred parking for green vehicles and implements one of the specified options for alternative-fuel fueling stations."
+        }
+      ]
+    }
+  ],
+
+
+  "SUSTAINABLE SITES (SS)": [
+    {
+      "name": "Construction Activity Pollution Prevention",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce pollution from construction activities by controlling soil erosion, waterway sedimentation, and airborne dust.",
+      "requirements": {
+        "description": "Create and implement an erosion and sedimentation control plan for all construction activities associated with the project. The plan must conform to the erosion and sedimentation requirements of the 2012 U.S. Environmental Protection Agency (EPA) Construction General Permit (CGP) or local equivalent, whichever is more stringent. Projects must apply the CGP regardless of size. The plan must describe the measures implemented."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project has developed and implemented an erosion and sedimentation control plan that meets or exceeds the EPA's 2012 CGP or local equivalent. The plan effectively addresses soil erosion, waterway sedimentation, and airborne dust."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project lacks an erosion and sedimentation control plan, or the plan does not meet the EPA's 2012 CGP requirements or local equivalent. Key measures to control soil erosion, waterway sedimentation, or airborne dust are missing or insufficient."
+        }
+      ]
+    },
+    {
+      "name": "Environmental Site Assessment",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "Schools",
+        "Healthcare"
+      ],
+      "intent": "To protect the health of vulnerable populations by ensuring that the site is assessed for environmental contamination and that any environmental contamination has been remediated.",
+      "requirements": {
+        "description": "Conduct a Phase I Environmental Site Assessment as described in ASTM E1527–05 (or a local equivalent) to determine whether environmental contamination exists at the site. If contamination is suspected, conduct a Phase II Environmental Site Assessment as described in ASTM E1903–11 (or a local equivalent). If a site is contaminated, remediate the site to meet local, state, or national environmental protection agency region residential (unrestricted) standards, whichever are most stringent."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project has completed a Phase I Environmental Site Assessment according to ASTM E1527–05. If contamination was suspected, a Phase II Assessment was conducted, and any contamination was remediated to meet the most stringent standards."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project did not conduct the required environmental assessments, or contamination was not remediated to the required standards."
+        }
+      ]
+    },
+    {
+      "name": "Site Assessment",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To assess site conditions before design to evaluate sustainable options and inform related decisions about site design.",
+      "requirements": {
+        "description": "Complete and document a site survey or assessment that includes the following information: topography, hydrology, climate, vegetation, soils, human use, and human health effects. The assessment should demonstrate the relationships between the site features and how these features influenced the project design; provide reasons for not addressing any of those topics."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project has completed a comprehensive site assessment covering all required topics and has clearly documented how each aspect influenced the design decisions."
+        },
+        {
+          "score": 0,
+          "criteria": "The project has an incomplete site assessment or has not demonstrated how the findings influenced the design."
+        }
+      ]
+    },
+    {
+      "name": "Site Development—Protect or Restore Habitat",
+      "type": "Credit",
+      "points": {
+        "New Construction": [1, 2],
+        "Core & Shell": [1, 2],
+        "Schools": [1, 2],
+        "Retail": [1, 2],
+        "Data Centers": [1, 2],
+        "Warehouses & Distribution Centers": [1, 2],
+        "Hospitality": [1, 2],
+        "Healthcare": 1
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To conserve existing natural areas and restore damaged areas to provide habitat and promote biodiversity.",
+      "requirements": {
+        "option_1": {
+          "description": "On-Site Restoration",
+          "requirements": [
+            "Preserve and protect from all development and construction activity 40% of the greenfield area on the site (if such areas exist).",
+            "Using native or adapted vegetation, restore 30% (including the building footprint) of all portions of the site identified as previously disturbed.",
+            "Restore all disturbed or compacted soils that will be revegetated within the project’s development footprint to meet specific criteria."
+          ],
+          "points": {
+            "Most Project Types": 2,
+            "Healthcare": 1
+          }
+        },
+        "option_2": {
+          "description": "Financial Support",
+          "requirements": [
+            "Provide financial support equivalent to at least $0.40 per square foot ($4 per square meter) for the total site area (including the building footprint) to a nationally or locally recognized land trust or conservation organization within the same EPA Level III ecoregion or the project's state (or within 100 miles for projects outside the U.S.)."
+          ],
+          "points": 1
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project meets all requirements of Option 1, preserving required greenfield areas and restoring disturbed areas with native or adapted vegetation, including soil restoration."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project meets the requirements of Option 2 by providing the required financial support to a qualifying organization."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements of either option."
+        }
+      ]
+    },
+    {
+      "name": "Open Space",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To create exterior open space that encourages interaction with the environment, social interaction, passive recreation, and physical activities.",
+      "requirements": {
+        "description": "Provide outdoor space greater than or equal to 30% of the total site area (including building footprint). A minimum of 25% of that outdoor space must be vegetated (excluding turf grass) or have overhead vegetated canopy. The outdoor space must be physically accessible and meet one or more specified uses, such as pedestrian-oriented spaces, recreational areas, garden spaces, community gardens, or preserved habitats with human interaction."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project provides the required amount of open space, with at least 25% vegetated, and ensures it is physically accessible and serves appropriate functions as specified."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum open space requirement, lacks sufficient vegetation, or the space is not physically accessible or appropriately purposed."
+        }
+      ]
+    },
+    {
+      "name": "Rainwater Management",
+      "type": "Credit",
+      "points": {
+        "New Construction": [2, 3],
+        "Core & Shell": [2, 3],
+        "Schools": [2, 3],
+        "Retail": [2, 3],
+        "Data Centers": [2, 3],
+        "Warehouses & Distribution Centers": [2, 3],
+        "Hospitality": [2, 3],
+        "Healthcare": [1, 2]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce runoff volume and improve water quality by replicating the natural hydrology and water balance of the site, based on historical conditions and undeveloped ecosystems in the region.",
+      "requirements": {
+        "options": [
+          {
+            "option": "Option 1",
+            "paths": [
+              {
+                "path": "95th Percentile",
+                "description": "Manage on-site the runoff from the developed site for the 95th percentile of regional or local rainfall events using low-impact development (LID) and green infrastructure.",
+                "points": {
+                  "Most Project Types": 2,
+                  "Healthcare": 1
+                }
+              },
+              {
+                "path": "98th Percentile",
+                "description": "Achieve the above for the 98th percentile rainfall events.",
+                "points": {
+                  "Most Project Types": 3,
+                  "Healthcare": 2
+                }
+              },
+              {
+                "path": "Zero Lot Line Projects – 85th Percentile",
+                "description": "For zero lot line projects in urban areas with a minimum density of 1.5 FAR, manage on-site the runoff for the 85th percentile rainfall events.",
+                "points": {
+                  "Most Project Types": 3,
+                  "Healthcare": 2
+                }
+              }
+            ]
+          },
+          {
+            "option": "Option 2",
+            "description": "Natural Land Cover Conditions: Manage on-site the annual increase in runoff volume from the natural land cover condition to the post-developed condition.",
+            "points": {
+              "Most Project Types": 3,
+              "Healthcare": 2
+            }
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project meets the highest level of stormwater management by managing runoff for the 98th percentile rainfall events or by replicating natural land cover conditions (Option 2)."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project meets lower thresholds, such as managing runoff for the 95th percentile rainfall events."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum requirements for stormwater management as specified."
+        }
+      ]
+    },
+    {
+      "name": "Heat Island Reduction",
+      "type": "Credit",
+      "points": {
+        "Most Project Types": [1, 2],
+        "Healthcare": 1
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To minimize effects on microclimates and human and wildlife habitats by reducing heat islands.",
+      "requirements": {
+        "options": [
+          {
+            "option": "Option 1",
+            "description": "Nonroof and Roof: Use strategies such as high-reflectance materials, vegetated roofs, and shading to reduce heat islands. Meet specific criteria based on the area of nonroof measures, high-reflectance roof, and vegetated roof.",
+            "points": {
+              "Most Project Types": 2,
+              "Healthcare": 1
+            }
+          },
+          {
+            "option": "Option 2",
+            "description": "Parking under Cover: Place a minimum of 75% of parking spaces under cover. Roofs used must meet specific requirements, such as having high SRI values, being vegetated, or supporting energy generation systems.",
+            "points": 1
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project meets all requirements under Option 1, effectively using a combination of strategies to reduce heat islands across the site."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project meets the requirements of Option 2 by providing covered parking for at least 75% of parking spaces with qualifying roof materials."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum requirements of either option to reduce heat islands."
+        }
+      ]
+    },
+    {
+      "name": "Light Pollution Reduction",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To increase night sky access, improve nighttime visibility, and reduce the consequences of development for wildlife and people.",
+      "requirements": {
+        "description": "Meet uplight and light trespass requirements using either the backlight-uplight-glare (BUG) rating method or calculation method. Additionally, ensure that internally illuminated signage does not exceed specified luminance levels. Exemptions apply to certain types of lighting, provided they are controlled separately from nonexempt lighting."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project complies with all uplight and light trespass requirements using one of the allowed methods and meets the requirements for internally illuminated signage."
+        },
+        {
+          "score": 0,
+          "criteria": "The project fails to meet the uplight and/or light trespass requirements or exceeds luminance levels for internally illuminated signage."
+        }
+      ]
+    },
+    {
+      "name": "Site Master Plan",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Schools"],
+      "intent": "To ensure that the sustainable site benefits achieved by the project continue, regardless of future changes in programs or demographics.",
+      "requirements": {
+        "description": "Develop a site master plan in collaboration with school authorities. The project must achieve at least four of six specific credits using the associated calculation methods and then be recalculated using data from the master plan. The master plan must include current construction activity plus future construction (within the building's lifespan) that affects the site."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project has developed a comprehensive site master plan and meets the requirements by achieving and recalculating at least four of the specified credits."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not develop a site master plan or fails to achieve and recalculate the required credits."
+        }
+      ]
+    },
+    {
+      "name": "Tenant Design and Construction Guidelines",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Core & Shell"],
+      "intent": "To educate tenants in implementing sustainable design and construction features in their tenant improvement build-outs.",
+      "requirements": {
+        "description": "Publish an illustrated document for tenants that includes a description of the sustainable design and construction features incorporated in the core and shell project, recommendations for sustainable strategies, and information to help tenants coordinate space design with building systems when pursuing specific LEED v4 for Interior Design and Construction prerequisites and credits. Provide the guidelines to all tenants before signing the lease."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project has published comprehensive tenant guidelines covering all required content and has provided them to tenants before lease signing."
+        },
+        {
+          "score": 0,
+          "criteria": "The project lacks tenant guidelines, or the guidelines are incomplete or were not provided to tenants in a timely manner."
+        }
+      ]
+    },
+    {
+      "name": "Places of Respite",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Healthcare"],
+      "intent": "To provide patients, staff, and visitors with the health benefits of the natural environment by creating outdoor places of respite on the healthcare campus.",
+      "requirements": {
+        "description": "Provide accessible places of respite for patients and visitors equal to 5% of the net usable program area, and additional dedicated places for staff equal to 2% of the net usable program area. These areas must meet specific requirements regarding accessibility, vegetation, and separation from medical care areas."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project provides the required places of respite for patients, visitors, and staff, meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project fails to provide the required areas or does not meet the specified requirements for places of respite."
+        }
+      ]
+    },
+    {
+      "name": "Direct Exterior Access",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Healthcare"],
+      "intent": "To provide patients and staff with the health benefits associated with direct access to the natural environment.",
+      "requirements": {
+        "description": "Provide direct access to an exterior courtyard, terrace, garden, or balcony for 75% of all inpatients and qualifying outpatients whose clinical length of stay exceeds four hours. The spaces must meet specific requirements, including being designated as nonsmoking and meeting air quality standards."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project provides direct exterior access for the required percentage of patients, meeting all specified conditions."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not provide sufficient direct exterior access or fails to meet the specified conditions."
+        }
+      ]
+    },
+    {
+      "name": "Joint Use of Facilities",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Schools"],
+      "intent": "To integrate the school with the community by sharing the building and its playing fields for nonschool events and functions.",
+      "requirements": {
+        "options": [
+          {
+            "option": "Option 1",
+            "description": "Make Building Space Open to the General Public: Ensure that at least three types of spaces in the school are accessible and available for shared use by the general public. Provide access to toilets in joint-use areas after normal school hours."
+          },
+          {
+            "option": "Option 2",
+            "description": "Contract with Specific Organizations to Share Building Space: Contract with community or other organizations to provide at least two types of dedicated-use spaces in the building. Provide access to toilets in joint-use areas after normal school hours."
+          },
+          {
+            "option": "Option 3",
+            "description": "Use Shared Space Owned by Other Organizations: Ensure that at least two types of spaces owned by other organizations are accessible to students. Provide direct pedestrian access and signed joint-use agreements."
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets the requirements of one of the options, successfully integrating shared facilities with the community."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements of any option for joint use of facilities."
+        }
+      ]
+    }
+  ],
+
+
+  "WATER EFFICIENCY (WE)": [
+    {
+      "name": "Outdoor Water Use Reduction",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce outdoor water consumption.",
+      "requirements": {
+        "options": [
+          {
+            "option": 1,
+            "description": "No Irrigation Required",
+            "requirements": [
+              "Show that the landscape does not require a permanent irrigation system beyond a maximum two-year establishment period."
+            ]
+          },
+          {
+            "option": 2,
+            "description": "Reduced Irrigation",
+            "requirements": [
+              "Reduce the project's landscape water requirement (LWR) by at least 30% from the calculated baseline for the site's peak watering month.",
+              "Reductions must be achieved through plant species selection and irrigation system efficiency, as calculated by the EPA WaterSense Water Budget Tool."
+            ]
+          }
+        ],
+        "notes": [
+          "Nonvegetated surfaces, such as permeable or impermeable pavement, should be excluded from the landscape area calculations.",
+          "Athletic fields, playgrounds (if vegetated), and food gardens may be included or excluded at the project team's discretion."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project meets the requirements of either Option 1 or Option 2, demonstrating a reduction in outdoor water use as specified."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project does not meet the minimum requirements for outdoor water use reduction under either option."
+        }
+      ]
+    },
+    {
+      "name": "Indoor Water Use Reduction",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce indoor water consumption.",
+      "requirements": {
+        "building_water_use": {
+          "description": "For fixtures and fittings, reduce aggregate water consumption by 20% from the baseline.",
+          "requirements": [
+            "Base calculations on the volumes and flow rates specified in Table 1.",
+            "All newly installed toilets, urinals, private lavatory faucets, and showerheads that are eligible for labeling must be WaterSense labeled (or local equivalent)."
+          ],
+          "table_1": {
+            "fixtures": [
+              {
+                "fixture": "Toilet (water closet)",
+                "baseline": "1.6 gpf (6 lpf)"
+              },
+              {
+                "fixture": "Urinal",
+                "baseline": "1.0 gpf (3.8 lpf)"
+              },
+              {
+                "fixture": "Public lavatory faucet",
+                "baseline": "0.5 gpm at 60 psi (1.9 lpm at 415 kPa)"
+              },
+              {
+                "fixture": "Private lavatory faucet",
+                "baseline": "2.2 gpm at 60 psi (8.3 lpm at 415 kPa)"
+              },
+              {
+                "fixture": "Kitchen faucet",
+                "baseline": "2.2 gpm at 60 psi (8.3 lpm at 415 kPa)"
+              },
+              {
+                "fixture": "Showerhead",
+                "baseline": "2.5 gpm at 80 psi (9.5 lpm at 550 kPa)"
+              }
+            ]
+          }
+        },
+        "appliance_and_process_water_use": {
+          "description": "Install appliances, equipment, and processes within the project scope that meet specified requirements.",
+          "requirements": [
+            "Residential clothes washers: ENERGY STAR or equivalent.",
+            "Commercial clothes washers: CEE Tier 3A.",
+            "Residential dishwashers: ENERGY STAR or equivalent.",
+            "Prerinse spray valves: ≤ 1.3 gpm (4.9 lpm).",
+            "Ice machines: ENERGY STAR or equivalent, and use air-cooled or closed-loop cooling."
+          ],
+          "additional_requirements": [
+            "No once-through cooling with potable water for any equipment or appliances that reject heat.",
+            "Cooling towers and evaporative condensers must meet specific equipment requirements."
+          ]
+        },
+        "additional_requirements_for_specific_projects": {
+          "description": "Healthcare, Retail, Schools, and Hospitality projects have additional appliance and process water requirements.",
+          "requirements": [
+            "Kitchen equipment must meet specified water efficiency standards.",
+            "Process requirements such as discharge water temperature tempering and prohibition of venturi-type flow-through vacuum generators."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project demonstrates at least a 20% reduction in indoor water use from the baseline and meets all fixture and appliance requirements."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to achieve the 20% reduction or does not comply with the required fixture and appliance standards."
+        }
+      ]
+    },
+    {
+      "name": "Building-Level Water Metering",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To support water management and identify opportunities for additional water savings by tracking water consumption.",
+      "requirements": {
+        "description": "Install permanent water meters that measure the total potable water use for the building and associated grounds. Meter data must be compiled into monthly and annual summaries; meter readings can be manual or automated.",
+        "commitment": "Commit to sharing with USGBC the resulting whole-project water usage data for a five-year period beginning on the date the project accepts LEED certification or typical occupancy, whichever comes first."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project installs the required building-level water meters and commits to sharing water usage data with USGBC for five years."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project does not install building-level water meters or fails to commit to data sharing as required."
+        }
+      ]
+    },
+    {
+      "name": "Outdoor Water Use Reduction",
+      "type": "Credit",
+      "points": {
+        "Most Project Types": [1, 2],
+        "Healthcare": 1
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce outdoor water consumption.",
+      "requirements": {
+        "options": [
+          {
+            "option": 1,
+            "description": "No Irrigation Required",
+            "points": {
+              "Most Project Types": 2,
+              "Healthcare": 1
+            },
+            "requirements": [
+              "Show that the landscape does not require a permanent irrigation system beyond a maximum two-year establishment period."
+            ]
+          },
+          {
+            "option": 2,
+            "description": "Reduced Irrigation",
+            "points": {
+              "Most Project Types": [1, 2],
+              "Healthcare": 1
+            },
+            "requirements": [
+              "Reduce the project's landscape water requirement (LWR) by at least 50% from the calculated baseline for the site's peak watering month.",
+              "Reductions must first be achieved through plant species selection and irrigation system efficiency as calculated in the EPA WaterSense Water Budget Tool.",
+              "Additional reductions beyond 30% may be achieved using any combination of efficiency, alternative water sources, and smart scheduling technologies."
+            ],
+            "points_table": {
+              "Percentage Reduction from Baseline": [50, 100],
+              "Points": {
+                "Most Project Types": [1, 2],
+                "Healthcare": 1
+              }
+            }
+          }
+        ],
+        "notes": [
+          "Nonvegetated surfaces should be excluded from landscape area calculations.",
+          "Athletic fields, playgrounds, and food gardens may be included or excluded at the project team's discretion."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "Option 1: The project demonstrates that no permanent irrigation is required after two years, earning maximum points."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "Option 2: The project reduces LWR by 50% (or 100% for maximum points) from the baseline during the peak watering month."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum requirements for outdoor water use reduction."
+        }
+      ]
+    },
+    {
+      "name": "Indoor Water Use Reduction",
+      "type": "Credit",
+      "points": {
+        "New Construction": [1, 6],
+        "Core & Shell": [1, 6],
+        "Schools": [1, 7],
+        "Retail": [1, 7],
+        "Data Centers": [1, 6],
+        "Warehouses & Distribution Centers": [1, 6],
+        "Hospitality": [1, 6],
+        "Healthcare": [1, 7]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce indoor water consumption.",
+      "requirements": {
+        "description": "Further reduce fixture and fitting water use from the calculated baseline in WE Prerequisite Indoor Water Use Reduction. Points are awarded according to the percentage reduction achieved.",
+        "points_table": {
+          "Percentage Reduction": [25, 30, 35, 40, 45, 50],
+          "Points": {
+            "BD&C": [1, 2, 3, 4, 5, 6],
+            "Schools, Retail, Hospitality, Healthcare": [1, 2, 3, 4, 5, 6, 7]
+          }
+        },
+        "additional_requirements": {
+          "Schools, Retail, Hospitality, and Healthcare": [
+            "Install equipment within the project scope that meets the minimum requirements in specified tables for appliance and process water use.",
+            "One point is awarded for meeting all applicable requirements in any one table.",
+            "Schools, Retail, and Healthcare projects can earn a second point for meeting the requirements of two tables."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project achieves the highest percentage reduction in water use (e.g., 50% or more) and meets additional equipment requirements for applicable project types."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project achieves intermediate levels of water use reduction according to the points table."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not exceed the prerequisite reduction of 20%."
+        }
+      ]
+    },
+    {
+      "name": "Cooling Tower Water Use",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To conserve water used for cooling tower makeup while controlling microbes, corrosion, and scale in the condenser water system.",
+      "requirements": {
+        "description": "For cooling towers and evaporative condensers, conduct a one-time potable water analysis measuring at least the five control parameters listed. Limit cooling tower cycles to avoid exceeding maximum values.",
+        "parameters_table": {
+          "Parameter": ["Calcium (as CaCO3)", "Total Alkalinity", "Silica", "Chloride", "Conductivity"],
+          "Maximum Level": ["1000 ppm", "1000 ppm", "100 ppm", "250 ppm", "2000 µS/cm"]
+        },
+        "points_table": {
+          "Criteria": [
+            "Maximum number of cycles achieved without exceeding any filtration levels or affecting operation (up to 10 cycles)",
+            "Achieve minimum 10 cycles by increasing treatment, or meet minimum cycles and use at least 20% recycled nonpotable water"
+          ],
+          "Points": [1, 2]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project achieves at least 10 cooling tower cycles through advanced treatment or uses at least 20% recycled nonpotable water, earning 2 points."
+        },
+        {
+          "score": 1,
+          "criteria": "The project achieves the maximum number of cycles possible without exceeding parameters (up to 10 cycles), earning 1 point."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum requirements for cooling tower water use reduction."
+        }
+      ]
+    },
+    {
+      "name": "Water Metering",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To support water management and identify opportunities for additional water savings by tracking water consumption.",
+      "requirements": {
+        "description": "Install permanent water meters for two or more water subsystems, as applicable to the project.",
+        "subsystems": [
+          "Irrigation",
+          "Indoor plumbing fixtures and fittings",
+          "Domestic hot water",
+          "Boiler with aggregate projected annual water use of 100,000 gallons or more, or boiler of more than 500,000 BtuH",
+          "Reclaimed water",
+          "Other process water (e.g., humidification systems, dishwashers, clothes washers, pools)"
+        ],
+        "healthcare_additional_requirements": [
+          "Healthcare projects must install water meters in any five of the specified systems (e.g., purified water systems, filter backwash water, dietary department water use, etc.)"
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project installs permanent water meters for at least two applicable water subsystems (or five for healthcare projects) as specified."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not install the required water meters for the applicable subsystems."
+        }
+      ]
+    }
+  ],
+
+
+  "ENERGY AND ATMOSPHERE": [
+    {
+      "name": "Fundamental Commissioning and Verification",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To support the design, construction, and eventual operation of a project that meets the owner’s project requirements for energy, water, indoor environmental quality, and durability.",
+      "requirements": {
+        "commissioning_process_scope": {
+          "description": "Complete the commissioning (Cx) process activities for mechanical, electrical, plumbing, and renewable energy systems and assemblies, in accordance with ASHRAE Guideline 0-2005 and ASHRAE Guideline 1.1–2007 for HVAC&R Systems.",
+          "activities": [
+            "Develop the Owner's Project Requirements (OPR).",
+            "Develop a Basis of Design (BOD).",
+            "Commissioning authority (CxA) reviews the OPR, BOD, and project design.",
+            "Develop and implement a commissioning plan.",
+            "Confirm incorporation of commissioning requirements into construction documents.",
+            "Develop construction checklists.",
+            "Develop a system test procedure.",
+            "Verify system test execution.",
+            "Maintain an issues and benefits log throughout the commissioning process.",
+            "Prepare a final commissioning process report.",
+            "Document all findings and recommendations and report directly to the owner throughout the process."
+          ],
+          "exterior_enclosures": "Requirements for exterior enclosures are limited to inclusion in the OPR and BOD, as well as the review of the OPR, BOD, and project design. NIBS Guideline 3-2012 may provide additional guidance."
+        },
+        "commissioning_authority": {
+          "description": "By the end of the design development phase, engage a commissioning authority with specified qualifications.",
+          "qualifications": [
+            "Documented commissioning process experience on at least two building projects with a similar scope of work, extending from early design phase through at least 10 months of occupancy.",
+            "The CxA may be a qualified employee of the owner, an independent consultant, or an employee of the design or construction firm who is not part of the project’s design or construction team, or a disinterested subcontractor of the design or construction team.",
+            "For projects smaller than 20,000 square feet (1,860 square meters), the CxA may be a qualified member of the design or construction team."
+          ],
+          "note": "CxA must report findings directly to the owner."
+        },
+        "current_facilities_requirements_and_operations_and_maintenance_plan": {
+          "description": "Prepare and maintain a current facilities requirements and operations and maintenance plan containing necessary information to operate the building efficiently.",
+          "contents": [
+            "Sequence of operations for the building.",
+            "Building occupancy schedule.",
+            "Equipment run-time schedules.",
+            "Setpoints for all HVAC equipment.",
+            "Set lighting levels throughout the building.",
+            "Minimum outside air requirements.",
+            "Changes in schedules or setpoints for different seasons, days of the week, and times of day.",
+            "Systems narrative describing the mechanical and electrical systems and equipment.",
+            "Preventive maintenance plan for building equipment.",
+            "Commissioning program that includes periodic commissioning requirements and ongoing commissioning tasks."
+          ]
+        },
+        "data_centers": {
+          "description": "For small data center projects, the CxA may be a qualified employee of the design or construction team.",
+          "criteria": "Computer room peak cooling loads less than 2,000,000 Btu/h (600 kW) or total computer room peak cooling load less than 600,000 Btu/h (175 kW)."
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project completes all required commissioning activities, engages a qualified commissioning authority, and prepares a facilities requirements and operations and maintenance plan as specified."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to complete required commissioning activities, does not engage a qualified commissioning authority, or lacks a proper facilities requirements and operations and maintenance plan."
+        }
+      ]
+    },
+    {
+      "name": "Minimum Energy Performance",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce the environmental and economic harms of excessive energy use by achieving a minimum level of energy efficiency for the building and its systems.",
+      "requirements": {
+        "option_1": {
+          "description": "Whole-Building Energy Simulation",
+          "requirements": [
+            "Demonstrate an improvement of 5% for new construction, 3% for major renovations, or 2% for core and shell projects in the proposed building performance rating compared with the baseline.",
+            "Baseline building performance calculated according to ANSI/ASHRAE/IESNA Standard 90.1–2010, Appendix G, with errata.",
+            "Proposed design must comply with mandatory provisions, include all energy consumption and costs, and be compared against a baseline building that complies with Standard 90.1–2010."
+          ],
+          "retail": "Process loads may include refrigeration equipment, cooking and food preparation, clothes washing, and other major support appliances. Industry standard baseline conditions are defined in Appendix 3, Tables 1–4."
+        },
+        "option_2": {
+          "description": "Prescriptive Compliance: ASHRAE 50% Advanced Energy Design Guide",
+          "requirements": [
+            "Comply with the mandatory and prescriptive provisions of ANSI/ASHRAE/IESNA Standard 90.1–2010, with errata.",
+            "Comply with HVAC and service water heating requirements in Chapter 4 of the appropriate ASHRAE 50% Advanced Energy Design Guide for the project's building type and climate zone."
+          ]
+        },
+        "option_3": {
+          "description": "Prescriptive Compliance: Advanced Buildings™ Core Performance™ Guide",
+          "requirements": [
+            "Comply with mandatory and prescriptive provisions of ANSI/ASHRAE/IESNA Standard 90.1-2010, with errata.",
+            "Comply with Section 1: Design Process Strategies, Section 2: Core Performance Requirements, and specified strategies from Section 3: Enhanced Performance Strategies.",
+            "Projects must be less than 100,000 square feet (9,290 square meters).",
+            "Not applicable to Healthcare, Warehouse, or Laboratory projects."
+          ]
+        },
+        "data_centers": {
+          "description": "Whole-Building Energy Simulation for Data Centers",
+          "requirements": [
+            "Demonstrate a 5% improvement in the proposed performance rating over the baseline.",
+            "Create two models: one for building energy cost and one for IT equipment energy cost.",
+            "Determine power utilization effectiveness (PUE) value of the proposed design.",
+            "Minimum of 2% of the 5% energy savings must come from building power and cooling infrastructure."
+          ],
+          "note": "Include all energy consumption and costs, and compare against a baseline building that complies with Standard 90.1–2010 and data center modeling guidelines."
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project meets the minimum energy performance improvement as specified under one of the options, following all requirements."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to meet the minimum energy performance improvement or does not comply with the specified requirements."
+        }
+      ]
+    },
+    {
+      "name": "Building-Level Energy Metering",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To support energy management and identify opportunities for additional energy savings by tracking building-level energy use.",
+      "requirements": {
+        "description": "Install new or use existing building-level energy meters or submeters that can provide building-level data representing total building energy consumption.",
+        "commitment": "Commit to sharing with USGBC the resulting energy consumption data and electrical demand data (if metered) for a five-year period beginning on the date the project accepts LEED certification. Energy consumption must be tracked at one-month intervals.",
+        "cs_projects": "For Core & Shell projects, install base building-level energy meters, and the commitment begins on the date of LEED certification or typical occupancy, whichever comes first."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project installs the required energy meters and commits to sharing energy consumption data with USGBC for five years."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project does not install building-level energy meters or fails to commit to data sharing as required."
+        }
+      ]
+    },
+    {
+      "name": "Fundamental Refrigerant Management",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce stratospheric ozone depletion.",
+      "requirements": {
+        "description": [
+          "Do not use chlorofluorocarbon (CFC)-based refrigerants in new HVAC&R systems.",
+          "When reusing existing HVAC&R equipment, complete a comprehensive CFC phase-out conversion before project completion.",
+          "Existing small HVAC&R units containing less than 0.5 pound (225 grams) of refrigerant are exempt."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project does not use CFC-based refrigerants or has completed a phase-out conversion of existing equipment."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project uses CFC-based refrigerants without a phase-out plan or has not completed the required phase-out conversion."
+        }
+      ]
+    },
+    {
+      "name": "Enhanced Commissioning",
+      "type": "Credit",
+      "points": {
+        "All Project Types": [2, 6]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To further support the design, construction, and eventual operation of a project that meets the owner’s project requirements for energy, water, indoor environmental quality, and durability.",
+      "requirements": {
+        "commissioning_authority": {
+          "description": "Engage a commissioning authority (CxA) with specified qualifications.",
+          "qualifications": [
+            "Documented commissioning process experience on at least two building projects with a similar scope of work, extending from early design phase through at least 10 months of occupancy.",
+            "The CxA may be a qualified employee of the owner, an independent consultant, or a disinterested subcontractor of the design team."
+          ]
+        },
+        "option_1": {
+          "description": "Enhanced Systems Commissioning",
+          "paths": [
+            {
+              "path": "Path 1: Enhanced Commissioning",
+              "points": 3,
+              "requirements": [
+                "Complete additional commissioning process activities for mechanical, electrical, plumbing, and renewable energy systems.",
+                "Activities include review of contractor submittals, verifying inclusion of systems manual requirements, verifying operator and occupant training, verifying systems manual updates and delivery, verifying seasonal testing, reviewing building operations 10 months after substantial completion, and developing an ongoing commissioning plan.",
+                "Include all enhanced commissioning tasks in the OPR and BOD."
+              ]
+            },
+            {
+              "path": "Path 2: Enhanced and Monitoring-Based Commissioning",
+              "points": 4,
+              "requirements": [
+                "Achieve Path 1.",
+                "Develop monitoring-based procedures and identify points to be measured and evaluated to assess performance of energy- and water-consuming systems.",
+                "Include procedures and measurement points in the commissioning plan.",
+                "Update systems manual with any modifications or new settings."
+              ]
+            }
+          ]
+        },
+        "option_2": {
+          "description": "Envelope Commissioning",
+          "points": 2,
+          "requirements": [
+            "Fulfill the requirements in EA Prerequisite Fundamental Commissioning and Verification as they apply to the building’s thermal envelope.",
+            "Complete additional commissioning process activities for the building’s thermal envelope in accordance with ASHRAE Guideline 0–2005 and NIBS Guideline 3–2012.",
+            "Activities include review of contractor submittals, verifying inclusion of systems manual requirements, verifying operator and occupant training, verifying systems manual updates and delivery, verifying seasonal testing, reviewing building operations 10 months after substantial completion, and developing an ongoing commissioning plan."
+          ]
+        },
+        "data_centers": {
+          "description": "For Data Centers, commissioning process activities vary based on project size.",
+          "requirements": [
+            "For small projects, CxA must conduct at least one commissioning verification review before mid-construction documents development and a final review at 95% completion.",
+            "For larger projects, CxA must conduct at least three verification reviews at specified stages."
+          ],
+          "criteria": [
+            "Small projects: Peak cooling loads less than 2,000,000 Btu/h (600 kW) or total computer room peak cooling load less than 600,000 Btu/h (175 kW).",
+            "Large projects: Above these thresholds."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project achieves both Option 1 (Path 2) and Option 2, completing all required enhanced commissioning activities, including monitoring-based commissioning and envelope commissioning."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project achieves either Option 1 (Path 1 or Path 2) or Option 2, completing the specified enhanced commissioning activities."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not complete the required enhanced commissioning activities."
+        }
+      ]
+    },
+    {
+      "name": "Optimize Energy Performance",
+      "type": "Credit",
+      "points": {
+        "New Construction": [1, 18],
+        "Core & Shell": [1, 18],
+        "Schools": [1, 16],
+        "Healthcare": [1, 20],
+        "Other Project Types": [1, 18]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To achieve increasing levels of energy performance beyond the prerequisite standard to reduce environmental and economic harms associated with excessive energy use.",
+      "requirements": {
+        "description": "Establish an energy performance target no later than the schematic design phase, expressed as kBtu per square foot-year of source energy use.",
+        "option_1": {
+          "description": "Whole-Building Energy Simulation",
+          "requirements": [
+            "Analyze efficiency measures during the design process and account for the results in design decision making.",
+            "Follow the criteria in EA Prerequisite Minimum Energy Performance to demonstrate a percentage improvement in the proposed building performance rating compared with the baseline.",
+            "Points are awarded according to the percentage improvement achieved."
+          ],
+          "points_table": "Refer to Table 1 in the credit language for points corresponding to percentage improvement."
+        },
+        "option_2": {
+          "description": "Prescriptive Compliance: ASHRAE Advanced Energy Design Guide",
+          "requirements": [
+            "Implement and document compliance with applicable recommendations and standards in Chapter 4 of the appropriate ASHRAE 50% Advanced Energy Design Guide for the project's building type and climate zone.",
+            "Points are awarded for implementing specific design strategies as outlined in the guide."
+          ],
+          "points": [1, 6]
+        },
+        "retail": "Retail projects must meet requirements of Option 2 and comply with prescriptive measures in Appendix 3, Tables 1–4, for 90% of total energy consumption for all process equipment.",
+        "data_centers": "Data centers use Whole-Building Energy Simulation, analyzing efficiency measures focused on IT load reduction and HVAC strategies. Use energy cost savings from both the building and IT to determine the total percentage reduction."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project achieves the highest percentage improvement in energy performance according to the points table, demonstrating significant energy cost savings."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project achieves intermediate levels of energy performance improvement, earning points as per the points table."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not exceed the minimum energy performance required by the prerequisite."
+        }
+      ]
+    },
+    {
+      "name": "Advanced Energy Metering",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To support energy management and identify opportunities for additional energy savings by tracking building-level and system-level energy use.",
+      "requirements": {
+        "description": [
+          "Install advanced energy metering for all whole-building energy sources used by the building.",
+          "Install advanced energy metering for any individual energy end uses that represent 10% or more of the total annual consumption of the building.",
+          "Advanced energy metering must have specified characteristics, such as recording intervals of one hour or less, data transmission to a remote location, data storage capability, and remote accessibility."
+        ],
+        "cs_projects": "Core & Shell projects must install meters for future tenant spaces to enable tenants to independently meter energy consumption, with at least one meter per energy source per floor."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project installs advanced energy metering that meets all specified requirements for whole-building and applicable end uses."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not install advanced energy metering or fails to meet the specified requirements."
+        }
+      ]
+    },
+    {
+      "name": "Demand Response",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To increase participation in demand response technologies and programs that make energy generation and distribution systems more efficient, increase grid reliability, and reduce greenhouse gas emissions.",
+      "requirements": {
+        "case_1": {
+          "description": "Demand Response Program Available",
+          "points": 2,
+          "requirements": [
+            "Participate in an existing demand response (DR) program.",
+            "Design a system with capability for real-time, fully-automated DR based on external initiation by a DR Program Provider (semi-automated DR may be used in practice).",
+            "Enroll in a minimum one-year DR participation contractual commitment with a qualified DR program provider for at least 10% of the estimated peak electricity demand.",
+            "Develop a comprehensive plan for meeting the contractual commitment during a DR event.",
+            "Include DR processes in the commissioning authority's scope of work, including participation in at least one full test of the DR plan."
+          ]
+        },
+        "case_2": {
+          "description": "Demand Response Program Not Available",
+          "points": 1,
+          "requirements": [
+            "Provide infrastructure to take advantage of future DR programs or dynamic, real-time pricing programs.",
+            "Install interval recording meters with communications and ability for the building automation system to accept an external price or control signal.",
+            "Develop a comprehensive plan for shedding at least 10% of building estimated peak electricity demand.",
+            "Include DR processes in the commissioning authority's scope of work, including participation in at least one full test of the DR plan.",
+            "Contact local utility representatives to discuss participation in future DR programs."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project meets all requirements of Case 1, actively participating in a demand response program with fully-automated DR capabilities."
+        },
+        {
+          "score": 1,
+          "criteria": "The project meets all requirements of Case 2, preparing for future participation in demand response programs."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements for either case."
+        }
+      ]
+    },
+    {
+      "name": "Renewable Energy Production",
+      "type": "Credit",
+      "points": [1, 3],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce the environmental and economic harms associated with fossil fuel energy by increasing self-supply of renewable energy.",
+      "requirements": {
+        "description": [
+          "Use renewable energy systems to offset building energy costs.",
+          "Calculate the percentage of renewable energy using the specified equation based on the equivalent cost of usable energy produced and the total building annual energy cost.",
+          "Points are awarded according to the percentage of renewable energy generated."
+        ],
+        "allowance": "Use of solar gardens or community renewable energy systems is allowed if specific requirements are met.",
+        "points_table": {
+          "Percentage Renewable Energy": ["1%", "5%", "10%"],
+          "Points (Most Project Types)": [1, 2, 3],
+          "Points (Core & Shell)": [1, 3, "-"]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project generates renewable energy equivalent to 10% (or highest percentage specified) of the building's annual energy cost, earning maximum points."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project generates renewable energy at lower percentages (e.g., 1% or 5%), earning points according to the table."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not generate renewable energy or fails to meet the minimum percentage required for points."
+        }
+      ]
+    },
+    {
+      "name": "Enhanced Refrigerant Management",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce ozone depletion and support early compliance with the Montreal Protocol while minimizing direct contributions to climate change.",
+      "requirements": {
+        "option_1": {
+          "description": "No Refrigerants or Low-Impact Refrigerants",
+          "requirements": [
+            "Do not use refrigerants, or use only refrigerants with an ozone depletion potential (ODP) of zero and a global warming potential (GWP) of less than 50."
+          ]
+        },
+        "option_2": {
+          "description": "Calculation of Refrigerant Impact",
+          "requirements": [
+            "Select refrigerants to minimize or eliminate the emission of compounds that contribute to ozone depletion and climate change.",
+            "The combination of all HVAC&R equipment must comply with the specified formula for lifecycle refrigerant impact."
+          ],
+          "formula": "LCGWP + LCODP x 10^5 ≤ 100 (IP units) or ≤ 13 (SI units)",
+          "variables": "Variables include Global Warming Potential, Ozone Depletion Potential, Refrigerant Leakage Rate, End-of-life Refrigerant Loss, Refrigerant Charge, and Equipment Life."
+        },
+        "retail": {
+          "description": "Additional requirements for stores with commercial refrigeration systems.",
+          "requirements": [
+            "Use only non-ozone-depleting refrigerants.",
+            "Select equipment with an average HFC refrigerant charge of no more than 1.75 pounds of refrigerant per 1,000 Btu/h (2.72 kg per kW) total evaporator cooling load.",
+            "Demonstrate a predicted store-wide annual refrigerant emissions rate of no more than 15%.",
+            "Alternatively, attain EPA GreenChill's silver-level store certification for newly constructed stores."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets the requirements of either Option 1 or Option 2, ensuring refrigerant management minimizes ozone depletion and global warming potential."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements for refrigerant management under either option."
+        }
+      ]
+    },
+    {
+      "name": "Green Power and Carbon Offsets",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage the reduction of greenhouse gas emissions through the use of grid-source, renewable energy technologies and carbon mitigation projects.",
+      "requirements": {
+        "description": [
+          "Engage in a contract for qualified resources that have come online since January 1, 2005, for a minimum of five years.",
+          "Contract must specify the provision of at least 50% or 100% of the project's energy from green power, carbon offsets, or renewable energy certificates (RECs).",
+          "Green power and RECs must be Green-e Energy certified or equivalent.",
+          "Carbon offsets must be Green-e Climate certified or equivalent and may be used to mitigate Scope 1 or Scope 2 emissions.",
+          "Points are awarded according to the percentage of total energy addressed."
+        ],
+        "points_table": {
+          "Percentage of Total Energy Addressed": ["50%", "100%"],
+          "Points": [1, 2]
+        },
+        "cs_projects": "For Core & Shell projects, energy is defined as the energy usage of the core and shell floor area, but not less than 15% of the project's floor area."
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project procures 100% of its energy from qualified green power, RECs, or carbon offsets, meeting all specified requirements."
+        },
+        {
+          "score": 1,
+          "criteria": "The project procures at least 50% of its energy from qualified green power, RECs, or carbon offsets, meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum procurement requirements for green power or carbon offsets."
+        }
+      ]
+    }
+  ],
+
+
+  "MATERIALS AND RESOURCES (MR)": [
+    {
+      "name": "Storage and Collection of Recyclables",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce the waste that is generated by building occupants and hauled to and disposed of in landfills.",
+      "requirements": {
+        "description": [
+          "Provide dedicated areas accessible to waste haulers and building occupants for the collection and storage of recyclable materials for the entire building.",
+          "Collection and storage areas may be separate locations.",
+          "Recyclable materials must include mixed paper, corrugated cardboard, glass, plastics, and metals.",
+          "Take appropriate measures for the safe collection, storage, and disposal of two of the following: batteries, mercury-containing lamps, and electronic waste."
+        ],
+        "retail_specific": [
+          "Conduct a waste stream study to identify the project's top five recyclable waste streams by weight or volume.",
+          "Provide dedicated areas for the separation, collection, and storage of recyclable materials for at least the top four waste streams identified.",
+          "Locate collection and storage bins close to the source of recyclable waste.",
+          "If any of the top four waste streams are batteries, mercury-containing lamps, or electronic waste, take appropriate measures for safe collection, storage, and disposal."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project provides the required recycling storage areas and meets all specified requirements, including safe disposal measures for selected hazardous materials."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project does not provide adequate recycling storage areas or fails to meet the specified requirements for collection and disposal."
+        }
+      ]
+    },
+    {
+      "name": "Construction and Demolition Waste Management Planning",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce construction and demolition waste disposed of in landfills and incineration facilities by recovering, reusing, and recycling materials.",
+      "requirements": {
+        "description": [
+          "Develop and implement a construction and demolition waste management plan.",
+          "Establish waste diversion goals for the project by identifying at least five materials targeted for diversion.",
+          "Approximate a percentage of the overall project waste that these materials represent.",
+          "Specify whether materials will be separated or commingled and describe the diversion strategies planned.",
+          "Describe where the material will be taken and how the recycling facility will process the material.",
+          "Provide a final report detailing all major waste streams generated, including disposal and diversion rates."
+        ],
+        "notes": [
+          "Alternative daily cover (ADC) does not qualify as material diverted from disposal.",
+          "Land-clearing debris is not considered construction, demolition, or renovation waste that can contribute to waste diversion."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project develops and implements a comprehensive waste management plan meeting all specified requirements and provides a final report detailing waste streams and diversion rates."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to develop a waste management plan or does not meet the specified requirements, or does not provide the required final report."
+        }
+      ]
+    },
+    {
+      "name": "PBT Source Reduction—Mercury",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": ["Healthcare"],
+      "intent": "To reduce mercury-containing products and devices and mercury release through product substitution, capture, and recycling.",
+      "requirements": {
+        "description": [
+          "As part of the project's recycling collection system, identify the types of mercury-containing products and devices to be collected.",
+          "Specify criteria governing how they are to be handled by a recycling program.",
+          "Specify disposal methods for captured mercury.",
+          "In facilities delivering dental care, specify and install amalgam separation devices that meet or exceed the ISO-11143 standard.",
+          "Comply with mercury elimination requirements outlined in the 2010 FGI Guidelines for Design and Construction of Health Care Facilities, Section A1.3-4b."
+        ],
+        "additional_requirements": [
+          "Do not specify or install preheat, T-9, T-10, or T-12 fluorescents or mercury vapor high-intensity discharge (HID) lamps.",
+          "Do not specify probe-start metal halide HID lamps in any interior spaces.",
+          "Specify and install illuminated exit signs that do not contain mercury and use less than 5 watts of electricity.",
+          "Fluorescent and high-pressure sodium lamps must meet specified maximum mercury content criteria."
+        ],
+        "table_1": "Maximum mercury content of lamps (details provided in the credit language)."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project meets all specified requirements for mercury reduction, including identification, handling, disposal, and equipment specifications."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to meet one or more of the specified requirements for mercury reduction."
+        }
+      ]
+    },
+    {
+      "name": "Building Life-Cycle Impact Reduction",
+      "type": "Credit",
+      "points": {
+        "New Construction": [2, 5],
+        "Core & Shell": [2, 6],
+        "Other Project Types": [2, 5]
+      },
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage adaptive reuse and optimize the environmental performance of products and materials.",
+      "requirements": {
+        "description": "Demonstrate reduced environmental effects during initial project decision-making by reusing existing building resources or demonstrating a reduction in materials use through life-cycle assessment.",
+        "options": [
+          {
+            "option": 1,
+            "name": "Historic Building Reuse",
+            "points": {
+              "BD&C": 5,
+              "Core and Shell": 6
+            },
+            "requirements": [
+              "Maintain the existing building structure, envelope, and interior nonstructural elements of a historic building or contributing building in a historic district.",
+              "Do not demolish any part unless deemed structurally unsound or hazardous.",
+              "Alterations must be done in accordance with local or national standards for rehabilitation."
+            ]
+          },
+          {
+            "option": 2,
+            "name": "Renovation of Abandoned or Blighted Building",
+            "points": {
+              "BD&C": 5,
+              "Core and Shell": 6
+            },
+            "requirements": [
+              "Maintain at least 50%, by surface area, of the existing building structure, enclosure, and interior structural elements for buildings considered abandoned or blighted.",
+              "The building must be renovated to a state of productive occupancy.",
+              "Up to 25% of the building surface area may be excluded due to deterioration or damage."
+            ]
+          },
+          {
+            "option": 3,
+            "name": "Building and Material Reuse",
+            "points_table": {
+              "Percentage of Completed Project Surface Area Reused": [25, 50, 75],
+              "Points (BD&C)": [2, 3, 4],
+              "Points (Core and Shell)": [2, 3, 5]
+            },
+            "requirements": [
+              "Reuse or salvage building materials from off site or on site as a percentage of the surface area.",
+              "Include structural elements, enclosure materials, and permanently installed interior elements.",
+              "Exclude window assemblies and hazardous materials."
+            ],
+            "note": "Materials contributing toward this credit may not contribute toward MR Credit Material Disclosure and Optimization."
+          },
+          {
+            "option": 4,
+            "name": "Whole-Building Life-Cycle Assessment",
+            "points": 3,
+            "requirements": [
+              "Conduct a life-cycle assessment of the project's structure and enclosure.",
+              "Demonstrate a minimum of 10% reduction in at least three of six impact categories compared with a baseline building.",
+              "One of the impact categories must be global warming potential.",
+              "No impact category may increase by more than 5% compared with the baseline.",
+              "The baseline and proposed buildings must be of comparable size, function, orientation, and operating energy performance."
+            ],
+            "impact_categories": [
+              "Global warming potential (greenhouse gases), in CO2e",
+              "Depletion of the stratospheric ozone layer, in kg CFC-11",
+              "Acidification of land and water sources, in moles H+ or kg SO2",
+              "Eutrophication, in kg nitrogen or kg phosphate",
+              "Formation of tropospheric ozone, in kg NOx, kg O3 eq, or kg ethene",
+              "Depletion of nonrenewable energy resources, in MJ"
+            ]
+          }
+        ],
+        "healthcare_note": "For all options, building materials demolished to create courtyards to increase daylighting may be counted as retained if the new courtyards meet the requirements of EQ Credits Daylight and Quality Views."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Maximum points",
+          "criteria": "The project meets the highest requirements under one of the options, such as Option 1 or Option 2, or achieves the highest percentage under Option 3."
+        },
+        {
+          "score": "Partial points",
+          "criteria": "The project meets the requirements for lower point thresholds under Option 3 or achieves Option 4."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum requirements under any of the options."
+        }
+      ]
+    },
+    {
+      "name": "Building Product Disclosure and Optimization—Environmental Product Declarations",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage the use of products and materials for which life-cycle information is available and that have environmentally, economically, and socially preferable life-cycle impacts.",
+      "requirements": {
+        "option_1": {
+          "description": "Environmental Product Declaration (EPD)",
+          "points": 1,
+          "requirements": [
+            "Use at least 20 different permanently installed products sourced from at least five different manufacturers that meet specified disclosure criteria.",
+            "Product-specific declarations are valued as one-quarter of a product.",
+            "Industry-wide (generic) EPDs are valued as one-half of a product.",
+            "Product-specific Type III EPDs are valued as one whole product."
+          ]
+        },
+        "option_2": {
+          "description": "Multi-Attribute Optimization",
+          "points": 1,
+          "requirements": [
+            "Use products that comply with specified criteria for 50%, by cost, of the total value of permanently installed products.",
+            "Products must demonstrate impact reduction below industry average in at least three impact categories.",
+            "Products are valued at 100% of their cost."
+          ],
+          "impact_categories": [
+            "Global warming potential (greenhouse gases), in CO2e",
+            "Depletion of the stratospheric ozone layer, in kg CFC-11",
+            "Acidification of land and water sources, in moles H+ or kg SO2",
+            "Eutrophication, in kg nitrogen or kg phosphate",
+            "Formation of tropospheric ozone, in kg NOx, kg O3 eq, or kg ethene",
+            "Depletion of nonrenewable energy resources, in MJ"
+          ],
+          "regional_multiplier": "Products sourced within 100 miles (160 km) are valued at 200% of their base contributing cost.",
+          "limitation": "Structure and enclosure materials may not constitute more than 30% of the value of compliant building products."
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project achieves both Option 1 and Option 2, meeting all specified requirements."
+        },
+        {
+          "score": 1,
+          "criteria": "The project achieves either Option 1 or Option 2, meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements under either option."
+        }
+      ]
+    },
+    {
+      "name": "Building Product Disclosure and Optimization—Sourcing of Raw Materials",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage the use of products and materials for which life-cycle information is available and that have environmentally, economically, and socially preferable life-cycle impacts.",
+      "requirements": {
+        "option_1": {
+          "description": "Raw Material Source and Extraction Reporting",
+          "points": 1,
+          "requirements": [
+            "Use at least 20 different permanently installed products from at least five different manufacturers that have publicly released a report from their raw material suppliers.",
+            "Products with self-declared reports are valued as one-half of a product.",
+            "Products with third-party verified corporate sustainability reports are valued as one whole product."
+          ]
+        },
+        "option_2": {
+          "description": "Leadership Extraction Practices",
+          "points": 1,
+          "requirements": [
+            "Use products that meet at least one responsible extraction criteria for at least 25%, by cost, of the total value of permanently installed products.",
+            "Criteria include extended producer responsibility, bio-based materials, certified wood products, materials reuse, and recycled content.",
+            "Products are valued at 100% or 50% of their cost, depending on the criteria.",
+            "Regional multiplier applies: products sourced within 100 miles (160 km) are valued at 200% of their base contributing cost."
+          ],
+          "limitation": "Structure and enclosure materials may not constitute more than 30% of the value of compliant building products."
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project achieves both Option 1 and Option 2, meeting all specified requirements."
+        },
+        {
+          "score": 1,
+          "criteria": "The project achieves either Option 1 or Option 2, meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements under either option."
+        }
+      ]
+    },
+    
+    {
+      "name": "Building Product Disclosure and Optimization—Material Ingredients",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage the use of products and materials for which life-cycle information is available and that have environmentally, economically, and socially preferable life-cycle impacts.",
+      "requirements": {
+        "option_1": {
+          "description": "Material Ingredient Reporting",
+          "points": 1,
+          "requirements": [
+            "Use at least 20 different permanently installed products from at least five different manufacturers that demonstrate the chemical inventory of the product to at least 0.1% (1000 ppm).",
+            "Acceptable programs include Manufacturer Inventory, Health Product Declaration, Cradle to Cradle certification, Declare, ANSI/BIFMA e3, and others."
+          ]
+        },
+        "option_2": {
+          "description": "Material Ingredient Optimization",
+          "points": 1,
+          "requirements": [
+            "Use products that document material ingredient optimization using specified paths for at least 25%, by cost, of the total value of permanently installed products.",
+            "Acceptable programs include GreenScreen, Cradle to Cradle, REACH Optimization, and others.",
+            "Products are valued at 100% or 150% of their cost, depending on the level of optimization.",
+            "Regional multiplier applies: products sourced within 100 miles (160 km) are valued at 200% of their base contributing cost."
+          ],
+          "limitation": "Structure and enclosure materials may not constitute more than 30% of the value of compliant building products."
+        },
+        "option_3": {
+          "description": "Product Manufacturer Supply Chain Optimization",
+          "points": 1,
+          "requirements": [
+            "Use products for at least 25%, by cost, of the total value of permanently installed products that are sourced from manufacturers who engage in robust safety, health, hazard, and risk programs.",
+            "Manufacturers must have independent third-party verification of their supply chain.",
+            "Products meeting Option 3 criteria are valued at 100% of their cost."
+          ],
+          "note": "For credit calculation, products compliant with either Option 2 or Option 3 can be combined to reach the 25% threshold, but products compliant with both may only be counted once."
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project achieves any two of the three options, meeting all specified requirements."
+        },
+        {
+          "score": 1,
+          "criteria": "The project achieves any one of the options, meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements under any of the options."
+        }
+      ]
+    },
+    
+    {
+      "name": "PBT Source Reduction—Mercury",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Healthcare"],
+      "intent": "To reduce the release of persistent, bioaccumulative, and toxic (PBTs) chemicals associated with the life cycle of building materials.",
+      "requirements": {
+        "description": [
+          "Specify and install fluorescent lamps with both low mercury content and long lamp life, as listed in Table 1.",
+          "Do not specify or install circular fluorescent lamps or probe start metal halide lamps."
+        ],
+        "table_1": "Criteria for rated life of low-mercury lamps (details provided in the credit language)."
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets all specified requirements for mercury reduction in lamps and lighting."
+        },
+        {
+          "score": 0,
+          "criteria": "The project fails to meet one or more of the specified requirements."
+        }
+      ]
+    },
+    {
+      "name": "PBT Source Reduction—Lead, Cadmium, and Copper",
+      "type": "Credit",
+      "points": 2,
+      "applies_to": ["Healthcare"],
+      "intent": "To reduce the release of persistent, bioaccumulative, and toxic (PBT) chemicals associated with the life cycle of building materials.",
+      "requirements": {
+        "description": [
+          "Specify substitutes for materials manufactured with lead and cadmium.",
+          "For lead, comply with specified requirements for solder, flux, pipes, roofing, electrical wire, and paints.",
+          "For cadmium, specify no use of interior or exterior paints containing intentionally added cadmium.",
+          "For copper, reduce or eliminate joint-related sources of copper corrosion by using specified methods."
+        ],
+        "exemptions": "Lead used for radiation shielding and copper used for MRI shielding are exempt."
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project meets all specified requirements for reducing lead, cadmium, and copper in building materials."
+        },
+        {
+          "score": 0,
+          "criteria": "The project fails to meet one or more of the specified requirements."
+        }
+      ]
+    },
+    {
+      "name": "Furniture and Medical Furnishings",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": ["Healthcare"],
+      "intent": "To enhance the environmental and human health performance attributes associated with freestanding furniture and medical furnishings.",
+      "requirements": {
+        "description": "Use at least 30% (1 point) or 40% (2 points), by cost, of all freestanding furniture and medical furnishings that meet the criteria in one of the following three options.",
+        "options": [
+          {
+            "option": 1,
+            "name": "Minimal Chemical Content",
+            "requirements": [
+              "All components that constitute at least 5% by weight must contain less than 100 ppm of at least four of the five specified chemical groups.",
+              "Chemical groups include urea formaldehyde, heavy metals, hexavalent chromium, PFC-derived treatments, and added antimicrobial treatments."
+            ]
+          },
+          {
+            "option": 2,
+            "name": "Testing and Modeling of Chemical Content",
+            "requirements": [
+              "All components must contain less than 100 ppm of at least two of the five chemicals or materials listed in Option 1.",
+              "New furniture must comply with ANSI/BIFMA Standard Method M7.1–2011 and additional sections.",
+              "Salvaged and reused furniture more than one year old is considered compliant under specified conditions."
+            ]
+          },
+          {
+            "option": 3,
+            "name": "Multi-Attribute Assessment of Products",
+            "requirements": [
+              "Use products that meet at least one of the specified criteria, such as EPDs, materials reuse, recycled content, extended producer responsibility, bio-based materials, and certified wood products.",
+              "Products are valued according to source location, with those sourced within 100 miles (160 km) valued at 200% of their base contributing cost."
+            ]
+          }
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project uses at least 40% of furniture and medical furnishings that meet the criteria under any of the options."
+        },
+        {
+          "score": 1,
+          "criteria": "The project uses at least 30% of furniture and medical furnishings that meet the criteria under any of the options."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum percentage or fails to meet the specified requirements."
+        }
+      ]
+    },
+    {
+      "name": "Design for Flexibility",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": ["Healthcare"],
+      "intent": "Conserve resources associated with the construction and management of buildings by designing for flexibility and ease of future adaptation and for the service life of components and assemblies.",
+      "requirements": {
+        "description": "Increase building flexibility and ease of adaptive use over the life of the structure by employing at least three of the specified strategies.",
+        "strategies": [
+          "Use interstitial space.",
+          "Provide programmed soft space equal to at least 5% of departmental gross area (DGA).",
+          "Provide shell space equal to at least 5% of DGA.",
+          "Identify horizontal expansion capacity equal to at least 30% of existing floor area without demolition of occupied space.",
+          "Design for future vertical expansion on at least 75% of the roof.",
+          "Designate space for future above-grade parking structures equal to 50% of existing on-grade parking capacity.",
+          "Use demountable partitions for 50% of applicable areas.",
+          "Use movable or modular casework for at least 50% of casework and custom millwork."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project employs at least three of the specified design strategies for flexibility."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not employ at least three of the specified strategies."
+        }
+      ]
+    },
+    {
+      "name": "Construction and Demolition Waste Management",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce construction and demolition waste disposed of in landfills and incineration facilities by recovering, reusing, and recycling materials.",
+      "requirements": {
+        "option_1": {
+          "description": "Diversion",
+          "paths": [
+            {
+              "path": "Path 1",
+              "points": 1,
+              "requirements": [
+                "Divert at least 50% of the total construction and demolition material.",
+                "Diverted materials must include at least three material streams."
+              ]
+            },
+            {
+              "path": "Path 2",
+              "points": 2,
+              "requirements": [
+                "Divert at least 75% of the total construction and demolition material.",
+                "Diverted materials must include at least four material streams."
+              ]
+            }
+          ]
+        },
+        "option_2": {
+          "description": "Reduction of Total Waste Material",
+          "points": 2,
+          "requirements": [
+            "Do not generate more than 2.5 pounds of construction waste per square foot (12.2 kg per square meter) of the building's floor area."
+          ]
+        },
+        "notes": [
+          "Exclude excavated soil and land-clearing debris from calculations.",
+          "Include materials destined for alternative daily cover (ADC) as waste.",
+          "Waste-to-energy systems may be considered waste diversion under specified conditions."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project meets the requirements for Option 1 Path 2 or Option 2, achieving maximum waste diversion or reduction."
+        },
+        {
+          "score": 1,
+          "criteria": "The project meets the requirements for Option 1 Path 1, achieving at least 50% diversion with at least three material streams."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum requirements under any option."
+        }
+      ]
+    }
+  ],  
+
+
+  "INDOOR ENVIRONMENTAL QUALITY (EQ)": [
+    {
+      "name": "Minimum Indoor Air Quality Performance",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To contribute to the comfort and well-being of building occupants by establishing minimum standards for indoor air quality (IAQ).",
+      "requirements": {
+        "ventilation": {
+          "mechanically_ventilated_spaces": {
+            "option_1": {
+              "description": "ASHRAE Standard 62.1–2010",
+              "requirements": [
+                "Determine the minimum outdoor air intake flow using the ventilation rate procedure from ASHRAE 62.1–2010 or a local equivalent, whichever is more stringent.",
+                "Meet the minimum requirements of ASHRAE Standard 62.1–2010, Sections 4–7."
+              ]
+            },
+            "option_2": {
+              "description": "CEN Standards EN 15251–2007 and EN 13779–2007",
+              "requirements": [
+                "Meet the minimum outdoor air requirements of Annex B of CEN Standard EN 15251–2007 and meet the requirements of CEN Standard EN 13779–2007, excluding specified sections."
+              ]
+            }
+          },
+          "naturally_ventilated_spaces": {
+            "requirements": [
+              "Determine minimum outdoor air opening and space configuration using the natural ventilation procedure from ASHRAE Standard 62.1–2010 or a local equivalent, whichever is more stringent.",
+              "Confirm that natural ventilation is an effective strategy using the flow diagram in CIBSE Applications Manual AM10, Figure 2.8.",
+              "Meet the requirements of ASHRAE Standard 62.1–2010, Section 4."
+            ]
+          },
+          "all_spaces": {
+            "note": "The indoor air quality procedure defined in ASHRAE Standard 62.1–2010 may not be used to comply with this prerequisite."
+          }
+        },
+        "monitoring": {
+          "mechanically_ventilated_spaces": {
+            "requirements": [
+              "For variable air volume systems, provide a direct outdoor airflow measurement device capable of measuring the minimum outdoor air intake flow with an accuracy of +/-10%.",
+              "An alarm must indicate when the outdoor airflow value varies by 15% or more from the setpoint.",
+              "For constant-volume systems, balance outdoor airflow to the design minimum outdoor airflow rate.",
+              "Install a current transducer on the supply fan, an airflow switch, or similar monitoring device."
+            ]
+          },
+          "naturally_ventilated_spaces": {
+            "requirements": [
+              "Provide a direct exhaust airflow measurement device capable of measuring the exhaust airflow with an accuracy of +/-10%, with an alarm for deviations.",
+              "Provide automatic indication devices on all natural ventilation openings, with an alarm if any opening is closed during occupied hours.",
+              "Monitor carbon dioxide (CO2) concentrations within each thermal zone, with appropriate setpoints and alarms."
+            ]
+          }
+        },
+        "project_type_specific": {
+          "core_and_shell": {
+            "note": "Mechanical ventilation systems installed during core and shell construction must be capable of meeting projected ventilation levels and monitoring based on the requirements of anticipated future tenants."
+          },
+          "residential": {
+            "additional_requirements": [
+              "Unvented combustion appliances are not allowed.",
+              "Install carbon monoxide monitors on each floor of each unit.",
+              "All indoor fireplaces and woodstoves must have solid glass enclosures or doors that seal when closed.",
+              "Space- and water-heating equipment that involves combustion must be designed and installed with closed combustion or power-vented exhaust.",
+              "For projects in high-risk areas for radon, design and construct any dwelling unit on levels one through four above grade with radon-resistant construction techniques."
+            ]
+          }
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project meets all ventilation and monitoring requirements applicable to its project type."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to meet one or more of the ventilation or monitoring requirements."
+        }
+      ]
+    },
+    {
+      "name": "Environmental Tobacco Smoke Control",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To prevent or minimize exposure of building occupants, indoor surfaces, and ventilation air distribution systems to environmental tobacco smoke.",
+      "requirements": {
+        "general": [
+          "Prohibit smoking inside the building.",
+          "Prohibit smoking outside the building except in designated smoking areas located at least 25 feet (7.5 meters) from all entries, outdoor air intakes, and operable windows.",
+          "Prohibit smoking outside the property line in spaces used for business purposes.",
+          "Post signage within 10 feet (3 meters) of all building entrances indicating the no-smoking policy."
+        ],
+        "residential_option_1": {
+          "description": "No Smoking",
+          "requirements": [
+            "Meet the general requirements above."
+          ]
+        },
+        "residential_option_2": {
+          "description": "Compartmentalization of Smoking Areas",
+          "requirements": [
+            "Prohibit smoking inside all common areas of the building.",
+            "Prohibit smoking outside the building except in designated smoking areas at least 25 feet away.",
+            "Communicate the prohibition in rental or lease agreements or association covenants.",
+            "Post signage indicating the no-smoking policy.",
+            "Each unit must be compartmentalized to prevent excessive leakage between units.",
+            "Demonstrate a maximum leakage of 0.23 cubic feet per minute per square foot at 50 Pa of enclosure."
+          ]
+        },
+        "schools": [
+          "Prohibit smoking on site.",
+          "Post signage at the property line indicating the no-smoking policy."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project meets all requirements for prohibiting and controlling environmental tobacco smoke as applicable."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to meet one or more of the specified requirements for controlling environmental tobacco smoke."
+        }
+      ]
+    },
+    {
+      "name": "Minimum Acoustic Performance",
+      "type": "Prerequisite",
+      "points": 0,
+      "applies_to": ["Schools"],
+      "intent": "To provide classrooms that facilitate teacher-to-student and student-to-student communication through effective acoustic design.",
+      "requirements": {
+        "HVAC_background_noise": [
+          "Achieve a maximum background noise level of 40 dBA from HVAC systems in classrooms and other core learning spaces.",
+          "Follow recommended methodologies and best practices in ANSI Standard S12.60–2010, Part 1, Annex A.1; the 2011 HVAC Applications ASHRAE Handbook, Chapter 48; AHRI Standard 885–2008."
+        ],
+        "exterior_noise": [
+          "For high-noise sites (peak-hour Leq above 60 dBA during school hours), implement acoustic treatment and other measures to minimize noise intrusion.",
+          "Projects at least one-half mile (800 meters) from significant noise sources are exempt."
+        ],
+        "reverberation_time": {
+          "spaces_less_than_20_000_cubic_feet": {
+            "option_1": [
+              "Confirm that the total surface area of acoustic wall panels, ceiling finishes, and other sound-absorbent finishes equals or exceeds the total ceiling area.",
+              "Materials must have an NRC of 0.70 or higher."
+            ],
+            "option_2": [
+              "Confirm through calculations that rooms are designed to meet reverberation time requirements specified in ANSI Standard S12.60-2010."
+            ]
+          },
+          "spaces_equal_or_greater_than_20_000_cubic_feet": [
+            "Meet the recommended reverberation times described in the NRC-CNRC Construction Technology Update No. 51."
+          ]
+        },
+        "exceptions": "Exceptions to the requirements due to limited scope of work or historic preservation requirements will be considered."
+      },
+      "scoring_criteria": [
+        {
+          "score": "Pass",
+          "criteria": "The project meets all specified acoustic performance requirements for schools."
+        },
+        {
+          "score": "Fail",
+          "criteria": "The project fails to meet one or more of the specified acoustic performance requirements."
+        }
+      ]
+    },
+    {
+      "name": "Enhanced Indoor Air Quality Strategies",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To promote occupants’ comfort, well-being, and productivity by improving indoor air quality.",
+      "requirements": {
+        "option_1": {
+          "description": "Enhanced IAQ Strategies",
+          "points": 1,
+          "requirements": {
+            "mechanically_ventilated_spaces": ["A", "B", "C"],
+            "naturally_ventilated_spaces": ["A", "D"],
+            "mixed_mode_systems": ["A", "B", "C", "D", "E"],
+            "strategies": {
+              "A": {
+                "description": "Entryway Systems",
+                "requirements": [
+                  "Install permanent entryway systems at least 10 feet (3 meters) long in the primary direction of travel at regularly used exterior entrances.",
+                  "Maintain on a weekly basis."
+                ],
+                "additional_requirements": {
+                  "warehouses": "Entryway systems are not required at doors leading from the exterior to the loading dock or garage but must be installed between these spaces and adjacent office areas.",
+                  "healthcare": "Provide pressurized entryway vestibules at high-volume building entrances."
+                }
+              },
+              "B": {
+                "description": "Interior Cross-Contamination Prevention",
+                "requirements": [
+                  "Exhaust spaces where hazardous gases or chemicals may be present, creating negative pressure with respect to adjacent spaces.",
+                  "Provide self-closing doors and deck-to-deck partitions or a hard-lid ceiling."
+                ]
+              },
+              "C": {
+                "description": "Filtration",
+                "requirements": [
+                  "Each ventilation system supplying outdoor air to occupied spaces must have particle filters or air-cleaning devices that meet specified filtration media requirements (MERV 13 or higher).",
+                  "Replace all air filtration media after construction and before occupancy."
+                ],
+                "data_centers_note": "Filtration media requirements apply only to ventilation systems serving regularly occupied spaces."
+              },
+              "D": {
+                "description": "Natural Ventilation Design Calculations",
+                "requirements": [
+                  "Demonstrate that the system design for occupied spaces employs appropriate strategies in CIBSE Applications Manual AM10, Section 2.4."
+                ]
+              },
+              "E": {
+                "description": "Mixed-Mode Design Calculations",
+                "requirements": [
+                  "Demonstrate that the system design for occupied spaces complies with CIBSE Applications Manual 13–2000."
+                ]
+              }
+            }
+          }
+        },
+        "option_2": {
+          "description": "Additional Enhanced IAQ Strategies",
+          "points": 1,
+          "requirements": {
+            "mechanically_ventilated_spaces": ["Choose one of A, B, C, or D"],
+            "naturally_ventilated_spaces": ["Choose one of A, D, or E"],
+            "mixed_mode_systems": ["Choose one of A, B, D, or E"],
+            "strategies": {
+              "A": {
+                "description": "Exterior Contamination Prevention",
+                "requirements": [
+                  "Design the project to minimize and control the entry of pollutants into the building.",
+                  "Ensure that outdoor air contaminant concentrations at outdoor air intakes are below specified thresholds."
+                ],
+                "table": "Maximum concentrations of pollutants at outdoor air intakes."
+              },
+              "B": {
+                "description": "Increased Ventilation",
+                "requirements": [
+                  "Increase breathing zone outdoor air ventilation rates to all occupied spaces by at least 30% above the minimum rates determined in EQ Prerequisite Minimum Indoor Air Quality Performance."
+                ]
+              },
+              "C": {
+                "description": "Carbon Dioxide Monitoring",
+                "requirements": [
+                  "Monitor CO2 concentrations within all densely occupied spaces.",
+                  "CO2 monitors must have an audible or visual indicator or alert the building automation system if the sensed CO2 concentration exceeds the setpoint by more than 10%."
+                ]
+              },
+              "D": {
+                "description": "Additional Source Control and Monitoring",
+                "requirements": [
+                  "Evaluate potential sources of additional air contaminants.",
+                  "Develop and implement a materials-handling plan to reduce contaminant release.",
+                  "Install monitoring systems with sensors designed to detect specific contaminants."
+                ]
+              },
+              "E": {
+                "description": "Natural Ventilation Room-by-Room Calculations",
+                "requirements": [
+                  "Follow CIBSE AM10, Section 4, to predict that room-by-room airflows will provide effective natural ventilation."
+                ]
+              }
+            }
+          }
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project achieves both Option 1 and Option 2, meeting all specified requirements."
+        },
+        {
+          "score": 1,
+          "criteria": "The project achieves either Option 1 or Option 2, meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements under either option."
+        }
+      ]
+    },
+    {
+      "name": "Low-Emitting Materials",
+      "type": "Credit",
+      "points": [1, 3],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To reduce concentrations of chemical contaminants that can damage air quality, human health, productivity, and the environment.",
+      "requirements": {
+        "general": [
+          "This credit covers VOC emissions in the indoor air and the VOC content of materials, as well as the testing methods by which indoor VOC emissions are determined.",
+          "Different materials must meet different requirements to be considered compliant for this credit.",
+          "The building interior and exterior are organized in seven categories, each with different thresholds of compliance."
+        ],
+        "option_1": {
+          "description": "Product Category Calculations",
+          "requirements": [
+            "Achieve the threshold level of compliance with emissions and content standards for the number of product categories listed.",
+            "Table 1 outlines thresholds of compliance for 7 categories of materials.",
+            "Table 2 shows points awarded based on the number of compliant categories."
+          ]
+        },
+        "option_2": {
+          "description": "Budget Calculation Method",
+          "requirements": [
+            "If some products in a category do not meet the criteria, use the budget calculation method.",
+            "Points are awarded based on the percentage of total compliance (Table 3).",
+            "The budget method organizes the building interior into six assemblies: flooring, ceilings, walls, thermal and acoustic insulation, furniture, and for Healthcare and Schools, exterior applied products.",
+            "Determine the total percentage of compliant materials using provided equations."
+          ]
+        },
+        "additional_requirements": {
+          "emissions_and_content_requirements": [
+            "Products must meet specific requirements based on their category.",
+            "Inherently nonemitting sources are considered fully compliant without VOC emissions testing.",
+            "General emissions evaluation must be conducted per CDPH Standard Method v1.1–2010.",
+            "Wet-applied products have additional VOC content requirements.",
+            "Composite wood must meet CARB requirements for ultra-low-emitting formaldehyde (ULEF) resins or no added formaldehyde resins.",
+            "New furniture must be tested per ANSI/BIFMA standards."
+          ],
+          "healthcare_and_schools": [
+            "Batt insulation products may contain no added formaldehyde.",
+            "Exterior applied products must meet specific VOC limits.",
+            "Hot-mopped asphalt and coal tar sealants are prohibited."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 3,
+          "criteria": "The project meets the highest compliance threshold under Option 1 or Option 2, achieving maximum points."
+        },
+        {
+          "score": 1,
+          "criteria": "The project meets the minimum compliance threshold under Option 1 or Option 2."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the minimum compliance threshold under any option."
+        }
+      ]
+    },
+    {
+      "name": "Construction Indoor Air Quality Management Plan",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To promote the well-being of construction workers and building occupants by minimizing indoor air quality problems associated with construction and renovation.",
+      "requirements": {
+        "general": [
+          "Develop and implement an indoor air quality (IAQ) management plan for the construction and preoccupancy phases of the building.",
+          "Meet or exceed all applicable recommended control measures of the SMACNA IAQ Guidelines for Occupied Buildings under Construction, 2nd edition, 2007.",
+          "Protect absorptive materials stored on-site and installed from moisture damage.",
+          "Do not operate permanently installed air-handling equipment during construction unless specified filtration media are installed.",
+          "Replace all filtration media immediately before occupancy.",
+          "Prohibit the use of tobacco products inside the building and within 25 feet (7.5 meters) of the building entrance during construction."
+        ],
+        "healthcare": {
+          "additional_requirements": [
+            "Develop and implement a moisture control plan.",
+            "Schedule construction procedures to minimize exposure of absorbent materials to VOC emissions.",
+            "Develop a plan to manage fumes from outdoor activities generating high VOC emissions.",
+            "Develop a plan to reduce noise emissions and vibrations from construction equipment.",
+            "Establish an integrative infection control team to evaluate infection control risk and document required precautions."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project develops and implements a comprehensive IAQ management plan meeting all specified requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project fails to develop an IAQ management plan or does not meet the specified requirements."
+        }
+      ]
+    },
+    {
+      "name": "Indoor Air Quality Assessment",
+      "type": "Credit",
+      "points": [1, 2],
+      "applies_to": [
+        "New Construction",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To establish better quality indoor air in the building after construction and during occupancy.",
+      "requirements": {
+        "option_1": {
+          "description": "Flush-Out",
+          "points": 1,
+          "requirements": [
+            "Install new filtration media and perform a building flush-out by supplying a total air volume of 14,000 cubic feet of outdoor air per square foot.",
+            "Maintain an internal temperature of at least 60°F and no higher than 80°F and relative humidity no higher than 60%.",
+            "If occupancy is desired before the flush-out is completed, specific conditions must be met (Path 2)."
+          ]
+        },
+        "option_2": {
+          "description": "Air Testing",
+          "points": 2,
+          "requirements": [
+            "Conduct baseline IAQ testing using protocols consistent with specified methods for all occupied spaces.",
+            "Demonstrate that contaminants do not exceed the concentration levels listed in Table 1.",
+            "Conduct measurements before occupancy but during normal occupied hours.",
+            "For any noncompliant contaminants, take corrective action and retest."
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 2,
+          "criteria": "The project successfully completes Option 2, meeting all testing requirements and contaminant thresholds."
+        },
+        {
+          "score": 1,
+          "criteria": "The project successfully completes Option 1, meeting all flush-out requirements."
+        },
+        {
+          "score": 0,
+          "criteria": "The project does not meet the requirements under either option."
+        }
+      ]
+    },
+    {
+      "name": "Thermal Comfort",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To promote occupants’ productivity, comfort, and well-being by providing quality thermal comfort.",
+      "requirements": {
+        "thermal_comfort_design": {
+          "option_1": {
+            "description": "ASHRAE Standard 55-2010",
+            "requirements": [
+              "Design HVAC systems and the building envelope to meet the requirements of ASHRAE Standard 55–2010.",
+              "For natatoriums, demonstrate compliance with ASHRAE HVAC Applications Handbook, Chapter 5."
+            ]
+          },
+          "option_2": {
+            "description": "ISO and CEN Standards",
+            "requirements": [
+              "Design HVAC systems and the building envelope to meet the requirements of ISO 7730:2005 and CEN Standard EN 15251:2007."
+            ]
+          }
+        },
+        "thermal_comfort_control": {
+          "requirements": [
+            "Provide individual thermal comfort controls for at least 50% of individual occupant spaces.",
+            "Provide group thermal comfort controls for all shared multioccupant spaces.",
+            "Thermal comfort controls must allow adjustment of at least one of the following: air temperature, radiant temperature, air speed, and humidity."
+          ],
+          "project_type_specific": {
+            "hospitality": "Guest rooms are assumed to provide adequate thermal comfort controls and are not included in the credit calculations.",
+            "retail": "Meet the above requirements for at least 50% of individual occupant spaces in office and administrative areas.",
+            "healthcare": "Provide individual thermal comfort controls for every patient room and at least 50% of the remaining individual occupant spaces."
+          }
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project meets all requirements for thermal comfort design and control."
+        },
+        {
+          "score": 0,
+          "criteria": "The project fails to meet one or more of the specified thermal comfort requirements."
+        }
+      ]
+    }
+  ],
+
+
+  "Innovation (IN)": [
+    {
+      "name": "Innovation",
+      "type": "Credit",
+      "points": [1, 5],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage projects to achieve exceptional or innovative performance.",
+      "requirements": {
+        "general": [
+          "Project teams can use any combination of innovation, pilot, and exemplary performance strategies."
+        ],
+        "option_1": {
+          "description": "Innovation",
+          "points": "1 point each (up to 5 points total)",
+          "requirements": [
+            "Achieve significant, measurable environmental performance using a strategy not addressed in the LEED green building rating system.",
+            "Identify the following for each innovation credit attempted:",
+            "- The intent of the proposed innovation credit.",
+            "- Proposed requirements for compliance.",
+            "- Proposed submittals to demonstrate compliance.",
+            "- The design approach or strategies used to meet the requirements."
+          ]
+        },
+        "option_2": {
+          "description": "Pilot",
+          "points": "1 point each (up to 4 points total)",
+          "requirements": [
+            "Achieve one or more pilot credits from USGBC’s LEED Pilot Credit Library."
+          ]
+        },
+        "option_3": {
+          "description": "Additional Strategies",
+          "strategies": [
+            {
+              "name": "Innovation",
+              "points": "1 point each",
+              "requirements": [
+                "Defined in Option 1 above."
+              ]
+            },
+            {
+              "name": "Pilot",
+              "points": "1 point each",
+              "requirements": [
+                "Defined in Option 2 above."
+              ]
+            },
+            {
+              "name": "Exemplary Performance",
+              "points": "1 point each (up to 2 points total)",
+              "requirements": [
+                "Achieve exemplary performance in an existing LEED v4 prerequisite or credit that allows exemplary performance, as specified in the LEED Reference Guide, v4 edition.",
+                "An exemplary performance point is typically earned for achieving double the credit requirements or the next incremental percentage threshold."
+              ]
+            }
+          ]
+        }
+      },
+      "scoring_criteria": [
+        {
+          "score": "1-5 points",
+          "criteria": "Points are awarded based on the number of innovative strategies, pilot credits, and exemplary performance achievements. Each distinct strategy earns 1 point, up to a maximum of 5 points."
+        },
+        {
+          "score": "0 points",
+          "criteria": "The project does not successfully implement any qualifying innovation, pilot, or exemplary performance strategies."
+        }
+      ]
+    },
+    {
+      "name": "LEED Accredited Professional",
+      "type": "Credit",
+      "points": 1,
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To encourage the team integration required by a LEED project and to streamline the application and certification process.",
+      "requirements": [
+        "At least one principal participant of the project team must be a LEED Accredited Professional (AP) with a specialty appropriate for the project."
+      ],
+      "scoring_criteria": [
+        {
+          "score": 1,
+          "criteria": "The project team includes at least one LEED AP with a specialty appropriate for the project."
+        },
+        {
+          "score": 0,
+          "criteria": "The project team does not include a LEED AP with an appropriate specialty."
+        }
+      ]
+    }
+  ],
+
+  "Regional Priority (RP)": [
+    {
+      "name": "Regional Priority",
+      "type": "Credit",
+      "points": [1, 4],
+      "applies_to": [
+        "New Construction",
+        "Core & Shell",
+        "Schools",
+        "Retail",
+        "Data Centers",
+        "Warehouses & Distribution Centers",
+        "Hospitality",
+        "Healthcare"
+      ],
+      "intent": "To provide an incentive for the achievement of credits that address geographically specific environmental, social equity, and public health priorities.",
+      "requirements": {
+        "general": [
+          "Earn up to four of the six Regional Priority credits.",
+          "These credits have been identified by the USGBC regional councils and chapters as having additional regional importance for the project’s region.",
+          "A database of Regional Priority credits and their geographic applicability is available on the USGBC website: http://www.usgbc.org.",
+          "One point is awarded for each Regional Priority credit achieved, up to a maximum of four."
+        ]
+      },
+      "scoring_criteria": [
+        {
+          "score": "1-4 points",
+          "criteria": "One point is awarded for each Regional Priority credit achieved by the project, up to a maximum of 4 points."
+        },
+        {
+          "score": "0 points",
+          "criteria": "The project does not achieve any Regional Priority credits."
+        }
+      ]
+    }
+  ]
+}

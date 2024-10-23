@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Feedback System</title>
+    <title>LEED Rubrics Display</title>
     <style>
         /* 基础样式 */
         body {
@@ -308,14 +308,6 @@
             justify-content: space-between;
             margin-top: 20px;
         }
-        /* 左侧菜单的 Back 按钮样式 */
-        .left-menu button.back-button {
-            background-color: #e74c3c;
-            color: #fff;
-        }
-        .left-menu button.back-button:hover {
-            background-color: #c0392b;
-        }
         /* 只读的 textarea 样式 */
         .rubrics-list textarea[readonly] {
             background-color: transparent;
@@ -324,6 +316,101 @@
         /* 拖拽上传文件的样式 */
         .chat-container.dragover {
             background-color: #c8e6c9;
+        }
+        .rubric-item {
+            width: 100%; /* Take full width */
+            margin-bottom: 10px; /* Space between items */
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: block; /* Ensure vertical stacking */
+        }
+        .rubric-title {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%; /* 强制标题占满父容器的宽度 */
+            position: relative;
+        }
+        .rubric-title::after {
+            content: '\25BC'; /* 向下箭头 */
+            position: absolute;
+            right: 10px;
+            transition: transform 0.3s;
+        }
+        .rubric-title.expanded::after {
+            transform: rotate(180deg); /* 展开时箭头旋转 */
+        }
+        /* Rubric 内容容器样式 */
+        .rubric-content {
+            display: none; /* 初始隐藏 */
+            flex-direction: column;
+            padding: 0;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            width: 100%; /* 强制内容占满父容器的宽度 */
+            box-sizing: border-box;
+        }
+        .rubric-content.visible {
+            display: block; /* 显示内容 */
+        }
+        /* 子标题和内容样式 */
+        .rubric-subtitle {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            margin: 0;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        .rubric-subtitle::after {
+            content: '\25BA'; /* 右箭头 */
+            position: absolute;
+            right: 10px;
+            transition: transform 0.3s;
+        }
+        .rubric-subtitle.expanded::after {
+            transform: rotate(90deg); /* 展开时箭头旋转 */
+        }
+        .rubric-subcontent {
+            padding: 10px 20px;
+            margin: 0;
+            background-color: #fff;
+            border-left: 3px solid #ccc;
+            display: none;
+            width: 100%; /* 强制内容占满父容器的宽度 */
+            box-sizing: border-box;
+        }
+        .rubric-subcontent.visible {
+            display: block;
+        }
+        .rubric-criteria-item {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .rubric-criteria-item div {
+            margin-bottom: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        /* Back 按钮样式 */
+        .back-button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
@@ -362,12 +449,7 @@
             </div>
             <!-- Writing Rubrics List -->
             <div class="rubrics-list" id="writing-rubrics-list">
-                {% for rubric in rubrics %}
-                <div>
-                    <textarea>{{ rubric }}</textarea>
-                    <button class="rubric-button remove" onclick="removeRubric(this)">&#x2716;</button>
-                </div>
-                {% endfor %}
+                <!-- 用户自定义的 Rubrics 将在此处加载 -->
             </div>
             <!-- LEED Rubrics Header -->
             <div class="rubrics-header" id="leed-rubrics-header" style="display:none;">
@@ -385,11 +467,6 @@
 
     <!-- LEED 页面 -->
     <div id="leed-page" class="main-container">
-        <!-- 左侧菜单 -->
-        <div class="left-menu">
-            <!-- Back 按钮已移动到内容区域 -->
-        </div>
-
         <!-- LEED 表格内容 -->
         <div class="content" id="leed-content">
             <h2>LEED Certification Form</h2>
@@ -458,8 +535,8 @@
             formData.append('message', message);
 
             if (currentMode === 'LEED') {
-                if (sessionStorage.getItem('leedSubmitted') === 'true') {
-                    const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
+                const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
+                if (leedScores) {
                     formData.append('leed_scores', JSON.stringify(leedScores));
                 } else {
                     alert('Please submit LEED scores first.');
@@ -528,6 +605,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('An error occurred while processing your request.');
             });
         }
 
@@ -635,6 +713,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('An error occurred while submitting your feedback.');
             });
         }
 
@@ -651,14 +730,147 @@
         // 显示 LEED Rubrics
         function displayLeedRubrics(rubrics) {
             const rubricsList = document.getElementById('leed-rubrics-list');
-            rubricsList.innerHTML = '';
+            rubricsList.innerHTML = ''; // 清空之前的内容
+        
+            rubrics.forEach(rubricData => {
+                const rubricElem = document.createElement('div');
+                rubricElem.classList.add('rubric-item');
+                rubricElem.style.display = 'block';  // 强制垂直排列
+        
+                // 主标题元素，显示用户得分/总分
+                const titleElem = document.createElement('div');
+                titleElem.classList.add('rubric-title');
+                titleElem.textContent = `${rubricData.title} (Score: ${rubricData.user_score}/${rubricData.total_points})`;
+        
+                // 内容容器（包括Description和Scoring Criteria标题）
+                const contentElem = document.createElement('div');
+                contentElem.classList.add('rubric-content');
+                contentElem.style.display = 'none'; // 初始隐藏
+        
+                // 描述部分标题
+                const descElem = document.createElement('div');
+                descElem.classList.add('rubric-subtitle');
+                descElem.textContent = 'Description';
+        
+                // 描述内容
+                const descContentElem = document.createElement('div');
+                descContentElem.classList.add('rubric-subcontent');
+                descContentElem.innerHTML = ''; // 清空内容
+        
+                // 处理描述
+                if (Array.isArray(rubricData.descriptions) && rubricData.descriptions.length > 0) {
+                    if (rubricData.descriptions.length === 1) {
+                        // 只有一个描述，直接显示
+                        const descPara = document.createElement('p');
+                        descPara.textContent = rubricData.descriptions[0];
+                        descContentElem.appendChild(descPara);
+                    } else {
+                        // 有多个描述，显示 Option 1, Option 2，并加粗
+                        rubricData.descriptions.forEach((desc, index) => {
+                            const optionTitle = document.createElement('p');
+                            optionTitle.style.fontWeight = 'bold';
+                            optionTitle.textContent = `Option ${index + 1}:`;
 
-            rubrics.forEach(rubricText => {
-                createRubricElement(rubricsList, rubricText, true);
+                            const descPara = document.createElement('p');
+                            descPara.textContent = desc;
+
+                            descContentElem.appendChild(optionTitle);
+                            descContentElem.appendChild(descPara);
+                        });
+                    }
+                } else if (rubricData.description) {
+                    // 单个描述
+                    const descPara = document.createElement('p');
+                    descPara.textContent = rubricData.description;
+                    descContentElem.appendChild(descPara);
+                } else {
+                    descContentElem.textContent = 'No description available.';
+                }
+        
+                // 评分标准部分标题
+                const criteriaElem = document.createElement('div');
+                criteriaElem.classList.add('rubric-subtitle');
+                criteriaElem.textContent = 'Scoring Criteria';
+        
+                // 评分标准内容
+                const criteriaContentElem = document.createElement('div');
+                criteriaContentElem.classList.add('rubric-subcontent');
+        
+                // 显示评分标准
+                if (Array.isArray(rubricData.scoring_criteria) && rubricData.scoring_criteria.length > 0) {
+                    rubricData.scoring_criteria.forEach(criteria => {
+                        const criteriaItemElem = document.createElement('div');
+                        criteriaItemElem.classList.add('rubric-criteria-item');
+        
+                        const criteriaItemTitle = document.createElement('div');
+                        criteriaItemTitle.textContent = `${criteria.score}`;
+                        criteriaItemTitle.style.fontWeight = 'bold';
+        
+                        const criteriaItemContent = document.createElement('div');
+                        criteriaItemContent.textContent = `${criteria.criteria}`;
+        
+                        criteriaItemElem.appendChild(criteriaItemTitle);
+                        criteriaItemElem.appendChild(criteriaItemContent);
+        
+                        criteriaContentElem.appendChild(criteriaItemElem);
+                    });
+                } else {
+                    criteriaContentElem.textContent = 'No scoring criteria available.';
+                }
+        
+                // 初始隐藏描述和评分标准内容
+                descContentElem.style.display = 'none';
+                criteriaContentElem.style.display = 'none';
+        
+                // 点击描述标题，展开/收起描述内容
+                descElem.addEventListener('click', function() {
+                    if (descContentElem.style.display === 'none') {
+                        descContentElem.style.display = 'block';
+                        descElem.classList.add('expanded');
+                    } else {
+                        descContentElem.style.display = 'none';
+                        descElem.classList.remove('expanded');
+                    }
+                });
+        
+                // 点击评分标准标题，展开/收起评分标准内容
+                criteriaElem.addEventListener('click', function() {
+                    if (criteriaContentElem.style.display === 'none') {
+                        criteriaContentElem.style.display = 'block';
+                        criteriaElem.classList.add('expanded');
+                    } else {
+                        criteriaContentElem.style.display = 'none';
+                        criteriaElem.classList.remove('expanded');
+                    }
+                });
+        
+                // 组装内容
+                contentElem.appendChild(descElem);
+                contentElem.appendChild(descContentElem);
+                contentElem.appendChild(criteriaElem);
+                contentElem.appendChild(criteriaContentElem);
+        
+                // 将标题和内容添加到 Rubric 元素
+                rubricElem.appendChild(titleElem);
+                rubricElem.appendChild(contentElem);
+        
+                // 添加点击事件，展开或收起内容
+                titleElem.addEventListener('click', function() {
+                    if (contentElem.style.display === 'none') {
+                        contentElem.style.display = 'block';
+                        titleElem.classList.add('expanded');
+                    } else {
+                        contentElem.style.display = 'none';
+                        titleElem.classList.remove('expanded');
+                    }
+                });
+        
+                // 添加到 Rubrics 列表
+                rubricsList.appendChild(rubricElem);
             });
         }
 
-        // 创建 Rubric 元素
+        // 创建 Rubric 元素（用于 Writing Rubrics）
         function createRubricElement(container, rubricText, readOnly = false) {
             const rubricElem = document.createElement('div');
             const rubricTextarea = document.createElement('textarea');
@@ -729,6 +941,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('An error occurred while saving rubrics.');
             });
         }
 
@@ -747,13 +960,6 @@
                 autoResizeTextarea(this);
             });
 
-            // 检查是否提交了 LEED 表格
-            if (sessionStorage.getItem('leedSubmitted') === 'true') {
-                // 如果已提交 LEED 表格，加载 LEED Rubrics
-                const leedRubrics = JSON.parse(sessionStorage.getItem('leedRubrics'));
-                displayLeedRubrics(leedRubrics);
-            }
-
             // 初始化拖拽上传文件功能
             initDragAndDrop();
         }
@@ -770,9 +976,22 @@
             document.getElementById('leed-rubrics-header').style.display = 'flex';
             document.getElementById('leed-rubrics-list').style.display = 'flex';
 
+            // 检查用户是否已经提交了 LEED Scores
             if (sessionStorage.getItem('leedSubmitted') === 'true') {
-                const leedRubrics = JSON.parse(sessionStorage.getItem('leedRubrics'));
-                displayLeedRubrics(leedRubrics);
+                fetch('/get_leed_rubrics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const leedRubrics = data.rubrics;
+                        displayLeedRubrics(leedRubrics);
+                    } else {
+                        alert('Failed to load LEED rubrics: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while loading LEED rubrics.');
+                });
             } else {
                 showLeedPage();
             }
@@ -830,53 +1049,100 @@
             const tbody = document.querySelector('#leed-table tbody');
             tbody.innerHTML = '';
 
-            LEED_TABLE_DATA.forEach(row => {
-                if (row.section) {
-                    const tr = document.createElement('tr');
-                    tr.classList.add('section-header');
-                    const td = document.createElement('td');
-                    td.colSpan = '5';
-                    td.textContent = row.section;
-                    tr.appendChild(td);
-                    tbody.appendChild(tr);
-                } else {
+            LEED_TABLE_DATA.forEach(section => {
+                // 添加章节标题
+                const sectionHeader = document.createElement('tr');
+                sectionHeader.classList.add('section-header');
+                const sectionTd = document.createElement('td');
+                sectionTd.colSpan = '5';
+                sectionTd.textContent = section.section;
+                sectionHeader.appendChild(sectionTd);
+                tbody.appendChild(sectionHeader);
+
+                // 遍历章节下的项目
+                section.items.forEach(item => {
                     const tr = document.createElement('tr');
 
                     const tdCategory = document.createElement('td');
-                    tdCategory.textContent = row.category || '';
+                    tdCategory.textContent = section.section || '';
                     tr.appendChild(tdCategory);
 
                     const tdType = document.createElement('td');
-                    tdType.textContent = row.type || '';
+                    tdType.textContent = item.type || '';
                     tr.appendChild(tdType);
 
                     const tdTitle = document.createElement('td');
-                    tdTitle.textContent = row.title || '';
+                    tdTitle.textContent = item.name || '';
                     tr.appendChild(tdTitle);
 
                     const tdPoints = document.createElement('td');
-                    tdPoints.textContent = row.points || '';
+                    let pointsDisplay;
+
+                    // 判断是否为必需项
+                    if (item.type && item.type.toLowerCase() === 'prereq') {
+                        pointsDisplay = 'Required';
+                    } else {
+                        pointsDisplay = getMaxPoints(item.points);
+                        // 如果 pointsDisplay 为 '0'，则设置为 'Required'
+                        if (pointsDisplay === '0') {
+                            pointsDisplay = 'Required';
+                        }
+                    }
+
+                    tdPoints.textContent = pointsDisplay;
                     tr.appendChild(tdPoints);
 
                     const tdEarned = document.createElement('td');
-                    if (row.type && row.type.toLowerCase() === 'prereq') {
+                    // 修改这里：根据 pointsDisplay 是否为 'Required' 来决定显示 'Required' 或输入框
+                    if (pointsDisplay === 'Required') {
                         tdEarned.textContent = 'Required';
-                    } else if (row.points && row.points > 0) {
+                    } else if (pointsDisplay) {
                         const input = document.createElement('input');
                         input.type = 'number';
-                        input.name = row.title;
+                        input.name = item.name;
                         input.min = 0;
-                        input.max = row.points;
                         input.step = 0.5;
                         tdEarned.appendChild(input);
+
+                        // 如果之前用户已经输入了分数，填充到输入框中
+                        const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
+                        if (input && savedLeedScores[item.name] !== undefined) {
+                            input.value = savedLeedScores[item.name];
+                        }
                     } else {
                         tdEarned.textContent = '';
                     }
                     tr.appendChild(tdEarned);
 
                     tbody.appendChild(tr);
-                }
+                });
             });
+        }
+
+        // 新增的 getMaxPoints 函数，用于获取最大分数
+        function getMaxPoints(points) {
+            if (typeof points === 'number') {
+                return points.toString();
+            } else if (Array.isArray(points)) {
+                return Math.max(...points).toString();
+            } else if (typeof points === 'object' && points !== null) {
+                // 提取所有数字点值，展开数组
+                let pointValues = [];
+                Object.values(points).forEach(val => {
+                    if (Array.isArray(val)) {
+                        pointValues = pointValues.concat(val);
+                    } else if (typeof val === 'number') {
+                        pointValues.push(val);
+                    }
+                });
+                // 移除重复值
+                pointValues = [...new Set(pointValues)];
+                if (pointValues.length === 0) {
+                    return '';
+                }
+                return Math.max(...pointValues).toString();
+            }
+            return '';
         }
 
         // 提交 LEED 表格
@@ -886,7 +1152,7 @@
 
             const leedScores = {};
             for (let [key, value] of formData.entries()) {
-                if (value) {
+                if (value && !isNaN(parseFloat(value))) {
                     leedScores[key] = parseFloat(value);
                 }
             }
@@ -896,6 +1162,7 @@
                 return;
             }
 
+            // 将用户输入的分数发送到后端
             fetch('/submit_leed_scores', {
                 method: 'POST',
                 headers: {
@@ -908,16 +1175,32 @@
                 if (data.success) {
                     sessionStorage.setItem('leedSubmitted', 'true');
                     sessionStorage.setItem('leedScores', JSON.stringify(leedScores));
-                    sessionStorage.setItem('leedRubrics', JSON.stringify(data.rubrics));
 
                     returnToMain();
-                    displayLeedRubrics(data.rubrics);
+
+                    // 加载并显示 LEED Rubrics
+                    fetch('/get_leed_rubrics')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const leedRubrics = data.rubrics;
+                            displayLeedRubrics(leedRubrics);
+                        } else {
+                            alert('Failed to load LEED rubrics: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while loading LEED rubrics.');
+                    });
+
                 } else {
                     alert('Failed to submit LEED scores: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('An error occurred while submitting LEED scores.');
             });
         }
 
@@ -926,7 +1209,6 @@
             // 清除 LEED 数据
             sessionStorage.removeItem('leedSubmitted');
             sessionStorage.removeItem('leedScores');
-            sessionStorage.removeItem('leedRubrics');
 
             // 显示 LEED 表格页面
             showLeedPage();
@@ -956,6 +1238,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert('An error occurred while loading rubrics.');
             });
         }
 
