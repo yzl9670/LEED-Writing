@@ -218,7 +218,6 @@ def submit_leed_scores():
 
 # Get LEED rubrics route
 @app.route('/get_leed_rubrics', methods=['GET'])
-@app.route('/get_leed_rubrics', methods=['GET'])
 def get_leed_rubrics():
     user_id = session.get('user_id')
     if not user_id:
@@ -289,7 +288,6 @@ def get_leed_rubrics():
 
     return jsonify({'success': True, 'rubrics': selected_rubrics})
 
-
 # Helper function to calculate total points
 def calculate_total_points(points):
     total_points = 0
@@ -316,6 +314,7 @@ def calculate_total_points(points):
 def get_feedback_route():
     user_id = session.get('user_id')
     if not user_id:
+        print('User not logged in.')
         return jsonify({'success': False, 'error': 'User not logged in.'})
 
     prompt_time = datetime.utcnow()
@@ -340,15 +339,27 @@ def get_feedback_route():
             return jsonify({'success': False, 'error': 'No user input provided.'})
         prompt_content = user_input
 
+    # Initialize leed_scores
+    leed_scores = None
+
     # Check if LEED mode
     leed_scores_json = request.form.get('leed_scores')
     if leed_scores_json:
         leed_scores = json.loads(leed_scores_json)
+        # Calculate total score
+        try:
+            total_score = sum(float(score) for score in leed_scores.values())
+        except ValueError:
+            return jsonify({'success': False, 'error': 'Invalid LEED scores provided.'})
+        leed_scores['total_score'] = total_score
+
         # Get cached LEED data
         leed_data = get_leed_data()
         # Generate rubrics based on leed_scores and leed_data
         selected_rubrics = []
         for item_title, score in leed_scores.items():
+            if item_title == 'total_score':
+                continue  # Skip total_score in leed_scores
             if float(score) > 0:
                 normalized_title = item_title.strip().lower()
                 item_data = None
@@ -376,7 +387,8 @@ def get_feedback_route():
     feedback_text, scores, full_feedback = get_feedback(
         user_input=user_input,
         file_path=file_path,
-        rubrics=rubrics_input
+        rubrics=rubrics_input,
+        leed_scores=leed_scores  # Pass leed_scores here
     )
 
     response_time = datetime.utcnow()
