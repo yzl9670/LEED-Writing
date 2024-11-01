@@ -67,6 +67,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            white-space: pre-wrap; /* 保留换行符和空白 */
         }
         .input-container {
             display: flex;
@@ -296,6 +297,27 @@
             justify-content: space-between;
             margin-top: 20px;
         }
+        .button-container .back-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Style for the submit button */
+        .button-container #leed-submit-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        
+    }
         /* 只读的 textarea 样式 */
         .rubrics-list textarea[readonly] {
             background-color: transparent;
@@ -398,7 +420,6 @@
         /* 新增的样式，用于显示评分 */
         .rubric-score {
             font-weight: bold;
-            color: #007BFF;
         }
         /* 新增的样式，用于右侧总分标题 */
         .rubrics-total-score {
@@ -429,6 +450,10 @@
         }
         .resubmit-button:hover {
             background-color: #c0392b;
+        }
+        .rubric-criteria-item.highlight {
+            background-color: #d0e2f2;
+            border-left: 3px solid #4a76a8;
         }
     </style>
 </head>
@@ -461,7 +486,7 @@
             <div class="leed-rubric-header" id="leed-rubric-header">
                 LEED Narrative Assignment Rubric
                 <!-- Resubmit 按钮 -->
-                <button class="resubmit-button" onclick="resubmitLeed()">Resubmit LEED</button>
+                <button class="resubmit-button" onclick="resubmitLeed()">LEED Certification Form</button>
             </div>
             <div class="rubrics-total-score" id="rubrics-total-score">
                 Total Score: 0/15
@@ -600,7 +625,7 @@
 
                 // 创建内容容器，避免 Feedback 按钮遮挡内容
                 const aiContent = document.createElement('div');
-                aiContent.textContent = data.feedback;
+                aiContent.textContent = data.feedback; // Using textContent
                 aiMessageElem.appendChild(aiContent);
 
                 // 添加反馈按钮
@@ -637,14 +662,14 @@
         function updateLeedRubricScores(scores) {
             const rubricsList = document.getElementById('leed-rubrics-list');
             const rubricItems = rubricsList.querySelectorAll('.rubric-item');
-
-            let totalScore = 0; // 用于计算总分
+        
+            let totalScore = 0; // 用于计算总得分
             let totalPossibleScore = 0; // 用于计算总可能得分
-
+        
             rubricItems.forEach(rubricElem => {
                 const titleElem = rubricElem.querySelector('.rubric-title');
                 const rubricName = titleElem.getAttribute('data-rubric-name');
-
+        
                 if (scores && scores[rubricName]) {
                     let scoreElem = titleElem.querySelector('.rubric-score');
                     if (!scoreElem) {
@@ -652,20 +677,68 @@
                         scoreElem.classList.add('rubric-score');
                         titleElem.appendChild(scoreElem);
                     }
-                    scoreElem.textContent = `Score: ${scores[rubricName].score}/${scores[rubricName].total}`;
-
-                    // 累加总分
-                    totalScore += scores[rubricName].score;
-                    totalPossibleScore += scores[rubricName].total;
+                    const scoreValue = scores[rubricName].score;
+                    const totalValue = scores[rubricName].total;
+                    scoreElem.textContent = `Score: ${scoreValue}/${totalValue}`;
+        
+                    // 根据个别得分设置颜色
+                    const scoreColor = getScoreColor(scoreValue, totalValue);
+                    scoreElem.style.color = scoreColor;
+        
+                    // 高亮对应的评分标准
+                    const criteriaItems = rubricElem.querySelectorAll('.rubric-criteria-item');
+                    criteriaItems.forEach(criteriaItem => {
+                        const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
+                        criteriaItem.classList.remove('highlight'); // 移除之前的高亮
+        
+                        if (criteriaPoints === scoreValue) {
+                            criteriaItem.classList.add('highlight');
+                        }
+                    });
+        
+                    // 处理没有精确匹配的情况
+                    const exactMatch = Array.from(criteriaItems).some(item => {
+                        return parseFloat(item.getAttribute('data-points')) === scoreValue;
+                    });
+        
+                    if (!exactMatch) {
+                        // 找到最接近的上下评分标准
+                        let lowerCriteria = null;
+                        let higherCriteria = null;
+                        criteriaItems.forEach(criteriaItem => {
+                            const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
+                            if (criteriaPoints < scoreValue) {
+                                if (!lowerCriteria || criteriaPoints > parseFloat(lowerCriteria.getAttribute('data-points'))) {
+                                    lowerCriteria = criteriaItem;
+                                }
+                            } else if (criteriaPoints > scoreValue) {
+                                if (!higherCriteria || criteriaPoints < parseFloat(higherCriteria.getAttribute('data-points'))) {
+                                    higherCriteria = criteriaItem;
+                                }
+                            }
+                        });
+        
+                        // 高亮最接近的上下评分标准
+                        if (lowerCriteria) lowerCriteria.classList.add('highlight');
+                        if (higherCriteria) higherCriteria.classList.add('highlight');
+                    }
+        
+                    // 累计总得分
+                    totalScore += scoreValue;
+                    totalPossibleScore += totalValue;
                 }
             });
+            
 
-            // 更新总分显示
+            // 更新总得分显示
             const totalScoreElem = document.getElementById('rubrics-total-score');
             totalScoreElem.textContent = `Total Score: ${totalScore}/15`;
 
-            displayScoreMessage(totalScore);
+            const totalScoreColor = getScoreColor(totalScore, 15);
+            totalScoreElem.style.color = totalScoreColor;
         }
+        
+        
 
         function displayScoreMessage(totalScore) {
             let messageElem = document.getElementById('leed-score-message');
@@ -693,6 +766,17 @@
                 if (messageElem.parentNode !== headerElem.parentNode || messageElem.nextSibling !== totalScoreElem) {
                     headerElem.parentNode.insertBefore(messageElem, totalScoreElem);
                 }
+            }
+        }
+
+        function getScoreColor(score, maxScore) {
+            const percentage = (score / maxScore) * 100;
+            if (percentage < 50) {
+                return '#FF0000';
+            } else if (percentage >= 50 && percentage < 80) {
+                return '#FFA500';
+            } else {
+                return '#008000';
             }
         }
 
@@ -825,7 +909,7 @@
             });
         }
 
-        // 显示 LEED Rubrics
+        // 显示 LEED Rubrics 的函数（更新后）
         function displayLeedRubrics(rubrics) {
             const rubricsList = document.getElementById('leed-rubrics-list');
             rubricsList.innerHTML = ''; // 清空之前的内容
@@ -833,60 +917,60 @@
             rubrics.forEach(rubricData => {
                 const rubricElem = document.createElement('div');
                 rubricElem.classList.add('rubric-item');
-                rubricElem.style.display = 'block';  // 强制垂直排列
+                rubricElem.style.display = 'block';  // Ensure vertical alignment
 
-                // 主标题元素，显示名称
+                // Rubric 标题元素
                 const titleElem = document.createElement('div');
                 titleElem.classList.add('rubric-title');
-                // 添加 data-rubric-name 属性
                 titleElem.setAttribute('data-rubric-name', rubricData.name);
 
-                // 创建标题文本
+                // 标题文本
                 const titleTextElem = document.createElement('span');
                 titleTextElem.classList.add('title-text');
                 titleTextElem.textContent = `${rubricData.name}`;
 
-                // 将评分显示添加到标题元素
+                // 分数元素
                 const scoreElem = document.createElement('span');
                 scoreElem.classList.add('rubric-score');
-                scoreElem.textContent = 'Score: 0/0'; // 初始分数
+                scoreElem.textContent = 'Score: 0/0'; // 初始得分
 
-                // 将标题文本和评分添加到标题元素
+                // 将标题文本和分数添加到标题元素
                 titleElem.appendChild(titleTextElem);
                 titleElem.appendChild(scoreElem);
 
-                // 内容容器
+                // 内容容器（用于存放评分标准）
                 const contentElem = document.createElement('div');
                 contentElem.classList.add('rubric-content');
                 contentElem.style.display = 'none'; // 初始隐藏
 
-                // 评分标准内容
-                const criteriaContentElem = document.createElement('div');
-                criteriaContentElem.classList.add('rubric-subcontent');
-
-                // 显示评分标准
+                // 填充评分标准
                 if (Array.isArray(rubricData.scoringCriteria) && rubricData.scoringCriteria.length > 0) {
                     rubricData.scoringCriteria.forEach(criteria => {
                         const criteriaItemElem = document.createElement('div');
                         criteriaItemElem.classList.add('rubric-criteria-item');
+                        criteriaItemElem.setAttribute('data-points', criteria.points);
 
+                        // 评分标准标题（例如 "2 Points"）
                         const criteriaItemTitle = document.createElement('div');
                         criteriaItemTitle.textContent = `${criteria.points} Points`;
                         criteriaItemTitle.style.fontWeight = 'bold';
 
+                        // 评分标准描述
                         const criteriaItemContent = document.createElement('div');
                         criteriaItemContent.textContent = `${criteria.description}`;
 
+                        // 将标题和描述添加到评分标准项
                         criteriaItemElem.appendChild(criteriaItemTitle);
                         criteriaItemElem.appendChild(criteriaItemContent);
 
-                        criteriaContentElem.appendChild(criteriaItemElem);
+                        // 将评分标准项添加到内容容器
+                        contentElem.appendChild(criteriaItemElem);
                     });
                 } else {
-                    criteriaContentElem.textContent = 'No scoring criteria available.';
+                    contentElem.textContent = 'No scoring criteria available.';
                 }
 
-                // 点击标题，展开/收起内容
+                // 点击标题时切换内容显示
                 titleElem.addEventListener('click', function() {
                     if (contentElem.style.display === 'none') {
                         contentElem.style.display = 'block';
@@ -897,17 +981,17 @@
                     }
                 });
 
-                // 组装内容
-                contentElem.appendChild(criteriaContentElem);
-
                 // 将标题和内容添加到 Rubric 元素
                 rubricElem.appendChild(titleElem);
                 rubricElem.appendChild(contentElem);
 
-                // 添加到 Rubrics 列表
+                // 将 Rubric 元素添加到 Rubrics 列表
                 rubricsList.appendChild(rubricElem);
             });
         }
+
+        
+        
 
         // 页面加载时
         window.onload = function() {
@@ -975,22 +1059,26 @@
             const tbody = document.querySelector('#leed-table tbody');
             tbody.innerHTML = '';
 
-            LEED_TABLE_DATA.forEach(section => {
+            // 使用 Object.entries 遍历对象的键值对
+            Object.entries(LEED_TABLE_DATA).forEach(([sectionName, sectionData]) => {
                 // 添加章节标题
                 const sectionHeader = document.createElement('tr');
                 sectionHeader.classList.add('section-header');
                 const sectionTd = document.createElement('td');
                 sectionTd.colSpan = '5';
-                sectionTd.textContent = section.section;
+                sectionTd.textContent = sectionName;
                 sectionHeader.appendChild(sectionTd);
                 tbody.appendChild(sectionHeader);
 
+                // 获取章节的项目列表
+                const items = sectionData.items;
+
                 // 遍历章节下的项目
-                section.items.forEach(item => {
+                items.forEach(item => {
                     const tr = document.createElement('tr');
 
                     const tdCategory = document.createElement('td');
-                    tdCategory.textContent = section.section || '';
+                    tdCategory.textContent = sectionName || '';
                     tr.appendChild(tdCategory);
 
                     const tdType = document.createElement('td');
@@ -1019,7 +1107,7 @@
                     tr.appendChild(tdPoints);
 
                     const tdEarned = document.createElement('td');
-                    // 修改这里：根据 pointsDisplay 是否为 'Required' 来决定显示 'Required' 或输入框
+                    // 根据 pointsDisplay 是否为 'Required' 来决定显示内容
                     if (pointsDisplay === 'Required') {
                         tdEarned.textContent = 'Required';
                     } else if (pointsDisplay) {
@@ -1029,13 +1117,27 @@
                         input.min = 0;
                         input.max = parseFloat(pointsDisplay);
                         input.step = 0.5;
-                        tdEarned.appendChild(input);
 
                         // 如果之前用户已经输入了分数，填充到输入框中
                         const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
                         if (input && savedLeedScores[item.name] !== undefined) {
                             input.value = savedLeedScores[item.name];
                         }
+
+                        // 添加输入验证
+                        input.addEventListener('input', function() {
+                            const max = parseFloat(this.max);
+                            const min = parseFloat(this.min);
+                            let value = parseFloat(this.value);
+
+                            if (value > max) {
+                                this.value = max;
+                            } else if (value < min) {
+                                this.value = min;
+                            }
+                        });
+
+                        tdEarned.appendChild(input);
                     } else {
                         tdEarned.textContent = '';
                     }
@@ -1045,6 +1147,7 @@
                 });
             });
         }
+
 
         // 新增的 getMaxPoints 函数，用于获取最大分数
         function getMaxPoints(points) {
