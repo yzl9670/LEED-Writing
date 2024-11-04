@@ -1059,26 +1059,22 @@
             const tbody = document.querySelector('#leed-table tbody');
             tbody.innerHTML = '';
 
-            // 使用 Object.entries 遍历对象的键值对
-            Object.entries(LEED_TABLE_DATA).forEach(([sectionName, sectionData]) => {
+            LEED_TABLE_DATA.forEach(section => {
                 // 添加章节标题
                 const sectionHeader = document.createElement('tr');
                 sectionHeader.classList.add('section-header');
                 const sectionTd = document.createElement('td');
                 sectionTd.colSpan = '5';
-                sectionTd.textContent = sectionName;
+                sectionTd.textContent = section.section;
                 sectionHeader.appendChild(sectionTd);
                 tbody.appendChild(sectionHeader);
 
-                // 获取章节的项目列表
-                const items = sectionData.items;
-
                 // 遍历章节下的项目
-                items.forEach(item => {
+                section.items.forEach(item => {
                     const tr = document.createElement('tr');
 
                     const tdCategory = document.createElement('td');
-                    tdCategory.textContent = sectionName || '';
+                    tdCategory.textContent = section.section || '';
                     tr.appendChild(tdCategory);
 
                     const tdType = document.createElement('td');
@@ -1107,7 +1103,7 @@
                     tr.appendChild(tdPoints);
 
                     const tdEarned = document.createElement('td');
-                    // 根据 pointsDisplay 是否为 'Required' 来决定显示内容
+                    // 修改这里：根据 pointsDisplay 是否为 'Required' 来决定显示 'Required' 或输入框
                     if (pointsDisplay === 'Required') {
                         tdEarned.textContent = 'Required';
                     } else if (pointsDisplay) {
@@ -1117,27 +1113,27 @@
                         input.min = 0;
                         input.max = parseFloat(pointsDisplay);
                         input.step = 0.5;
+                        tdEarned.appendChild(input);
 
-                        // 如果之前用户已经输入了分数，填充到输入框中
-                        const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
-                        if (input && savedLeedScores[item.name] !== undefined) {
-                            input.value = savedLeedScores[item.name];
-                        }
-
-                        // 添加输入验证
                         input.addEventListener('input', function() {
                             const max = parseFloat(this.max);
                             const min = parseFloat(this.min);
                             let value = parseFloat(this.value);
-
+        
                             if (value > max) {
                                 this.value = max;
                             } else if (value < min) {
                                 this.value = min;
                             }
                         });
-
+        
                         tdEarned.appendChild(input);
+
+                        // 如果之前用户已经输入了分数，填充到输入框中
+                        const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
+                        if (input && savedLeedScores[item.name] !== undefined) {
+                            input.value = savedLeedScores[item.name];
+                        }
                     } else {
                         tdEarned.textContent = '';
                     }
@@ -1147,7 +1143,6 @@
                 });
             });
         }
-
 
         // 新增的 getMaxPoints 函数，用于获取最大分数
         function getMaxPoints(points) {

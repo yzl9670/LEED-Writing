@@ -34,7 +34,9 @@
       "name": "Green Vehicles",
       "type": "Credit",
       "points": 1
-    },
+    }
+  ],
+  "Materials and Resources":[
     {
       "name": "Construction Activity Pollution Prevention",
       "type": "Credit",
