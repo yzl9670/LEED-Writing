@@ -1,3 +1,4 @@
+{% set is_admin = user.username == 'admin' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -455,7 +456,42 @@
             background-color: #d0e2f2;
             border-left: 3px solid #4a76a8;
         }
+        /* 登出按钮容器样式 */
+        .logout-container {
+            position: fixed;
+            bottom: 20px; /* 距离底部 20 像素，可根据需要调整 */
+            right: 20px;  /* 距离右侧 20 像素，可根据需要调整 */
+            z-index: 1000; /* 确保按钮位于最上层 */
+        }
+
+        /* 登出按钮样式 */
+        .logout-button {
+            padding: 10px 20px;
+            background-color: #e74c3c; /* 按钮背景颜色 */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b; /* 悬停时的背景颜色 */
+        }
+        .edit-button {
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            background-color: #4CAF50; /* 背景颜色，可以根据需要调整 */
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
     </style>
+    <script>
+        var isAdmin = {{ is_admin | tojson }};
+    </script>
 </head>
 <body>
     <div class="main-container" id="main-container">
@@ -914,7 +950,7 @@
             const rubricsList = document.getElementById('leed-rubrics-list');
             rubricsList.innerHTML = ''; // 清空之前的内容
 
-            rubrics.forEach(rubricData => {
+            rubrics.forEach((rubricData, rubricIndex)=> {
                 const rubricElem = document.createElement('div');
                 rubricElem.classList.add('rubric-item');
                 rubricElem.style.display = 'block';  // Ensure vertical alignment
@@ -938,6 +974,19 @@
                 titleElem.appendChild(titleTextElem);
                 titleElem.appendChild(scoreElem);
 
+                // 如果是管理员，添加 `+/-` 按钮
+                // **在这里添加编辑按钮代码**
+                if (isAdmin) {
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.classList.add('edit-button');
+                    editButton.onclick = (event) => {
+                        event.stopPropagation(); // 阻止事件冒泡，避免触发展开/收起
+                        editRubric(rubricIndex);
+                    };
+                    titleElem.appendChild(editButton);
+                }
+
                 // 内容容器（用于存放评分标准）
                 const contentElem = document.createElement('div');
                 contentElem.classList.add('rubric-content');
@@ -945,7 +994,7 @@
 
                 // 填充评分标准
                 if (Array.isArray(rubricData.scoringCriteria) && rubricData.scoringCriteria.length > 0) {
-                    rubricData.scoringCriteria.forEach(criteria => {
+                    rubricData.scoringCriteria.forEach((criteria, criteriaIndex) => {
                         const criteriaItemElem = document.createElement('div');
                         criteriaItemElem.classList.add('rubric-criteria-item');
                         criteriaItemElem.setAttribute('data-points', criteria.points);
@@ -962,6 +1011,18 @@
                         // 将标题和描述添加到评分标准项
                         criteriaItemElem.appendChild(criteriaItemTitle);
                         criteriaItemElem.appendChild(criteriaItemContent);
+
+                        // 如果是管理员，添加编辑按钮
+                        if (isAdmin) {
+                            const editCriteriaButton = document.createElement('button');
+                            editCriteriaButton.textContent = 'Edit';
+                            editCriteriaButton.classList.add('edit-button');
+                            editCriteriaButton.onclick = (event) => {
+                                event.stopPropagation();
+                                editScoringCriteria(rubricIndex, criteriaIndex);
+                            };
+                            criteriaItemElem.appendChild(editCriteriaButton);
+                        }
 
                         // 将评分标准项添加到内容容器
                         contentElem.appendChild(criteriaItemElem);
@@ -995,41 +1056,40 @@
 
         // 页面加载时
         window.onload = function() {
-            // 默认进入 LEED 模式并显示 LEED 页面
-            currentMode = 'LEED';
-
-            // 显示 LEED Rubrics
-            document.getElementById('leed-rubric-header').style.display = 'flex';
-            document.getElementById('leed-rubrics-list').style.display = 'flex';
-
-            // 检查用户是否已经提交了 LEED Scores
-            if (sessionStorage.getItem('leedSubmitted') === 'true') {
-                // 加载并显示 LEED Rubrics
-                displayLeedRubrics(LEED_RUBRIC);
-                const totalScore = parseFloat(sessionStorage.getItem('leedTotalScore')) || 0;
-        displayScoreMessage(totalScore);
+            if (isAdmin) {
+                // 获取管理员的 LEED 数据
+                fetch('/admin/get_leed_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        LEED_RUBRIC = data.leed_data;
+                        displayLeedRubrics(LEED_RUBRIC);
+                    } else {
+                        console.error('Failed to load LEED data:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching LEED data:', error);
+                });
             } else {
-                showLeedPage();
+                // 获取普通用户的 LEED Rubric 数据
+                fetch('/get_leed_rubrics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        LEED_RUBRIC = data.rubrics;
+                        displayLeedRubrics(LEED_RUBRIC);
+                    } else {
+                        console.error('Failed to load LEED rubrics:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching LEED rubrics:', error);
+                });
             }
-
+        
             // 初始化拖拽上传文件功能
             initDragAndDrop();
-        }
-
-        // 显示 LEED 页面
-        function showLeedPage() {
-            // 隐藏主界面，显示 LEED 页面
-            document.getElementById('main-container').style.display = 'none';
-            document.getElementById('leed-page').style.display = 'flex';
-
-            // 生成 LEED 表格
-            generateLeedTable();
-
-            // 如果已填写过数据，填充表格
-            const leedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
-            if (Object.keys(leedScores).length > 0) {
-                fillLeedForm(leedScores);
-            }
         }
 
         // 填充 LEED 表格
@@ -1142,7 +1202,7 @@
                     tbody.appendChild(tr);
                 });
             });
-        }
+        }  
 
         // 新增的 getMaxPoints 函数，用于获取最大分数
         function getMaxPoints(points) {
@@ -1263,6 +1323,161 @@
             });
         }
 
+        function addRubric() {
+            const rubricName = prompt('Enter new rubric name:');
+            if (rubricName) {
+                LEED_RUBRIC.push({
+                    name: rubricName,
+                    scoringCriteria: []
+                });
+                displayLeedRubrics(LEED_RUBRIC);
+            }
+        }
+        
+        function removeRubric(rubricIndex) {
+            if (confirm('Are you sure you want to delete this rubric?')) {
+                LEED_RUBRIC.splice(rubricIndex, 1);
+                displayLeedRubrics(LEED_RUBRIC);
+            }
+        }
+        
+        function editRubric(rubricIndex) {
+            const rubric = LEED_RUBRIC[rubricIndex];
+            const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
+            const titleElem = rubricElem.querySelector('.rubric-title');
+            const titleTextElem = titleElem.querySelector('.title-text');
+        
+            // 创建输入框替换标题文本
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = rubric.name;
+            input.style.width = '100%';
+        
+            // 替换标题文本为输入框
+            titleElem.replaceChild(input, titleTextElem);
+        
+            // 聚焦输入框并选择文本
+            input.focus();
+            input.select();
+        
+            // 当输入框失去焦点或按下回车键时，保存修改
+            input.onblur = function() {
+                saveRubricName(rubricIndex, input.value);
+            };
+        
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // 防止在输入框中换行
+                    input.blur();
+                }
+            };
+        }
+        
+        function saveRubricName(rubricIndex, newName) {
+            // 更新 Rubric 名称
+            LEED_RUBRIC[rubricIndex].name = newName;
+        
+            // 重新渲染 Rubrics
+            displayLeedRubrics(LEED_RUBRIC);
+        
+            // 自动保存修改
+            saveLeedRubrics();
+        }
+        
+        function addScoringCriteria(rubricIndex) {
+            const points = prompt('Enter points for the scoring criteria:');
+            const description = prompt('Enter description for the scoring criteria:');
+            if (points && description) {
+                LEED_RUBRIC[rubricIndex].scoringCriteria.push({
+                    points: parseFloat(points),
+                    description: description
+                });
+                displayLeedRubrics(LEED_RUBRIC);
+            }
+        }
+        
+        function removeScoringCriteria(rubricIndex, criteriaIndex) {
+            if (confirm('Are you sure you want to delete this scoring criteria?')) {
+                LEED_RUBRIC[rubricIndex].scoringCriteria.splice(criteriaIndex, 1);
+                displayLeedRubrics(LEED_RUBRIC);
+            }
+        }
+        
+        function editScoringCriteria(rubricIndex, criteriaIndex) {
+            const criteria = LEED_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex];
+            const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
+            const criteriaItemElem = rubricElem.querySelectorAll('.rubric-criteria-item')[criteriaIndex];
+            const criteriaItemContent = criteriaItemElem.querySelector('div:nth-child(2)'); // 第二个子元素为描述
+        
+            // 创建文本区域替换描述文本
+            const textarea = document.createElement('textarea');
+            textarea.value = criteria.description;
+            textarea.style.width = '100%';
+        
+            // 替换描述文本为文本区域
+            criteriaItemElem.replaceChild(textarea, criteriaItemContent);
+        
+            // 聚焦文本区域并选择文本
+            textarea.focus();
+            textarea.select();
+        
+            // 当文本区域失去焦点或按下回车键时，保存修改
+            textarea.onblur = function() {
+                saveScoringCriteriaDescription(rubricIndex, criteriaIndex, textarea.value);
+            };
+        
+            textarea.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // 防止在文本区域中换行
+                    textarea.blur();
+                }
+            };
+        }
+        function saveScoringCriteriaDescription(rubricIndex, criteriaIndex, newDescription) {
+            // 更新 Scoring Criteria 描述
+            LEED_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex].description = newDescription;
+        
+            // 重新渲染 Rubrics
+            displayLeedRubrics(LEED_RUBRIC);
+        
+            // 自动保存修改
+            saveLeedRubrics();
+        }
+        
+        function saveLeedRubrics() {
+            fetch('/admin/save_leed_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ leed_data: LEED_RUBRIC })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('LEED rubrics saved successfully.');
+                    // 您可以在此添加提示信息，告知管理员修改已保存
+                } else {
+                    alert('Failed to save LEED rubrics: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving LEED rubrics:', error);
+            });
+        }
+
+        function showLeedPage() {
+            // 隐藏主界面，显示 LEED 页面
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('leed-page').style.display = 'flex';
+        
+            // 隐藏 LEED Rubrics
+            document.getElementById('leed-rubric-header').style.display = 'none';
+            document.getElementById('leed-rubrics-list').style.display = 'none';
+        
+            // 生成 LEED 表格
+            generateLeedTable();
+        }
         // 加载 LEED 数据
         const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
 
@@ -1380,5 +1595,10 @@
         ];
 
     </script>
+    {% if user %}
+        <div class="logout-container">
+            <a href="{{ url_for('logout') }}" class="logout-button">Log Out</a>
+        </div>
+    {% endif %}
 </body>
 </html>

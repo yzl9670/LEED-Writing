@@ -10,6 +10,7 @@ from functools import lru_cache
 
 # Import feedback function
 from feedback import get_feedback
+from leed_rubrics import LEED_TABLE_DATA
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
@@ -50,6 +51,7 @@ class User(db.Model):
 class Rubric(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
+    score = db.Column(db.Float, nullable=True)  # 添加成绩字段
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # Chat history model
@@ -66,25 +68,47 @@ class ChatHistory(db.Model):
 # Cache LEED data
 @lru_cache(maxsize=1)
 def get_leed_data():
-    json_path = 'cleaned_leed_rubric.json'  # Replace with the actual path of your LEED JSON file
+    json_path = 'leed_data.json'  # Replace with the actual path of your LEED JSON file
     with open(json_path, 'r', encoding='utf-8') as f:
         leed_data = json.load(f)
     return leed_data
 
 # Generate LEED table data for rendering in the frontend
 @lru_cache(maxsize=1)
+# def generate_leed_table_data():
+#     leed_data = get_leed_data()
+#     table_data = []
+#     for section_name, items in leed_data.items():
+#         section = {
+#             'section': section_name,
+#             'items': items
+#         }
+#         table_data.append(section)
+#     return table_data
 def generate_leed_table_data():
     leed_data = get_leed_data()
     table_data = []
-    for section_name, items in leed_data.items():
-        section = {
-            'section': section_name,
-            'items': items
-        }
-        table_data.append(section)
-    return table_data
 
-LEED_TABLE_DATA = generate_leed_table_data()
+    credits_collection = leed_data.get('LEED_Credits_Collection', {})
+    for rating_system, categories in credits_collection.items():
+        for category_name, category_data in categories.items():
+            section = {
+                'section': f"{category_name} ({category_data.get('total_points', 0)} Points)",
+                'items': []
+            }
+            credits = category_data.get('Credits', [])
+            for credit in credits:
+                item = {
+                    'category': category_name,
+                    'type': credit.get('CreditType', ''),
+                    'name': credit.get('CreditName', ''),
+                    'points': credit.get('CreditPoints', None)
+                }
+                section['items'].append(item)
+            table_data.append(section)
+    return table_data
+# LEED_TABLE_DATA = generate_leed_table_data()
+# print(LEED_TABLE_DATA)
 
 # Registration route
 @app.route('/register', methods=['GET', 'POST'])
@@ -158,32 +182,40 @@ def index():
         flash('Please log in first.', 'danger')
         return redirect(url_for('login'))
 
+    current_user = User.query.get(user_id)
+    if not current_user:
+        # Handle user not found
+        return redirect(url_for('login'))
+
+
+    # 获取LEED表格数据
+    leed_table_data = LEED_TABLE_DATA
     user_rubrics = Rubric.query.filter_by(user_id=user_id).all()
     rubrics = [rubric.text for rubric in user_rubrics]
 
-    return render_template('index.html', rubrics=rubrics, leed_table_data=LEED_TABLE_DATA)
+    return render_template('index.html', user=current_user, rubrics=rubrics, leed_table_data=LEED_TABLE_DATA)
 
 # Save rubrics route
-@app.route('/save_rubrics', methods=['POST'])
-def save_rubrics():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'success': False, 'error': 'User not logged in.'})
+# @app.route('/save_rubrics', methods=['POST'])
+# def save_rubrics():
+#     user_id = session.get('user_id')
+#     if not user_id:
+#         return jsonify({'success': False, 'error': 'User not logged in.'})
 
-    data = request.get_json()
-    rubrics_input = data.get('rubrics')
+#     data = request.get_json()
+#     rubrics_input = data.get('rubrics')
 
-    if rubrics_input is not None:
-        # Update rubrics in the database
-        Rubric.query.filter_by(user_id=user_id).delete()
-        for rubric_text in rubrics_input.strip().split('\n\n'):
-            if rubric_text.strip():
-                new_rubric = Rubric(text=rubric_text.strip(), user_id=user_id)
-                db.session.add(new_rubric)
-        db.session.commit()
-        return jsonify({'success': True})
-    else:
-        return jsonify({'success': False, 'error': 'No rubrics provided.'})
+#     if rubrics_input is not None:
+#         # Update rubrics in the database
+#         Rubric.query.filter_by(user_id=user_id).delete()
+#         for rubric_text in rubrics_input.strip().split('\n\n'):
+#             if rubric_text.strip():
+#                 new_rubric = Rubric(text=rubric_text.strip(), user_id=user_id)
+#                 db.session.add(new_rubric)
+#         db.session.commit()
+#         return jsonify({'success': True})
+#     else:
+#         return jsonify({'success': False, 'error': 'No rubrics provided.'})
 
 # Get user rubrics route
 @app.route('/get_user_rubrics', methods=['GET'])
@@ -197,24 +229,33 @@ def get_user_rubrics():
 
     return jsonify({'success': True, 'rubrics': rubrics})
 
-# Submit LEED scores route
-@app.route('/submit_leed_scores', methods=['POST'])
-def submit_leed_scores():
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'success': False, 'error': 'User not logged in.'})
+# # Submit LEED scores route
+# @app.route('/submit_leed_scores', methods=['POST'])
+# def submit_leed_scores():
+#     user_id = session.get('user_id')
+#     if not user_id:
+#         return jsonify({'success': False, 'error': 'User not logged in.'})
 
-    data = request.get_json()
-    leed_scores = data.get('leed_scores')
+#     # 获取当前用户对象
+#     current_user = User.query.get(user_id)
+#     if not current_user:
+#         return jsonify({'success': False, 'error': 'User not found.'})
 
-    if not leed_scores:
-        return jsonify({'success': False, 'error': 'No LEED scores provided.'})
+#     # 权限检查：只有admin用户可以提交LEED分数
+#     if current_user.username != 'admin':
+#         return jsonify({'success': False, 'error': 'You do not have permission to perform this action.'})
 
-    # Convert scores to strings before storing in session
-    leed_scores_str = {k: str(v) for k, v in leed_scores.items()}
-    session['leed_scores'] = leed_scores_str
+#     data = request.get_json()
+#     leed_scores = data.get('leed_scores')
 
-    return jsonify({'success': True})
+#     if not leed_scores:
+#         return jsonify({'success': False, 'error': 'No LEED scores provided.'})
+
+#     # Convert scores to strings before storing in session
+#     leed_scores_str = {k: str(v) for k, v in leed_scores.items()}
+#     session['leed_scores'] = leed_scores_str
+
+#     return jsonify({'success': True})
 
 # Get LEED rubrics route
 @app.route('/get_leed_rubrics', methods=['GET'])
@@ -224,6 +265,11 @@ def get_leed_rubrics():
         print('User not logged in.')
         return jsonify({'success': False, 'error': 'User not logged in.'})
 
+    # 获取当前用户对象
+    current_user = User.query.get(user_id)
+    if not current_user:
+        return jsonify({'success': False, 'error': 'User not found.'})
+    
     # Fetch LEED scores from session
     leed_scores = session.get('leed_scores')
     if not leed_scores:
@@ -311,6 +357,105 @@ def calculate_total_points(points):
 
 # Get feedback route
 @app.route('/get_feedback', methods=['POST'])
+# def get_feedback_route():
+#     user_id = session.get('user_id')
+#     if not user_id:
+#         print('User not logged in.')
+#         return jsonify({'success': False, 'error': 'User not logged in.'})
+
+#     prompt_time = datetime.utcnow()
+
+#     # Check if a file was uploaded
+#     if 'file' in request.files and request.files['file'].filename != '':
+#         file = request.files['file']
+#         filename = secure_filename(file.filename)
+#         if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+#             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#             file.save(filepath)
+#             user_input = None
+#             file_path = filepath
+#             prompt_content = f"Uploaded file: {filename}"
+#         else:
+#             return jsonify({'success': False, 'error': 'Invalid file type. Only PDF and DOCX files are allowed.'})
+#     else:
+#         # No file uploaded, get user input text
+#         user_input = request.form.get('message')
+#         file_path = None
+#         if not user_input:
+#             return jsonify({'success': False, 'error': 'No user input provided.'})
+#         prompt_content = user_input
+
+#     # Initialize leed_scores
+#     leed_scores = None
+
+#     # Check if LEED mode
+#     leed_scores_json = request.form.get('leed_scores')
+#     if leed_scores_json:
+#         leed_scores = json.loads(leed_scores_json)
+#         # Calculate total score
+#         try:
+#             total_score = sum(float(score) for score in leed_scores.values())
+#         except ValueError:
+#             return jsonify({'success': False, 'error': 'Invalid LEED scores provided.'})
+#         leed_scores['total_score'] = total_score
+
+#         # Get cached LEED data
+#         leed_data = get_leed_data()
+#         # Generate rubrics based on leed_scores and leed_data
+#         selected_rubrics = []
+#         for item_title, score in leed_scores.items():
+#             if item_title == 'total_score':
+#                 continue  # Skip total_score in leed_scores
+#             if float(score) > 0:
+#                 normalized_title = item_title.strip().lower()
+#                 item_data = None
+#                 for category_items in leed_data.values():
+#                     for item in category_items:
+#                         if item.get('name', '').strip().lower() == normalized_title:
+#                             item_data = item
+#                             break
+#                     if item_data:
+#                         break
+#                 if item_data:
+#                     # Prepare the rubric text (you can adjust this as needed)
+#                     selected_rubrics.append(f"{item_title} (Score: {score}):\n{item_data}")
+#         rubrics_input = '\n\n'.join(selected_rubrics)
+#     else:
+#         # Get rubrics from request.form (Writing mode)
+#         rubrics_input = request.form.get('rubrics')
+#         if not rubrics_input:
+#             return jsonify({'success': False, 'error': 'No rubrics provided.'})
+
+#     if not rubrics_input:
+#         return jsonify({'success': False, 'error': 'No rubrics found.'})
+
+#     # Call get_feedback function
+#     feedback_text, scores, full_feedback = get_feedback(
+#         user_input=user_input,
+#         file_path=file_path,
+#         rubrics=rubrics_input,
+#         leed_scores=leed_scores  # Pass leed_scores here
+#     )
+
+#     response_time = datetime.utcnow()
+
+#     # Remove uploaded file after processing
+#     if file_path:
+#         os.remove(file_path)
+
+#     # Save chat history
+#     chat_history = ChatHistory(
+#         user_id=user_id,
+#         prompt_time=prompt_time,
+#         prompt_content=prompt_content,
+#         response_time=response_time,
+#         response_content=feedback_text
+#     )
+#     db.session.add(chat_history)
+#     db.session.commit()
+
+#     return jsonify({'success': True, 'feedback': feedback_text, 'scores': scores, 'chat_history_id': chat_history.id})
+@app.route('/get_feedback', methods=['POST'])
 def get_feedback_route():
     user_id = session.get('user_id')
     if not user_id:
@@ -355,33 +500,61 @@ def get_feedback_route():
 
         # Get cached LEED data
         leed_data = get_leed_data()
-        # Generate rubrics based on leed_scores and leed_data
+        print(f"Type of leed_data: {type(leed_data)}")
+        print(f"leed_data content: {leed_data}")
+
+        # Access the 'LEED_Credits_Collection' key
+        leed_credits_collection = leed_data.get('LEED_Credits_Collection', {})
+        print(f"Type of leed_credits_collection: {type(leed_credits_collection)}")
+        print(f"leed_credits_collection content: {leed_credits_collection}")
+
+        # Build a mapping from item titles to their data
+        def normalize_title(title):
+            return title.strip().lower()
+
+        item_data_mapping = {}
+        for rating_system, categories in leed_credits_collection.items():
+            for category_name, category_data in categories.items():
+                credits = category_data.get('Credits', [])
+                for item in credits:
+                    item_title = item.get('name', '')
+                    normalized_title = normalize_title(item_title)
+                    item_data_mapping[normalized_title] = item
+
         selected_rubrics = []
         for item_title, score in leed_scores.items():
             if item_title == 'total_score':
                 continue  # Skip total_score in leed_scores
-            if float(score) > 0:
-                normalized_title = item_title.strip().lower()
-                item_data = None
-                for category_items in leed_data.values():
-                    for item in category_items:
-                        if item.get('name', '').strip().lower() == normalized_title:
-                            item_data = item
-                            break
-                    if item_data:
-                        break
+            try:
+                numeric_score = float(score)
+            except (ValueError, TypeError):
+                print(f'Invalid score for "{item_title}": {score}. Skipping.')
+                continue  # Skip invalid scores
+
+            if numeric_score > 0:
+                normalized_title = normalize_title(item_title)
+                item_data = item_data_mapping.get(normalized_title)
                 if item_data:
-                    # Prepare the rubric text (you can adjust this as needed)
-                    selected_rubrics.append(f"{item_title} (Score: {score}):\n{item_data}")
-        rubrics_input = '\n\n'.join(selected_rubrics)
+                    # Extract the scoring criteria or any other relevant data
+                    scoring_criteria = item_data.get('scoringCriteria', [])
+                    selected_rubrics.append({
+                        'title': item_data.get('name', ''),
+                        'user_score': numeric_score,
+                        'scoring_criteria': scoring_criteria
+                    })
+                else:
+                    print(f'Item data not found for: {item_title}')
+        # Convert selected rubrics to a string format if needed
+        rubrics_input = '\n\n'.join([
+            f"{rubric['title']} (Score: {rubric['user_score']}):\n" +
+            '\n'.join([f"- {criteria['description']} (Points: {criteria['points']})" for criteria in rubric['scoring_criteria']])
+            for rubric in selected_rubrics
+        ])
     else:
-        # Get rubrics from request.form (Writing mode)
+        # Handle the case when rubrics are provided directly
         rubrics_input = request.form.get('rubrics')
         if not rubrics_input:
             return jsonify({'success': False, 'error': 'No rubrics provided.'})
-
-    if not rubrics_input:
-        return jsonify({'success': False, 'error': 'No rubrics found.'})
 
     # Call get_feedback function
     feedback_text, scores, full_feedback = get_feedback(
@@ -406,6 +579,18 @@ def get_feedback_route():
         response_content=feedback_text
     )
     db.session.add(chat_history)
+    # 删除当前用户的旧 Rubric 记录
+    Rubric.query.filter_by(user_id=user_id).delete()
+
+    # 保存新的 Rubric 和成绩
+    for rubric_title, score_dict in scores.items():
+        new_rubric = Rubric(
+            text=rubric_title,
+            score=score_dict['score'],
+            user_id=user_id
+        )
+        db.session.add(new_rubric)
+
     db.session.commit()
 
     return jsonify({'success': True, 'feedback': feedback_text, 'scores': scores, 'chat_history_id': chat_history.id})
@@ -433,6 +618,130 @@ def submit_feedback():
 
     return jsonify({'success': True})
 
+@app.route('/save_rubrics', methods=['POST'])
+def save_rubrics():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'User not logged in.'})
+    
+    # 获取当前用户对象
+    current_user = User.query.get(user_id)
+    if not current_user:
+        return jsonify({'success': False, 'error': 'User not found.'})
+    
+    # 权限检查
+    if current_user.username != 'admin':
+        return jsonify({'success': False, 'error': 'You do not have permission to perform this action.'})
+    
+    data = request.get_json()
+    rubrics_input = data.get('rubrics')
+
+    if rubrics_input is not None:
+        # Update rubrics in the database
+        Rubric.query.filter_by(user_id=user_id).delete()
+        for rubric_text in rubrics_input.strip().split('\n\n'):
+            if rubric_text.strip():
+                new_rubric = Rubric(text=rubric_text.strip(), user_id=user_id)
+                db.session.add(new_rubric)
+        db.session.commit()
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': 'No rubrics provided.'})
+    
+@app.route('/submit_leed_scores', methods=['POST'])
+def submit_leed_scores():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'User not logged in.'})
+
+    # 获取当前用户对象
+    current_user = User.query.get(user_id)
+    if not current_user:
+        return jsonify({'success': False, 'error': 'User not found.'})
+
+    data = request.get_json()
+    leed_scores = data.get('leed_scores')
+
+    if not leed_scores:
+        return jsonify({'success': False, 'error': 'No LEED scores provided.'})
+
+    # Convert scores to strings before storing in session
+    leed_scores_str = {k: str(v) for k, v in leed_scores.items()}
+    session['leed_scores'] = leed_scores_str
+
+    return jsonify({'success': True})
+
+@app.route('/admin/get_leed_data', methods=['GET'])
+def admin_get_leed_data():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'User not logged in.'})
+
+    current_user = User.query.get(user_id)
+    if not current_user or current_user.username != 'admin':
+        return jsonify({'success': False, 'error': 'You do not have permission to perform this action.'})
+
+    leed_data = get_leed_data()
+    return jsonify({'success': True, 'leed_data': leed_data})
+
+@app.route('/admin/save_leed_data', methods=['POST'])
+def admin_save_leed_data():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'User not logged in.'})
+
+    current_user = User.query.get(user_id)
+    if not current_user or current_user.username != 'admin':
+        return jsonify({'success': False, 'error': 'You do not have permission to perform this action.'})
+
+    data = request.get_json()
+    leed_data = data.get('leed_data')
+
+    if not leed_data:
+        return jsonify({'success': False, 'error': 'No LEED data provided.'})
+
+    # 将LEED数据保存到文件
+    json_path = 'cleaned_leed_rubric.json'
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(leed_data, f, ensure_ascii=False, indent=4)
+
+    # 清除缓存，以便下一次获取最新的数据
+    get_leed_data.cache_clear()
+
+    return jsonify({'success': True})
+
+# @app.route('/admin/update_score', methods=['POST'])
+# def admin_update_score():
+#     user_id = session.get('user_id')
+#     if not user_id:
+#         return jsonify({'success': False, 'error': 'User not logged in.'})
+
+#     current_user = User.query.get(user_id)
+#     if not current_user or current_user.username != 'admin':
+#         return jsonify({'success': False, 'error': 'You do not have permission to perform this action.'})
+
+#     data = request.get_json()
+#     rubric_id = data.get('rubric_id')
+#     new_score = data.get('new_score')
+
+#     if not rubric_id or new_score is None:
+#         return jsonify({'success': False, 'error': 'Invalid data provided.'})
+
+#     try:
+#         # 查找对应的 Rubric
+#         rubric = Rubric.query.get(rubric_id)
+#         if not rubric:
+#             return jsonify({'success': False, 'error': 'Rubric not found.'})
+
+#         # 更新成绩
+#         rubric.score = float(new_score)
+#         db.session.commit()
+
+#         return jsonify({'success': True})
+#     except Exception as e:
+#         print(e)
+#         return jsonify({'success': False, 'error': 'An error occurred while updating the score.'})
+    
 # Run the Flask application
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Get the port from the environment variable, default to 5000
