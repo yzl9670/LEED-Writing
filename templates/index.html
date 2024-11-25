@@ -30,7 +30,7 @@
             gap: 20px;
         }
         .content {
-            width: 80%; /* 调整宽度 */
+            width: 70%; /* 调整宽度 */
             padding: 20px;
             background-color: #fff;
             display: flex;
@@ -123,7 +123,7 @@
             cursor: pointer;
         }
         .rubrics-container {
-            width: 20%;
+            width: 30%;
             padding: 20px;
             background-color: #fff;
             display: flex;
@@ -488,6 +488,20 @@
             border: none;
             border-radius: 3px;
         }
+        /* 加载动画样式 */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #4a76a8;
+            animation: spin 1s linear infinite;
+            margin: 10px; /* 调整位置 */
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
     <script>
         var isAdmin = {{ is_admin | tojson }};
@@ -589,7 +603,7 @@
         }
 
         // 发送消息到聊天窗口，并将 Rubrics 一起发送到后端
-        function sendMessage() {
+        /*function sendMessage() {
             const input = document.getElementById('user-input');
             const fileInput = document.getElementById('file-input');
             const message = input.value;
@@ -692,8 +706,138 @@
                 console.error('Error:', error);
                 alert('An error occurred while processing your request.');
             });
-        }
+        }*/
 
+        function sendMessage() {
+            // 获取用户输入和文件输入的元素
+            const input = document.getElementById('user-input');
+            const fileInput = document.getElementById('file-input');
+            const message = input.value;
+            const file = fileInput.files[0];
+        
+            // 检查用户是否输入了消息或选择了文件
+            if (!message.trim() && !file) {
+                alert("Please enter a message or upload a file.");
+                return;
+            }
+        
+            // 创建要发送到后端的 FormData 对象
+            const formData = new FormData();
+            formData.append('message', message);
+        
+            // 根据当前模式（LEED 或其他），附加相应的数据
+            if (currentMode === 'LEED') {
+                const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
+                if (leedScores) {
+                    formData.append('leed_scores', JSON.stringify(leedScores));
+                } else {
+                    alert('Please submit LEED scores first.');
+                    return;
+                }
+            } else {
+                const rubrics = getCurrentRubrics();
+                formData.append('rubrics', rubrics);
+            }
+        
+            // 如果用户选择了文件，添加到 FormData 中
+            if (file) {
+                console.log('Selected file:', file);
+                formData.append('file', file);
+            } else {
+                console.log('No file selected.');
+            }
+        
+            // 打印 FormData 的内容用于调试
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            }
+        
+            // 获取聊天容器元素
+            const chatContainer = document.getElementById('chat-container');
+        
+            // 显示用户消息
+            if (message.trim()) {
+                const userMessageElem = document.createElement('div');
+                userMessageElem.classList.add('chat-message', 'user');
+                userMessageElem.textContent = message;
+                chatContainer.appendChild(userMessageElem);
+            } else if (file) {
+                const userMessageElem = document.createElement('div');
+                userMessageElem.classList.add('chat-message', 'user');
+                userMessageElem.textContent = `Uploaded file: ${file.name}`;
+                chatContainer.appendChild(userMessageElem);
+            }
+        
+            // 添加 AI 回复气泡，显示加载动画
+            const aiMessageElem = document.createElement('div');
+            aiMessageElem.classList.add('chat-message', 'ai');
+        
+            // 创建加载动画元素
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.classList.add('loading-spinner');
+            aiMessageElem.appendChild(loadingSpinner);
+        
+            // 将 AI 消息元素添加到聊天容器
+            chatContainer.appendChild(aiMessageElem);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+            // 清空输入框和文件输入
+            input.value = '';
+            input.style.height = '50px';
+            fileInput.value = '';
+        
+            // 发送请求到后端
+            fetch('/get_feedback', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 检查请求是否成功
+                    if (data.success === false) {
+                        alert(data.error);
+                        // 移除加载动画
+                        aiMessageElem.remove();
+                        return;
+                    }
+        
+                    // 更新 AI 回复气泡的内容，替换加载动画为实际回复
+                    aiMessageElem.innerHTML = ''; // 清空之前的内容
+        
+                    // 创建内容容器
+                    const aiContent = document.createElement('div');
+                    aiContent.textContent = data.feedback; // 使用 textContent 避免 XSS
+        
+                    aiMessageElem.appendChild(aiContent);
+        
+                    // 添加反馈按钮（如果需要）
+                    const feedbackBtn = document.createElement('button');
+                    feedbackBtn.classList.add('feedback-button');
+                    feedbackBtn.textContent = 'Feedback';
+                    feedbackBtn.onclick = function () {
+                        toggleFeedbackPanel(aiMessageElem, data.chat_history_id, feedbackBtn);
+                    };
+                    aiMessageElem.appendChild(feedbackBtn);
+        
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+                    // 更新 Rubrics 的评分显示
+                    if (currentMode === 'LEED') {
+                        updateLeedRubricScores(data.scores);
+                    } else {
+                        updateWritingRubricScores(data.scores);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your request.');
+        
+                    // 移除加载动画
+                    aiMessageElem.remove();
+                });
+        }
+        
         // 更新 LEED Rubrics 的评分
         function updateLeedRubricScores(scores) {
             const rubricsList = document.getElementById('leed-rubrics-list');
