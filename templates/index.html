@@ -35,7 +35,7 @@
             background-color: #fff;
             display: flex;
             flex-direction: column;
-            position: relative;
+            position: relativea;
             overflow: hidden;
         }
         .chat-container {
@@ -1621,6 +1621,20 @@
         
             // 生成 LEED 表格
             generateLeedTable();
+
+            // Insert the prompt
+            const leedContent = document.getElementById('leed-content');
+            const existingPrompt = document.querySelector('.leed-prompt');
+            if (!existingPrompt) {
+                const promptDiv = document.createElement('div');
+                promptDiv.className = 'leed-prompt';
+                promptDiv.textContent = 'Note: You do not need to fill in every item. Only input scores for the items where your project obtains points; other items will be counted as zero points.';
+                
+                // Change the font color to red
+                promptDiv.style.color = 'red';
+
+                leedContent.insertBefore(promptDiv, leedContent.querySelector('#leed-table-container'));
+            }
         }
         // 加载 LEED 数据
         const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
