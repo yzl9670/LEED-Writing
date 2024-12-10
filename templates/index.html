@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <title>LEED Rubrics Display</title>
     <style>
-        /* 基础样式 */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -20,17 +19,18 @@
             flex: 1;
             height: 100%;
         }
+        /*hide*/
         .left-menu {
-            width: 0; /* 隐藏左侧菜单 */
+            width: 0; 
             background-color: #4a76a8;
             color: #fff;
-            padding: 0; /* 隐藏左侧菜单 */
-            display: none; /* 隐藏左侧菜单 */
+            padding: 0; 
+            display: none;
             flex-direction: column;
             gap: 20px;
         }
         .content {
-            width: 70%; /* 调整宽度 */
+            width: 70%; 
             padding: 20px;
             background-color: #fff;
             display: flex;
@@ -68,9 +68,21 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            white-space: pre-wrap; /* 保留换行符和空白 */
+            white-space: pre-wrap;
         }
         .input-container {
+            position: static; /* 或者直接删除 position:absolute; */
+            bottom: auto;
+            left: auto;
+            right: auto;
+            background-color: #fff;
+            padding: 10px 0;
+            z-index: 2;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #ccc;
+        /*.input-container {
             display: flex;
             gap: 10px;
             align-items: center;
@@ -80,7 +92,7 @@
             right: 0;
             background-color: white;
             padding: 10px 0;
-            z-index: 2;
+            z-index: 2; --> */
         }
         .input-container textarea {
             flex-grow: 1;
@@ -102,7 +114,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        /* 上传按钮样式 */
         .upload-button {
             position: relative;
             overflow: hidden;
@@ -149,7 +160,7 @@
             flex-direction: column;
             gap: 10px;
             overflow-y: auto;
-            max-height: 80vh; /* 根据需要调整最大高度 */
+            max-height: 80vh; 
         }
         .rubrics-list div {
             padding: 10px;
@@ -187,11 +198,11 @@
         .rubric-button:hover {
             background-color: #c0392b;
         }
-        /* 文件输入框样式 */
+        
         #file-input {
             display: none;
         }
-        /* 反馈面板样式 */
+        
         .feedback-panel {
             position: absolute;
             bottom: 0;
@@ -245,7 +256,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        /* 反馈按钮样式 */
+        
         .feedback-button {
             margin-top: 10px;
             align-self: flex-end;
@@ -257,7 +268,7 @@
             padding: 5px 10px;
             cursor: pointer;
         }
-        /* LEED 页面样式 */
+        
         #leed-page {
             display: none;
             flex-direction: column;
@@ -292,7 +303,7 @@
         #leed-table input[type="number"] {
             width: 80px;
         }
-        /* 按钮容器样式 */
+        
         .button-container {
             display: flex;
             justify-content: space-between;
@@ -318,17 +329,17 @@
             border-radius: 5px;
             cursor: pointer;
         
-    }
-        /* 只读的 textarea 样式 */
+        }
+    
         .rubrics-list textarea[readonly] {
             background-color: transparent;
             cursor: default;
         }
-        /* 拖拽上传文件的样式 */
+        
         .chat-container.dragover {
             background-color: #c8e6c9;
         }
-        /* Rubric 项目样式 */
+        /* Rubrics */
         .rubric-item {
             width: 95%;
             margin-bottom: 10px;
@@ -366,7 +377,6 @@
         .rubric-content.visible {
             display: block;
         }
-        /* 提示信息样式 */
         .message {
             font-weight: bold;
             margin-bottom: 10px;
@@ -377,7 +387,6 @@
         .message.green {
             color: green;
         }
-        /* 更新的评分标准项样式 */
         .rubric-criteria-item {
             margin-bottom: 10px;
             display: flex;
@@ -394,7 +403,6 @@
             display: none;
             width: 100%;
             box-sizing: border-box;
-            /* 新增 */
             display: flex;
             flex-direction: column;
         }
@@ -410,19 +418,17 @@
             position: relative;
         }
         .rubric-subtitle::after {
-            content: '\25BA'; /* 右箭头 */
+            content: '\25BA'; 
             position: absolute;
             right: 10px;
             transition: transform 0.3s;
         }
         .rubric-subtitle.expanded::after {
-            transform: rotate(90deg); /* 展开时箭头旋转 */
+            transform: rotate(90deg); 
         }
-        /* 新增的样式，用于显示评分 */
         .rubric-score {
             font-weight: bold;
         }
-        /* 新增的样式，用于右侧总分标题 */
         .rubrics-total-score {
             font-weight: bold;
             margin-top: 10px;
@@ -434,20 +440,36 @@
             font-weight: bold;
             margin-bottom: 10px;
             text-align: center;
-            position: relative; /* 为了定位按钮 */
+            position: relative; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
-        /* Resubmit 按钮样式 */
         .resubmit-button {
-            position: absolute;
-            top: 0;
-            right: 0;
-            font-size: 12px;
             background-color: #e74c3c;
             color: white;
             border: none;
             border-radius: 3px;
             padding: 5px 10px;
             cursor: pointer;
+            font-size: 14px; 
+            transition: all 0.3s ease; 
+        }
+        @media (max-width: 600px) {
+            .resubmit-button {
+                font-size: 12px;
+                padding: 4px 8px;
+                border-radius: 2px;
+                position: static;
+                margin-top: 10px;
+            }
+        }
+        @media (max-width: 400px) {
+            .resubmit-button {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
         }
         .resubmit-button:hover {
             background-color: #c0392b;
@@ -456,15 +478,14 @@
             background-color: #d0e2f2;
             border-left: 3px solid #4a76a8;
         }
-        /* 登出按钮容器样式 */
+
         .logout-container {
             position: fixed;
-            bottom: 20px; /* 距离底部 20 像素，可根据需要调整 */
-            right: 20px;  /* 距离右侧 20 像素，可根据需要调整 */
-            z-index: 1000; /* 确保按钮位于最上层 */
+            bottom: 20px; 
+            right: 20px;  
+            z-index: 1000; 
         }
 
-        /* 登出按钮样式 */
         .logout-button {
             padding: 10px 20px;
             background-color: #e74c3c; /* 按钮背景颜色 */
@@ -802,6 +823,7 @@
                         return;
                     }
         
+                    console.log("Scores from backend (frontend):", data.scores);
                     // 更新 AI 回复气泡的内容，替换加载动画为实际回复
                     aiMessageElem.innerHTML = ''; // 清空之前的内容
         
@@ -902,7 +924,7 @@
                         if (lowerCriteria) lowerCriteria.classList.add('highlight');
                         if (higherCriteria) higherCriteria.classList.add('highlight');
                     }
-        
+                    console.log("Rubric:", rubricName, "Score:", scores[rubricName].score, "Total:", scores[rubricName].total);
                     // 累计总得分
                     totalScore += scoreValue;
                     totalPossibleScore += totalValue;
