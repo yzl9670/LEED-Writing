@@ -71,7 +71,7 @@
             white-space: pre-wrap;
         }
         .input-container {
-            position: static; /* 或者直接删除 position:absolute; */
+            position: static; 
             bottom: auto;
             left: auto;
             right: auto;
@@ -82,17 +82,6 @@
             gap: 10px;
             align-items: center;
             border-top: 1px solid #ccc;
-        /*.input-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: white;
-            padding: 10px 0;
-            z-index: 2; --> */
         }
         .input-container textarea {
             flex-grow: 1;
@@ -488,7 +477,7 @@
 
         .logout-button {
             padding: 10px 20px;
-            background-color: #e74c3c; /* 按钮背景颜色 */
+            background-color: #e74c3c; 
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -497,19 +486,19 @@
         }
 
         .logout-button:hover {
-            background-color: #c0392b; /* 悬停时的背景颜色 */
+            background-color: #c0392b; 
         }
         .edit-button {
             margin-left: 10px;
             padding: 5px;
             font-size: 12px;
             cursor: pointer;
-            background-color: #4CAF50; /* 背景颜色，可以根据需要调整 */
+            background-color: #4CAF50; 
             color: white;
             border: none;
             border-radius: 3px;
         }
-        /* 加载动画样式 */
+        /* Loading animation style */
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             width: 24px;
@@ -517,7 +506,13 @@
             border-radius: 50%;
             border-left-color: #4a76a8;
             animation: spin 1s linear infinite;
-            margin: 10px; /* 调整位置 */
+            margin: 10px; 
+        }
+        .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-left: 20px;
+            margin-bottom: 10px;
         }
 
         @keyframes spin {
@@ -530,18 +525,15 @@
 </head>
 <body>
     <div class="main-container" id="main-container">
-        <!-- 左侧按钮部分（已隐藏） -->
+        <!-- Left button section (hidden)） -->
         <div class="left-menu">
-            <!-- 左侧菜单已隐藏 -->
         </div>
 
-        <!-- 中间聊天内容部分 -->
         <div class="content">
             <div class="chat-container" id="chat-container">
                 <div class="chat-message ai">Welcome to the AI feedback system!</div>
             </div>
             <div class="input-container">
-                <!-- 美化的上传按钮 -->
                 <label class="upload-button">
                     Upload
                     <input type="file" id="file-input" accept=".docx,.pdf" onchange="sendMessage()">
@@ -549,14 +541,15 @@
                 <textarea id="user-input" placeholder="Type your message here..." oninput="autoResizeTextarea(this)"></textarea>
                 <button onclick="sendMessage()">Send</button>
             </div>
+            <div class="input-hint">
+                Press <b>Ctrl+Enter</b> to send message
+            </div>
         </div>
 
-        <!-- 右侧 Rubrics 管理部分 -->
+        <!-- Rubrics section on the right -->
         <div class="rubrics-container" id="rubrics-container">
-            <!-- LEED Rubric 总标题和总分显示 -->
             <div class="leed-rubric-header" id="leed-rubric-header">
                 LEED Narrative Assignment Rubric
-                <!-- Resubmit 按钮 -->
                 <button class="resubmit-button" onclick="resubmitLeed()">LEED Certification Form</button>
             </div>
             <div class="rubrics-total-score" id="rubrics-total-score">
@@ -569,32 +562,28 @@
         </div>
     </div>
 
-    <!-- LEED 页面 -->
+    <!-- LEED -->
     <div id="leed-page" class="main-container">
-        <!-- LEED 表格内容 -->
+        <!-- LEED Form -->
         <div class="content" id="leed-content">
             <h2>LEED Certification Form</h2>
             <div id="leed-table-container">
                 <form id="leed-form">
-                    <!-- LEED 表格将在此生成 -->
                     <table id="leed-table">
-                        <!-- 表头 -->
+                        <!-- Header -->
                         <thead>
                             <tr>
-                                <th>Category</th>
-                                <th>Prereq/Credit</th>
                                 <th>Title</th>
+                                <th>Prereq/Credit</th>
                                 <th>Points</th>
                                 <th>Earned</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- 表格内容将在 JavaScript 中生成 -->
                         </tbody>
                     </table>
                 </form>
             </div>
-            <!-- 按钮容器 -->
             <div class="button-container">
                 <button class="back-button" onclick="returnToMain()">Back</button>
                 <button id="leed-submit-button" onclick="submitLeedForm()">Submit LEED Scores</button>
@@ -603,16 +592,16 @@
     </div>
 
     <script>
-        let currentChatHistoryId = null;  // 当前正在反馈的聊天记录ID
-        let currentMode = 'LEED'; // 默认模式改为 'LEED'
+        let currentChatHistoryId = null;  
+        let currentMode = 'LEED'; 
 
-        // 自动调整输入框高度
+
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * 0.5) + 'px';
         }
 
-        // 获取当前的 Rubrics（仅在 Writing 模式下）
+        // Get the current Rubrics (in Writing mode only)
         function getCurrentRubrics() {
             const rubricsList = document.getElementById('writing-rubrics-list');
             const rubricTextareas = rubricsList.querySelectorAll('textarea');
@@ -623,130 +612,23 @@
             return rubrics.trim();
         }
 
-        // 发送消息到聊天窗口，并将 Rubrics 一起发送到后端
-        /*function sendMessage() {
-            const input = document.getElementById('user-input');
-            const fileInput = document.getElementById('file-input');
-            const message = input.value;
-            const file = fileInput.files[0];
-
-            if (!message.trim() && !file) {
-                alert("Please enter a message or upload a file.");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('message', message);
-
-            if (currentMode === 'LEED') {
-                const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
-                if (leedScores) {
-                    formData.append('leed_scores', JSON.stringify(leedScores));
-                } else {
-                    alert('Please submit LEED scores first.');
-                    return;
-                }
-            } else {
-                const rubrics = getCurrentRubrics();
-                formData.append('rubrics', rubrics);
-            }
-
-            if (file) {
-                console.log('Selected file:', file);
-                formData.append('file', file);
-            } else {
-                console.log('No file selected.');
-            }
-            
-            // 打印 FormData 的内容
-            for (let pair of formData.entries()) {
-                console.log(pair[0]+ ', ' + pair[1]);
-            }
-            
-            // 将用户输入的消息和 Rubrics 发送到后端
-            fetch('/get_feedback', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success === false) {
-                    alert(data.error);
-                    return;
-                }
-                const chatContainer = document.getElementById('chat-container');
-
-                // 显示用户消息
-                if (message.trim()) {
-                    const userMessageElem = document.createElement('div');
-                    userMessageElem.classList.add('chat-message', 'user');
-                    userMessageElem.textContent = message;
-                    chatContainer.appendChild(userMessageElem);
-                } else if (file) {
-                    const userMessageElem = document.createElement('div');
-                    userMessageElem.classList.add('chat-message', 'user');
-                    userMessageElem.textContent = `Uploaded file: ${file.name}`;
-                    chatContainer.appendChild(userMessageElem);
-                }
-
-                // 显示 AI 反馈
-                const aiMessageElem = document.createElement('div');
-                aiMessageElem.classList.add('chat-message', 'ai');
-
-                // 创建内容容器，避免 Feedback 按钮遮挡内容
-                const aiContent = document.createElement('div');
-                aiContent.textContent = data.feedback; // Using textContent
-                aiMessageElem.appendChild(aiContent);
-
-                // 添加反馈按钮
-                const feedbackBtn = document.createElement('button');
-                feedbackBtn.classList.add('feedback-button');
-                feedbackBtn.textContent = 'Feedback';
-                feedbackBtn.onclick = function() {
-                    toggleFeedbackPanel(aiMessageElem, data.chat_history_id, feedbackBtn);
-                };
-                aiMessageElem.appendChild(feedbackBtn);
-
-                chatContainer.appendChild(aiMessageElem);
-
-                // 重置输入框和文件输入
-                input.value = '';
-                input.style.height = '50px';
-                fileInput.value = '';
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-
-                // 更新 Rubrics 的评分显示
-                if (currentMode === 'LEED') {
-                    updateLeedRubricScores(data.scores);
-                } else {
-                    updateWritingRubricScores(data.scores);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while processing your request.');
-            });
-        }*/
-
         function sendMessage() {
-            // 获取用户输入和文件输入的元素
+            // Get user input and file input 
             const input = document.getElementById('user-input');
             const fileInput = document.getElementById('file-input');
             const message = input.value;
             const file = fileInput.files[0];
         
-            // 检查用户是否输入了消息或选择了文件
             if (!message.trim() && !file) {
                 alert("Please enter a message or upload a file.");
                 return;
             }
         
-            // 创建要发送到后端的 FormData 对象
+            // Create a FormData object to send to the backend
             const formData = new FormData();
             formData.append('message', message);
         
-            // 根据当前模式（LEED 或其他），附加相应的数据
+            // Depending on the current model (LEED or other), attach the corresponding data
             if (currentMode === 'LEED') {
                 const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
                 if (leedScores) {
@@ -760,7 +642,7 @@
                 formData.append('rubrics', rubrics);
             }
         
-            // 如果用户选择了文件，添加到 FormData 中
+            // If the user selects a file, add it to FormData
             if (file) {
                 console.log('Selected file:', file);
                 formData.append('file', file);
@@ -768,15 +650,15 @@
                 console.log('No file selected.');
             }
         
-            // 打印 FormData 的内容用于调试
+            // debug
             for (let pair of formData.entries()) {
                 console.log(pair[0] + ', ' + pair[1]);
             }
         
-            // 获取聊天容器元素
+            // Get the chat container 
             const chatContainer = document.getElementById('chat-container');
         
-            // 显示用户消息
+            // Display User Messages
             if (message.trim()) {
                 const userMessageElem = document.createElement('div');
                 userMessageElem.classList.add('chat-message', 'user');
@@ -789,25 +671,25 @@
                 chatContainer.appendChild(userMessageElem);
             }
         
-            // 添加 AI 回复气泡，显示加载动画
+            // Add AI reply bubble, showing loading animation
             const aiMessageElem = document.createElement('div');
             aiMessageElem.classList.add('chat-message', 'ai');
         
-            // 创建加载动画元素
+            // Creating a loading animation element
             const loadingSpinner = document.createElement('div');
             loadingSpinner.classList.add('loading-spinner');
             aiMessageElem.appendChild(loadingSpinner);
         
-            // 将 AI 消息元素添加到聊天容器
+            // Adding the AI ​​Message element to the chat container
             chatContainer.appendChild(aiMessageElem);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         
-            // 清空输入框和文件输入
+            // Clear the input box and file input
             input.value = '';
             input.style.height = '50px';
             fileInput.value = '';
         
-            // 发送请求到后端
+            // Sending request to the backend
             fetch('/get_feedback', {
                 method: 'POST',
                 body: formData,
@@ -815,25 +697,23 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    // 检查请求是否成功
                     if (data.success === false) {
                         alert(data.error);
-                        // 移除加载动画
+                        // Remove loading animation
                         aiMessageElem.remove();
                         return;
                     }
         
                     console.log("Scores from backend (frontend):", data.scores);
-                    // 更新 AI 回复气泡的内容，替换加载动画为实际回复
-                    aiMessageElem.innerHTML = ''; // 清空之前的内容
+                    // Updated AI reply bubble content, replacing loading animation with actual reply
+                    aiMessageElem.innerHTML = ''; 
         
-                    // 创建内容容器
                     const aiContent = document.createElement('div');
-                    aiContent.textContent = data.feedback; // 使用 textContent 避免 XSS
+                    aiContent.textContent = data.feedback; 
         
                     aiMessageElem.appendChild(aiContent);
         
-                    // 添加反馈按钮（如果需要）
+                    // Feedback Button
                     const feedbackBtn = document.createElement('button');
                     feedbackBtn.classList.add('feedback-button');
                     feedbackBtn.textContent = 'Feedback';
@@ -844,7 +724,7 @@
         
                     chatContainer.scrollTop = chatContainer.scrollHeight;
         
-                    // 更新 Rubrics 的评分显示
+                    // Updated Rubrics rating display
                     if (currentMode === 'LEED') {
                         updateLeedRubricScores(data.scores);
                     } else {
@@ -855,18 +735,18 @@
                     console.error('Error:', error);
                     alert('An error occurred while processing your request.');
         
-                    // 移除加载动画
+                    // Remove loading animation
                     aiMessageElem.remove();
                 });
         }
         
-        // 更新 LEED Rubrics 的评分
+        // Update LEED Rubrics Ratings
         function updateLeedRubricScores(scores) {
             const rubricsList = document.getElementById('leed-rubrics-list');
             const rubricItems = rubricsList.querySelectorAll('.rubric-item');
         
-            let totalScore = 0; // 用于计算总得分
-            let totalPossibleScore = 0; // 用于计算总可能得分
+            let totalScore = 0; 
+            let totalPossibleScore = 0; 
         
             rubricItems.forEach(rubricElem => {
                 const titleElem = rubricElem.querySelector('.rubric-title');
@@ -883,28 +763,28 @@
                     const totalValue = scores[rubricName].total;
                     scoreElem.textContent = `Score: ${scoreValue}/${totalValue}`;
         
-                    // 根据个别得分设置颜色
+                    // Set color according to scores
                     const scoreColor = getScoreColor(scoreValue, totalValue);
                     scoreElem.style.color = scoreColor;
         
-                    // 高亮对应的评分标准
+                    // Highlight the corresponding scoring criteria
                     const criteriaItems = rubricElem.querySelectorAll('.rubric-criteria-item');
                     criteriaItems.forEach(criteriaItem => {
                         const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
-                        criteriaItem.classList.remove('highlight'); // 移除之前的高亮
+                        criteriaItem.classList.remove('highlight'); 
         
                         if (criteriaPoints === scoreValue) {
                             criteriaItem.classList.add('highlight');
                         }
                     });
         
-                    // 处理没有精确匹配的情况
+                    // Handling the case where there is no exact match
                     const exactMatch = Array.from(criteriaItems).some(item => {
                         return parseFloat(item.getAttribute('data-points')) === scoreValue;
                     });
         
                     if (!exactMatch) {
-                        // 找到最接近的上下评分标准
+                        // Find the closest upper and lower rating scale
                         let lowerCriteria = null;
                         let higherCriteria = null;
                         criteriaItems.forEach(criteriaItem => {
@@ -920,32 +800,28 @@
                             }
                         });
         
-                        // 高亮最接近的上下评分标准
+                        // Highlight the closest upper and lower scoring criteria
                         if (lowerCriteria) lowerCriteria.classList.add('highlight');
                         if (higherCriteria) higherCriteria.classList.add('highlight');
                     }
                     console.log("Rubric:", rubricName, "Score:", scores[rubricName].score, "Total:", scores[rubricName].total);
-                    // 累计总得分
                     totalScore += scoreValue;
                     totalPossibleScore += totalValue;
                 }
             });
             
 
-            // 更新总得分显示
+            // Update total score
             const totalScoreElem = document.getElementById('rubrics-total-score');
             totalScoreElem.textContent = `Total Score: ${totalScore}/15`;
 
             const totalScoreColor = getScoreColor(totalScore, 15);
             totalScoreElem.style.color = totalScoreColor;
         }
-        
-        
 
         function displayScoreMessage(totalScore) {
             let messageElem = document.getElementById('leed-score-message');
             if (!messageElem) {
-                // 创建提示信息元素
                 messageElem = document.createElement('div');
                 messageElem.id = 'leed-score-message';
                 messageElem.style.fontWeight = 'bold';
@@ -982,7 +858,7 @@
             }
         }
 
-        // 更新 Writing Rubrics 的评分
+        // Update the ratings for Writing Rubrics
         function updateWritingRubricScores(scores) {
             const rubricsList = document.getElementById('writing-rubrics-list');
             const rubricItems = rubricsList.querySelectorAll('.rubric-item');
@@ -1003,7 +879,7 @@
             });
         }
 
-        // 切换反馈面板的显示
+        // Toggle display of the feedback panel
         function toggleFeedbackPanel(aiMessageElem, chatHistoryId, feedbackBtn) {
             let feedbackPanel = aiMessageElem.querySelector('.feedback-panel');
             if (feedbackPanel) {
@@ -1012,7 +888,7 @@
                 feedbackPanel = document.createElement('div');
                 feedbackPanel.classList.add('feedback-panel');
 
-                // 关闭按钮
+                // Close button
                 const closeButton = document.createElement('button');
                 closeButton.classList.add('close-button');
                 closeButton.innerHTML = '&times;';
@@ -1025,7 +901,7 @@
                 title.textContent = 'How do you like this response?';
                 feedbackPanel.appendChild(title);
 
-                // 星级评分
+                // Star Rating
                 const starsDiv = document.createElement('div');
                 starsDiv.classList.add('stars');
                 for (let i = 1; i <= 5; i++) {
@@ -1039,12 +915,12 @@
                 }
                 feedbackPanel.appendChild(starsDiv);
 
-                // 反馈文本框
+                // Feedback text box
                 const feedbackTextarea = document.createElement('textarea');
                 feedbackTextarea.placeholder = 'Enter your feedback...';
                 feedbackPanel.appendChild(feedbackTextarea);
 
-                // 提交按钮
+                // Submit Button
                 const submitButton = document.createElement('button');
                 submitButton.classList.add('submit-feedback');
                 submitButton.textContent = 'Submit';
@@ -1057,7 +933,7 @@
 
                 aiMessageElem.appendChild(feedbackPanel);
 
-                // 检查反馈面板是否超出可视区域，调整位置
+                // Check if the feedback panel exceeds the visible area and adjust its position
                 const rect = feedbackPanel.getBoundingClientRect();
                 if (rect.right > window.innerWidth) {
                     feedbackPanel.style.left = 'auto';
@@ -1066,7 +942,7 @@
             }
         }
 
-        // 选择星星评分
+        // Select star rating
         function selectStars(starsDiv, rating) {
             const stars = starsDiv.querySelectorAll('span');
             stars.forEach(star => {
@@ -1078,13 +954,13 @@
             });
         }
 
-        // 获取选中的星星数
+        // Get the number of selected stars
         function getSelectedStars(starsDiv) {
             const selectedStars = starsDiv.querySelectorAll('span.selected');
             return selectedStars.length;
         }
 
-        // 提交用户对 AI 回复的反馈
+        // Submit user feedback on AI responses
         function submitFeedback(chatHistoryId, rating, feedback) {
             fetch('/submit_feedback', {
                 method: 'POST',
@@ -1111,74 +987,74 @@
             });
         }
 
-        // 显示 LEED Rubrics 的函数（更新后）
+        // Function to display LEED Rubrics (updated)
         function displayLeedRubrics(rubrics) {
             const rubricsList = document.getElementById('leed-rubrics-list');
-            rubricsList.innerHTML = ''; // 清空之前的内容
+            rubricsList.innerHTML = ''; 
 
             rubrics.forEach((rubricData, rubricIndex)=> {
                 const rubricElem = document.createElement('div');
                 rubricElem.classList.add('rubric-item');
                 rubricElem.style.display = 'block';  // Ensure vertical alignment
 
-                // Rubric 标题元素
+                // Rubric Title 
                 const titleElem = document.createElement('div');
                 titleElem.classList.add('rubric-title');
                 titleElem.setAttribute('data-rubric-name', rubricData.name);
 
-                // 标题文本
+                // Title Text
                 const titleTextElem = document.createElement('span');
                 titleTextElem.classList.add('title-text');
                 titleTextElem.textContent = `${rubricData.name}`;
 
-                // 分数元素
+                // Score
                 const scoreElem = document.createElement('span');
                 scoreElem.classList.add('rubric-score');
                 scoreElem.textContent = 'Score: 0/0'; // 初始得分
 
-                // 将标题文本和分数添加到标题元素
+                // Add title text and fraction to title element
                 titleElem.appendChild(titleTextElem);
                 titleElem.appendChild(scoreElem);
 
-                // 如果是管理员，添加 `+/-` 按钮
-                // **在这里添加编辑按钮代码**
+                // If admin, add `+/-` buttons
+                // ADD EDIT BUTTON CODE HERE
                 if (isAdmin) {
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
                     editButton.classList.add('edit-button');
                     editButton.onclick = (event) => {
-                        event.stopPropagation(); // 阻止事件冒泡，避免触发展开/收起
+                        event.stopPropagation(); 
                         editRubric(rubricIndex);
                     };
                     titleElem.appendChild(editButton);
                 }
 
-                // 内容容器（用于存放评分标准）
+                // Content container (used to store scoring criteria)
                 const contentElem = document.createElement('div');
                 contentElem.classList.add('rubric-content');
-                contentElem.style.display = 'none'; // 初始隐藏
+                contentElem.style.display = 'none'; 
 
-                // 填充评分标准
+                // Fill in the scoring criteria
                 if (Array.isArray(rubricData.scoringCriteria) && rubricData.scoringCriteria.length > 0) {
                     rubricData.scoringCriteria.forEach((criteria, criteriaIndex) => {
                         const criteriaItemElem = document.createElement('div');
                         criteriaItemElem.classList.add('rubric-criteria-item');
                         criteriaItemElem.setAttribute('data-points', criteria.points);
 
-                        // 评分标准标题（例如 "2 Points"）
+                        // The title of the grading criteria (e.g. "2 Points")
                         const criteriaItemTitle = document.createElement('div');
                         criteriaItemTitle.textContent = `${criteria.points} Points`;
                         criteriaItemTitle.style.fontWeight = 'bold';
 
-                        // 评分标准描述
+                        // Description of scoring criteria
                         const criteriaItemContent = document.createElement('div');
                         criteriaItemContent.textContent = `${criteria.description}`;
 
-                        // 将标题和描述添加到评分标准项
+                        // Add a title and description to a rubric item
                         criteriaItemElem.appendChild(criteriaItemTitle);
                         criteriaItemElem.appendChild(criteriaItemContent);
 
-                        // 如果是管理员，添加编辑按钮
+                        // If admin, add an edit button
                         if (isAdmin) {
                             const editCriteriaButton = document.createElement('button');
                             editCriteriaButton.textContent = 'Edit';
@@ -1190,14 +1066,14 @@
                             criteriaItemElem.appendChild(editCriteriaButton);
                         }
 
-                        // 将评分标准项添加到内容容器
+                        // Add a rubric item to a content container
                         contentElem.appendChild(criteriaItemElem);
                     });
                 } else {
                     contentElem.textContent = 'No scoring criteria available.';
                 }
 
-                // 点击标题时切换内容显示
+                // Toggle content display when clicking on title
                 titleElem.addEventListener('click', function() {
                     if (contentElem.style.display === 'none') {
                         contentElem.style.display = 'block';
@@ -1208,11 +1084,11 @@
                     }
                 });
 
-                // 将标题和内容添加到 Rubric 元素
+                // Adding a title and content to a Rubric element
                 rubricElem.appendChild(titleElem);
                 rubricElem.appendChild(contentElem);
 
-                // 将 Rubric 元素添加到 Rubrics 列表
+                // Adding a Rubric Element to the Rubrics List
                 rubricsList.appendChild(rubricElem);
             });
         }
@@ -1220,10 +1096,10 @@
         
         
 
-        // 页面加载时
+        // When the page loads
         window.onload = function() {
-            if (isAdmin) {
-                // 获取管理员的 LEED 数据
+            //admin
+            if (isAdmin) { 
                 fetch('/admin/get_leed_data')
                 .then(response => response.json())
                 .then(data => {
@@ -1238,7 +1114,7 @@
                     console.error('Error fetching LEED data:', error);
                 });
             } else {
-                // 获取普通用户的 LEED Rubric 数据
+                // students
                 fetch('/get_leed_rubrics')
                 .then(response => response.json())
                 .then(data => {
@@ -1254,11 +1130,17 @@
                 });
             }
         
-            // 初始化拖拽上传文件功能
+            // Initialize the drag and drop file upload function
             initDragAndDrop();
+            document.getElementById('user-input').addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault(); // 阻止默认行为（如换行）
+                    sendMessage();      // 调用现有的发送消息函数
+                }
+            });
         }
 
-        // 填充 LEED 表格
+        // Filling the LEED form
         function fillLeedForm(leedScores) {
             const form = document.getElementById('leed-form');
             for (let [key, value] of Object.entries(leedScores)) {
@@ -1269,57 +1151,52 @@
             }
         }
 
-        // 返回主界面
         function returnToMain() {
-            // 显示主界面，隐藏 LEED 页面
+            // Show main interface, hide LEED page
             document.getElementById('main-container').style.display = 'flex';
             document.getElementById('leed-page').style.display = 'none';
 
-            // 显示 LEED Rubrics
+            // Show LEED Rubrics
             document.getElementById('leed-rubric-header').style.display = 'flex';
             document.getElementById('leed-rubrics-list').style.display = 'flex';
         }
 
-        // 生成 LEED 表格
+        // Generate LEED tables
         function generateLeedTable() {
             const tbody = document.querySelector('#leed-table tbody');
             tbody.innerHTML = '';
 
             LEED_TABLE_DATA.forEach(section => {
-                // 添加章节标题
+                // Adding a section title
                 const sectionHeader = document.createElement('tr');
                 sectionHeader.classList.add('section-header');
                 const sectionTd = document.createElement('td');
-                sectionTd.colSpan = '5';
+                sectionTd.colSpan = '4';
                 sectionTd.textContent = section.section;
                 sectionHeader.appendChild(sectionTd);
                 tbody.appendChild(sectionHeader);
 
-                // 遍历章节下的项目
+                // Traverse the items under the chapter
                 section.items.forEach(item => {
                     const tr = document.createElement('tr');
-
-                    const tdCategory = document.createElement('td');
-                    tdCategory.textContent = section.section || '';
-                    tr.appendChild(tdCategory);
-
-                    const tdType = document.createElement('td');
-                    tdType.textContent = item.type || '';
-                    tr.appendChild(tdType);
 
                     const tdTitle = document.createElement('td');
                     tdTitle.textContent = item.name || '';
                     tr.appendChild(tdTitle);
+                    
+                    const tdType = document.createElement('td');
+                    tdType.textContent = item.type || '';
+                    tr.appendChild(tdType);
 
                     const tdPoints = document.createElement('td');
                     let pointsDisplay;
 
-                    // 判断是否为必需项
+                    // Determine whether it is required
                     if (item.type && item.type.toLowerCase() === 'prereq') {
                         pointsDisplay = 'Required';
                     } else {
                         pointsDisplay = getMaxPoints(item.points);
-                        // 如果 pointsDisplay 为 '0'，则设置为 'Required'
+                        // If pointsDisplay is '0', set to 'Required'
                         if (pointsDisplay === '0') {
                             pointsDisplay = 'Required';
                         }
@@ -1329,7 +1206,7 @@
                     tr.appendChild(tdPoints);
 
                     const tdEarned = document.createElement('td');
-                    // 修改这里：根据 pointsDisplay 是否为 'Required' 来决定显示 'Required' 或输入框
+                    // Modify here: Determine whether to display 'Required' or the input box based on whether pointsDisplay is 'Required'
                     if (pointsDisplay === 'Required') {
                         tdEarned.textContent = 'Required';
                     } else if (pointsDisplay) {
@@ -1355,7 +1232,7 @@
         
                         tdEarned.appendChild(input);
 
-                        // 如果之前用户已经输入了分数，填充到输入框中
+                        // If the user has entered a score before, fill it into the input box
                         const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
                         if (input && savedLeedScores[item.name] !== undefined) {
                             input.value = savedLeedScores[item.name];
@@ -1370,14 +1247,14 @@
             });
         }  
 
-        // 新增的 getMaxPoints 函数，用于获取最大分数
+        // New getMaxPoints function to get the maximum score
         function getMaxPoints(points) {
             if (typeof points === 'number') {
                 return points.toString();
             } else if (Array.isArray(points)) {
                 return Math.max(...points).toString();
             } else if (typeof points === 'object' && points !== null) {
-                // 提取所有数字点值，展开数组
+                // Extract all numeric point values ​​and expand the array
                 let pointValues = [];
                 Object.values(points).forEach(val => {
                     if (Array.isArray(val)) {
@@ -1386,7 +1263,7 @@
                         pointValues.push(val);
                     }
                 });
-                // 移除重复值
+                // Remove duplicate values
                 pointValues = [...new Set(pointValues)];
                 if (pointValues.length === 0) {
                     return '';
@@ -1396,7 +1273,7 @@
             return '';
         }
 
-        // 提交 LEED 表格
+        // Submit LEED Form
         function submitLeedForm() {
             const form = document.getElementById('leed-form');
             const formData = new FormData(form);
@@ -1418,7 +1295,7 @@
 
             displayScoreMessage(totalScore);
 
-            // 将用户输入的分数发送到后端
+            // Send the user input score to the backend
             fetch('/submit_leed_scores', {
                 method: 'POST',
                 headers: {
@@ -1435,7 +1312,7 @@
 
                     returnToMain();
 
-                    // 加载并显示 LEED Rubrics
+                    // Load and display LEED Rubrics
                     displayLeedRubrics(LEED_RUBRIC);
 
                 } else {
@@ -1448,20 +1325,49 @@
             });
         }
 
-        // 重新提交 LEED 表格
+        // Resubmit LEED Form
         function resubmitLeed() {
-            // 清除 LEED 数据
             sessionStorage.removeItem('leedSubmitted');
             sessionStorage.removeItem('leedScores');
             sessionStorage.removeItem('leedTotalScore');
 
-            // 显示 LEED 表格页面
             showLeedPage();
         }
 
-        // 初始化拖拽上传文件功能
         function initDragAndDrop() {
+
             const chatContainer = document.getElementById('chat-container');
+            const inputContainer = document.querySelector('.input-container');
+            const mainContainer = document.getElementById('main-container');
+
+                // 统一在 mainContainer 上监听拖拽事件
+            [chatContainer, inputContainer, mainContainer].forEach(element => {
+                element.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.add('dragover');
+                });
+
+                element.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.remove('dragover');
+                });
+
+                element.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.remove('dragover');
+
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const fileInput = document.getElementById('file-input');
+                        fileInput.files = files;
+                        sendMessage();
+                    }
+                });
+            });
+            /* const chatContainer = document.getElementById('chat-container');
             const fileInput = document.getElementById('file-input');
 
             chatContainer.addEventListener('dragover', function(e) {
@@ -1486,7 +1392,7 @@
                     fileInput.files = files;
                     sendMessage();
                 }
-            });
+            });*/
         }
 
         function addRubric() {
@@ -1513,40 +1419,40 @@
             const titleElem = rubricElem.querySelector('.rubric-title');
             const titleTextElem = titleElem.querySelector('.title-text');
         
-            // 创建输入框替换标题文本
+            // Create an input box to replace the title text
             const input = document.createElement('input');
             input.type = 'text';
             input.value = rubric.name;
             input.style.width = '100%';
         
-            // 替换标题文本为输入框
+            // Replace title text with input box
             titleElem.replaceChild(input, titleTextElem);
         
-            // 聚焦输入框并选择文本
+            // Focus the input box and select text
             input.focus();
             input.select();
         
-            // 当输入框失去焦点或按下回车键时，保存修改
+            // When the input box loses focus or the Enter key is pressed, the changes are saved
             input.onblur = function() {
                 saveRubricName(rubricIndex, input.value);
             };
         
             input.onkeypress = function(e) {
                 if (e.key === 'Enter') {
-                    e.preventDefault(); // 防止在输入框中换行
+                    e.preventDefault(); 
                     input.blur();
                 }
             };
         }
         
         function saveRubricName(rubricIndex, newName) {
-            // 更新 Rubric 名称
+            // Update Rubric Name
             LEED_RUBRIC[rubricIndex].name = newName;
         
-            // 重新渲染 Rubrics
+            // Re-display Rubrics
             displayLeedRubrics(LEED_RUBRIC);
         
-            // 自动保存修改
+            // Automatically save changes
             saveLeedRubrics();
         }
         
@@ -1575,38 +1481,38 @@
             const criteriaItemElem = rubricElem.querySelectorAll('.rubric-criteria-item')[criteriaIndex];
             const criteriaItemContent = criteriaItemElem.querySelector('div:nth-child(2)'); // 第二个子元素为描述
         
-            // 创建文本区域替换描述文本
+            // Create a text area to replace the description text
             const textarea = document.createElement('textarea');
             textarea.value = criteria.description;
             textarea.style.width = '100%';
         
-            // 替换描述文本为文本区域
+            // Replace description text with text area
             criteriaItemElem.replaceChild(textarea, criteriaItemContent);
         
-            // 聚焦文本区域并选择文本
+            // Focus the text area and select the text
             textarea.focus();
             textarea.select();
         
-            // 当文本区域失去焦点或按下回车键时，保存修改
+            // Save changes when the text area loses focus or the Enter key is pressed
             textarea.onblur = function() {
                 saveScoringCriteriaDescription(rubricIndex, criteriaIndex, textarea.value);
             };
         
             textarea.onkeypress = function(e) {
                 if (e.key === 'Enter') {
-                    e.preventDefault(); // 防止在文本区域中换行
+                    e.preventDefault(); 
                     textarea.blur();
                 }
             };
         }
         function saveScoringCriteriaDescription(rubricIndex, criteriaIndex, newDescription) {
-            // 更新 Scoring Criteria 描述
+            // Update Scoring Criteria description
             LEED_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex].description = newDescription;
         
-            // 重新渲染 Rubrics
+            // Re-display Rubrics
             displayLeedRubrics(LEED_RUBRIC);
         
-            // 自动保存修改
+            // Automatically save changes
             saveLeedRubrics();
         }
         
@@ -1622,7 +1528,6 @@
             .then(data => {
                 if (data.success) {
                     console.log('LEED rubrics saved successfully.');
-                    // 您可以在此添加提示信息，告知管理员修改已保存
                 } else {
                     alert('Failed to save LEED rubrics: ' + data.error);
                 }
@@ -1633,15 +1538,15 @@
         }
 
         function showLeedPage() {
-            // 隐藏主界面，显示 LEED 页面
+            // Hide the main interface and display the LEED page
             document.getElementById('main-container').style.display = 'none';
             document.getElementById('leed-page').style.display = 'flex';
         
-            // 隐藏 LEED Rubrics
+            // Hide LEED Rubrics
             document.getElementById('leed-rubric-header').style.display = 'none';
             document.getElementById('leed-rubrics-list').style.display = 'none';
         
-            // 生成 LEED 表格
+            // Generate LEED tables
             generateLeedTable();
 
             // Insert the prompt
@@ -1658,10 +1563,10 @@
                 leedContent.insertBefore(promptDiv, leedContent.querySelector('#leed-table-container'));
             }
         }
-        // 加载 LEED 数据
+        // Loading LEED data
         const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
 
-        // 新的 LEED Rubric 数据
+        // New LEED Rubric Data
         const LEED_RUBRIC = [
             {
                 name: 'LEED Certification Achievement',
