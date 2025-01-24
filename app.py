@@ -5,11 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from datetime import datetime, timezone  # 导入 timezone
+from datetime import datetime, timezone  # Import timezone
 import os
 import json
 from functools import lru_cache
-import logging  # 确保导入 logging
+import logging  # Ensure logging is imported
 
 # Import feedback function
 from feedback import get_feedback
@@ -35,7 +35,7 @@ migrate = Migrate(app, db)
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-# 设置日志级别和格式
+# Set logging level and format
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s %(message)s',
@@ -102,9 +102,9 @@ def generate_leed_table_data():
             for credit in credits:
                 item = {
                     'category': category_name,
-                    'type': credit.get('type', ''),  # 修正为 'type'
-                    'name': credit.get('name', ''),  # 修正为 'name'
-                    'points': credit.get('points', None)  # 修正为 'points'
+                    'type': credit.get('type', ''),  # Changed to 'type'
+                    'name': credit.get('name', ''),  # Changed to 'name'
+                    'points': credit.get('points', None)  # Changed to 'points'
                 }
                 section['items'].append(item)
             table_data.append(section)
@@ -188,7 +188,7 @@ def index():
         return redirect(url_for('login'))
 
     # Get LEED table data
-    leed_table_data = generate_leed_table_data()  # 使用函数生成数据
+    leed_table_data = generate_leed_table_data()  # Use function to generate data
     user_rubrics = Rubric.query.filter_by(user_id=user_id).all()
     rubrics = [rubric.text for rubric in user_rubrics]
 
@@ -292,7 +292,7 @@ def calculate_total_points(points):
         return points
     elif isinstance(points, str):
         if points.lower() == 'required':
-            return 0  # 或者根据需要设置默认值
+            return 0  # Or set a default value as needed
         try:
             return float(points)
         except ValueError:
@@ -310,7 +310,7 @@ def get_feedback_route():
 
     prompt_time = datetime.now(timezone.utc)
 
-    # 检查是否上传了文件
+    # Check if a file was uploaded
     if 'file' in request.files and request.files['file'].filename != '':
         file = request.files['file']
         filename = secure_filename(file.filename)
@@ -323,22 +323,22 @@ def get_feedback_route():
         else:
             return jsonify({'success': False, 'error': 'Invalid file type. Only PDF and DOCX files are allowed.'}), 400
     else:
-        # 未上传文件，获取用户输入文本
+        # No file uploaded, get user input text
         user_input = request.form.get('message')
         file_path = None
         if not user_input:
             return jsonify({'success': False, 'error': 'No user input provided.'}), 400
         prompt_content = user_input
 
-    # 初始化 leed_scores
+    # Initialize leed_scores
     leed_scores = None
 
-    # 检查是否为 LEED 模式
+    # Check if in LEED mode
     leed_scores_json = request.form.get('leed_scores')
     if leed_scores_json:
         try:
             leed_scores = json.loads(leed_scores_json)
-            # 计算总分
+            # Calculate total score
             total_score = sum(
                 float(score) for score in leed_scores.values()
                 if isinstance(score, (int, float, str)) and str(score).replace('.', '', 1).isdigit()
@@ -348,20 +348,20 @@ def get_feedback_route():
             logging.error("Invalid LEED scores provided.")
             return jsonify({'success': False, 'error': 'Invalid LEED scores provided.'}), 400
 
-        # 获取缓存的 LEED 数据
+        # Get cached LEED data
         try:
             leed_data = get_leed_data()
         except Exception as e:
             logging.exception("Error loading LEED data:")
             return jsonify({'success': False, 'error': f'Error loading LEED data: {e}'}), 500
 
-        # 访问 'LEED_Credits_Collection' 键
+        # Access 'LEED_Credits_Collection' key
         leed_credits_collection = leed_data.get('LEED_Credits_Collection', {})
         if not leed_credits_collection:
             logging.error('LEED_Credits_Collection not found in LEED data.')
             return jsonify({'success': False, 'error': 'LEED_Credits_Collection not found in LEED data.'}), 500
 
-        # 构建标题到数据的映射
+        # Build a mapping from titles to data
         def normalize_title(title):
             return title.strip().lower()
 
@@ -377,18 +377,18 @@ def get_feedback_route():
         selected_rubrics = []
         for item_title, score in leed_scores.items():
             if item_title == 'total_score':
-                continue  # 跳过 total_score
+                continue  # Skip total_score
             try:
                 numeric_score = float(score)
             except (ValueError, TypeError):
                 logging.warning(f'Invalid score for "{item_title}": {score}. Skipping.')
-                continue  # 跳过无效分数
+                continue  # Skip invalid scores
 
             if numeric_score > 0:
                 normalized_title = normalize_title(item_title)
                 item_data = item_data_mapping.get(normalized_title)
                 if item_data:
-                    # 提取评分标准或其他相关数据
+                    # Extract scoring criteria or other relevant data
                     scoring_criteria = item_data.get('scoring_criteria', [])
                     selected_rubrics.append({
                         'name': item_data.get('name', ''),
@@ -396,14 +396,14 @@ def get_feedback_route():
                     })
                 else:
                     logging.warning(f'Item data not found for: {item_title}')
-        # 不再构建 rubrics_input 字符串，而是直接传递 selected_rubrics 列表
+        # No longer build rubrics_input string, directly pass the selected_rubrics list
     else:
-        # 处理直接提供的 rubrics
+        # Handle directly provided rubrics
         rubrics_input = request.form.get('rubrics')
         if not rubrics_input:
             return jsonify({'success': False, 'error': 'No rubrics provided.'}), 400
 
-    # 加载通用写作 Rubric
+    # Load general writing Rubric
     try:
         writing_rubric = load_general_rubric()
         logging.debug(f"Writing Rubric: {writing_rubric}")
@@ -413,12 +413,12 @@ def get_feedback_route():
         logging.exception("Error loading general rubric:")
         return jsonify({'success': False, 'error': f'Error loading general rubric: {e}'}), 500
 
-    # 调用 get_feedback 函数
+    # Call get_feedback function
     try:
         feedback_text, scores, full_feedback = get_feedback(
             user_input=user_input,
             file_path=file_path,
-            rubrics=writing_rubric,  # 传递列表而非字符串
+            rubrics=writing_rubric,  # Pass list instead of string
             leed_scores=leed_scores
         )
     except Exception as e:
@@ -427,14 +427,14 @@ def get_feedback_route():
 
     response_time = datetime.now(timezone.utc)
 
-    # 处理上传的文件
+    # Handle uploaded file
     if file_path:
         try:
             os.remove(file_path)
         except Exception as e:
             logging.warning(f"Failed to remove uploaded file: {file_path}. Error: {e}")
 
-    # 保存聊天记录
+    # Save chat history
     try:
         chat_history = ChatHistory(
             user_id=user_id,
@@ -444,13 +444,13 @@ def get_feedback_route():
             response_content=feedback_text
         )
         db.session.add(chat_history)
-        # 删除当前用户的旧 Rubric 记录
+        # Delete the user's old Rubric records
         Rubric.query.filter_by(user_id=user_id).delete()
 
-        # 保存新的 rubric 和分数
+        # Save new rubrics and scores
         for rubric_title, score in scores.items():
             if rubric_title == 'total_score':
-                continue  # 跳过 total_score
+                continue  # Skip total_score
             new_rubric = Rubric(
                 text=rubric_title,
                 score=score,
@@ -570,8 +570,8 @@ def admin_save_leed_data():
     if not leed_data:
         return jsonify({'success': False, 'error': 'No LEED data provided.'})
 
-    # Saving LEED data to a file
-    json_path = 'leed_data.json'  # 确保与 get_leed_data() 的路径一致
+    # Save LEED data to a file
+    json_path = 'leed_data.json'  
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(leed_data, f, ensure_ascii=False, indent=4)
 
@@ -582,8 +582,8 @@ def admin_save_leed_data():
 
 def load_general_rubric():
     """
-    加载通用的写作 Rubric。
-    确保 'cleaned_leed_rubric.json' 文件存在于同一目录或提供正确的路径。
+    Load the general writing Rubric.
+    Ensure the 'cleaned_leed_rubric.json' file exists in the same directory or provide the correct path.
     """
     rubric_path = os.path.join(os.path.dirname(__file__), "cleaned_leed_rubric.json")
     if not os.path.exists(rubric_path):
