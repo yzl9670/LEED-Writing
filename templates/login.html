@@ -58,7 +58,7 @@
             text-decoration: none;
         }
 
-        /* 自定义弹窗样式 */
+        /* Custom pop-up window style */
         .dialog-overlay {
             position: fixed;
             top: 0;
@@ -111,7 +111,7 @@
 <div class="form-container">
     <h2>Login</h2>
 
-    <!-- JavaScript 显示提示信息 -->
+    <!-- JavaScript Display prompt information -->
     <script>
         function getParameterByName(name) {
             const url = window.location.href;
@@ -139,7 +139,7 @@
     <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
 </div>
 
-<!-- 自定义弹窗 -->
+<!-- Custom Dialog window -->
 <div id="dialog-overlay" class="dialog-overlay">
     <div class="dialog-box">
         <h3 id="dialog-message"></h3>
@@ -148,7 +148,7 @@
 </div>
 
 <script>
-    // 显示自定义弹窗
+    // Display custom Dialog
     function showAlert(message, isError = false) {
         const dialogOverlay = document.getElementById('dialog-overlay');
         const dialogMessage = document.getElementById('dialog-message');
@@ -164,12 +164,12 @@
         dialogOverlay.style.display = 'flex';
     }
 
-    // 关闭弹窗
+    // Close Dialog
     function closeDialog() {
         document.getElementById('dialog-overlay').style.display = 'none';
     }
 
-    // 页面加载时检查是否有闪存消息
+    // Check if there is a flash message when the page loads
     document.addEventListener('DOMContentLoaded', function() {
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
