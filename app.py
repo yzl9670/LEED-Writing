@@ -26,7 +26,7 @@ ALLOWED_EXTENSIONS = {'pdf', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Configure maximum upload size (optional)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
+app.config['MAX_CONTENT_LENGTH'] = 80 * 1024 * 1024  # 80 MB
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
