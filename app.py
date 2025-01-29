@@ -17,7 +17,7 @@ from feedback import get_feedback, process_leed_items, collection
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'ssqlite:///instance/users.db'  # Adjust as needed
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/users.db'  # Adjust as needed
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Configure file uploads
