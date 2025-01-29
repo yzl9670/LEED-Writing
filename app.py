@@ -12,8 +12,8 @@ from functools import lru_cache
 import logging  # Ensure logging is imported
 
 # Import feedback function
-from feedback import get_feedback
-from leed_rubrics import LEED_TABLE_DATA
+from feedback import get_feedback, process_leed_items, collection
+#from leed_rubrics import LEED_TABLE_DATA
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
@@ -80,9 +80,11 @@ class ChatHistory(db.Model):
 # Cache LEED data
 @lru_cache(maxsize=1)
 def get_leed_data():
-    json_path = 'leed_data.json'  # Replace with the actual path of your LEED JSON file
+    json_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'leed_credits.json')
+    logging.debug(f"Reading LEED data from {json_path}")
     with open(json_path, 'r', encoding='utf-8') as f:
         leed_data = json.load(f)
+    logging.debug(f"LEED data loaded: {leed_data}")
     return leed_data
 
 # Generate LEED table data for rendering in the frontend
@@ -92,30 +94,46 @@ def generate_leed_table_data():
     table_data = []
 
     credits_collection = leed_data.get('LEED_Credits_Collection', {})
-    for rating_system, categories in credits_collection.items():
-        for category_name, category_data in categories.items():
-            section = {
-                'section': f"{category_name} ({category_data.get('total_points', 0)} Points)",
-                'items': []
+    logging.debug(f"credits_collection type: {type(credits_collection)}")
+    logging.debug(f"credits_collection content: {credits_collection}")
+
+    if not isinstance(credits_collection, dict):
+        logging.error(f"Expected 'LEED_Credits_Collection' to be dict, got {type(credits_collection)}.")
+        return table_data  # 返回空表格或根据需要处理
+
+    for category_name, category_data in credits_collection.items():
+        logging.debug(f"Processing category_name: {category_name}, type: {type(category_data)}")
+        if not isinstance(category_data, dict):
+            logging.error(f"Expected 'category_data' to be dict for category '{category_name}', got {type(category_data)}. Skipping.")
+            continue  # 跳过无效结构
+
+        section = {
+            'section': f"{category_name} ({category_data.get('total_points', 0)} Points)",
+            'items': []
+        }
+        credits = category_data.get('Credits', [])
+        if not isinstance(credits, list):
+            logging.error(f"Expected 'Credits' to be list for category '{category_name}', got {type(credits)}.")
+            continue  # 跳过无效结构
+
+        for credit in credits:
+            if not isinstance(credit, dict):
+                logging.error(f"Expected each 'credit' to be dict in category '{category_name}', got {type(credit)}. Skipping.")
+                continue  # 跳过无效结构
+
+            item = {
+                'category': category_name,
+                'type': credit.get('type', ''),
+                'name': credit.get('name', ''),
+                'points': credit.get('points', None)
             }
-            credits = category_data.get('Credits', [])
-            for credit in credits:
-                item = {
-                    'category': category_name,
-                    'type': credit.get('type', ''),  # Changed to 'type'
-                    'name': credit.get('name', ''),  # Changed to 'name'
-                    'points': credit.get('points', None)  # Changed to 'points'
-                }
-                section['items'].append(item)
-            table_data.append(section)
+            section['items'].append(item)
+        table_data.append(section)
     return table_data
 
 # Registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # If user is already logged in, redirect to main page
-    if 'user_id' in session:
-        return redirect(url_for('index'))
 
     if request.method == 'POST':
         username = request.form['username']
@@ -137,6 +155,8 @@ def register():
         db.session.add(user)
         db.session.commit()
 
+        session.clear()
+
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('login'))
 
@@ -146,7 +166,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # If user is already logged in, redirect to main page
-    if 'user_id' in session:
+    if 'user_id' in session and User.query.get(session['user_id']):
         return redirect(url_for('index'))
 
     if request.method == 'POST':
@@ -178,7 +198,7 @@ def logout():
 @app.route('/')
 def index():
     user_id = session.get('user_id')
-    if not user_id:
+    if not user_id or not User.query.get(user_id):
         flash('Please log in first.', 'danger')
         return redirect(url_for('login'))
 
@@ -301,6 +321,7 @@ def calculate_total_points(points):
         return 0
 
 # Get feedback route
+
 @app.route('/get_feedback', methods=['POST'])
 def get_feedback_route():
     user_id = session.get('user_id')
@@ -309,132 +330,88 @@ def get_feedback_route():
         return jsonify({'success': False, 'error': 'User not logged in.'}), 401
 
     prompt_time = datetime.now(timezone.utc)
+    logging.debug(f"User ID: {user_id}, Prompt Time: {prompt_time}")
 
-    # Check if a file was uploaded
-    if 'file' in request.files and request.files['file'].filename != '':
-        file = request.files['file']
-        filename = secure_filename(file.filename)
+    # 1. 检查是否有文件上传
+    file_path = None
+    uploaded_file = request.files.get('file')
+    if uploaded_file and uploaded_file.filename:
+        filename = secure_filename(uploaded_file.filename)
+        logging.debug(f"Uploaded file name: {filename}")
+        # 验证文件后缀
         if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            uploaded_file.save(file_path)
+            logging.debug(f"Saved uploaded file to: {file_path}")
             user_input = None
-            file_path = filepath
             prompt_content = f"Uploaded file: {filename}"
         else:
-            return jsonify({'success': False, 'error': 'Invalid file type. Only PDF and DOCX files are allowed.'}), 400
+            logging.warning(f"Invalid file type: {filename}")
+            return jsonify({
+                'success': False, 
+                'error': 'Invalid file type. Only PDF and DOCX files are allowed.'
+            }), 400
     else:
-        # No file uploaded, get user input text
-        user_input = request.form.get('message')
-        file_path = None
+        # 2. 若无文件，则读取 'message'
+        user_input = request.form.get('message', '').strip()
+        logging.debug(f"User input message: {user_input}")
         if not user_input:
+            logging.warning('No user input provided.')
             return jsonify({'success': False, 'error': 'No user input provided.'}), 400
         prompt_content = user_input
 
-    # Initialize leed_scores
+    # 3. 获取 LEED 分数
     leed_scores = None
-
-    # Check if in LEED mode
     leed_scores_json = request.form.get('leed_scores')
     if leed_scores_json:
         try:
             leed_scores = json.loads(leed_scores_json)
-            # Calculate total score
+            logging.debug(f"LEED scores: {leed_scores}")
+            # 计算总分 (可选)
             total_score = sum(
-                float(score) for score in leed_scores.values()
-                if isinstance(score, (int, float, str)) and str(score).replace('.', '', 1).isdigit()
+                float(score) for key, score in leed_scores.items()
+                if key != 'total_score' and isinstance(score, (int, float, str)) and str(score).replace('.', '', 1).isdigit()
             )
             leed_scores['total_score'] = total_score
+            logging.debug(f"Total LEED score: {total_score}")
         except (json.JSONDecodeError, ValueError) as e:
-            logging.error("Invalid LEED scores provided.")
+            logging.error("Invalid LEED scores provided.", exc_info=True)
             return jsonify({'success': False, 'error': 'Invalid LEED scores provided.'}), 400
 
-        # Get cached LEED data
-        try:
-            leed_data = get_leed_data()
-        except Exception as e:
-            logging.exception("Error loading LEED data:")
-            return jsonify({'success': False, 'error': f'Error loading LEED data: {e}'}), 500
+    # 4. 获取所有 LEED 项目
+    leed_table_data = generate_leed_table_data()  # Use function to generate data
+    user_rubrics = Rubric.query.filter_by(user_id=user_id).all()
+    rubrics = [rubric.text for rubric in user_rubrics]
 
-        # Access 'LEED_Credits_Collection' key
-        leed_credits_collection = leed_data.get('LEED_Credits_Collection', {})
-        if not leed_credits_collection:
-            logging.error('LEED_Credits_Collection not found in LEED data.')
-            return jsonify({'success': False, 'error': 'LEED_Credits_Collection not found in LEED data.'}), 500
+    # 构建项目列表
+    leed_items = []
+    for category in leed_table_data:
+        for item in category['items']:
+            leed_items.append({
+                'name': item['name'],
+                'points': item.get('points', 0)
+            })
 
-        # Build a mapping from titles to data
-        def normalize_title(title):
-            return title.strip().lower()
-
-        item_data_mapping = {}
-        for rating_system, categories in leed_credits_collection.items():
-            for category_name, category_data in categories.items():
-                credits = category_data.get("Credits", [])
-                for item in credits:
-                    item_title = item.get('name', '')
-                    normalized_title = normalize_title(item_title)
-                    item_data_mapping[normalized_title] = item
-
-        selected_rubrics = []
-        for item_title, score in leed_scores.items():
-            if item_title == 'total_score':
-                continue  # Skip total_score
-            try:
-                numeric_score = float(score)
-            except (ValueError, TypeError):
-                logging.warning(f'Invalid score for "{item_title}": {score}. Skipping.')
-                continue  # Skip invalid scores
-
-            if numeric_score > 0:
-                normalized_title = normalize_title(item_title)
-                item_data = item_data_mapping.get(normalized_title)
-                if item_data:
-                    # Extract scoring criteria or other relevant data
-                    scoring_criteria = item_data.get('scoring_criteria', [])
-                    selected_rubrics.append({
-                        'name': item_data.get('name', ''),
-                        'scoringCriteria': scoring_criteria
-                    })
-                else:
-                    logging.warning(f'Item data not found for: {item_title}')
-        # No longer build rubrics_input string, directly pass the selected_rubrics list
-    else:
-        # Handle directly provided rubrics
-        rubrics_input = request.form.get('rubrics')
-        if not rubrics_input:
-            return jsonify({'success': False, 'error': 'No rubrics provided.'}), 400
-
-    # Load general writing Rubric
+    # 5. 调用 get_feedback (RAG + item-by-item)
     try:
-        writing_rubric = load_general_rubric()
-        logging.debug(f"Writing Rubric: {writing_rubric}")
-        if not isinstance(writing_rubric, list):
-            raise ValueError("General rubric should be a list of dictionaries.")
+        feedback_text = process_leed_items(leed_items, collection)
+        logging.debug(f"Feedback Text: {feedback_text}")
     except Exception as e:
-        logging.exception("Error loading general rubric:")
-        return jsonify({'success': False, 'error': f'Error loading general rubric: {e}'}), 500
-
-    # Call get_feedback function
-    try:
-        feedback_text, scores, full_feedback = get_feedback(
-            user_input=user_input,
-            file_path=file_path,
-            rubrics=writing_rubric,  # Pass list instead of string
-            leed_scores=leed_scores
-        )
-    except Exception as e:
-        logging.exception("Error in get_feedback_route:")
+        logging.exception("Error in get_feedback:")
         return jsonify({'success': False, 'error': str(e)}), 500
 
     response_time = datetime.now(timezone.utc)
+    logging.debug(f"Response Time: {response_time}")
 
-    # Handle uploaded file
+    # 如果上传了文件，用完后清理
     if file_path:
         try:
             os.remove(file_path)
+            logging.debug(f"Removed uploaded file: {file_path}")
         except Exception as e:
             logging.warning(f"Failed to remove uploaded file: {file_path}. Error: {e}")
 
-    # Save chat history
+    # 6. 将对话记录保存到数据库
     try:
         chat_history = ChatHistory(
             user_id=user_id,
@@ -444,27 +421,42 @@ def get_feedback_route():
             response_content=feedback_text
         )
         db.session.add(chat_history)
-        # Delete the user's old Rubric records
-        Rubric.query.filter_by(user_id=user_id).delete()
+        logging.debug(f"Added ChatHistory: {chat_history}")
 
-        # Save new rubrics and scores
-        for rubric_title, score in scores.items():
-            if rubric_title == 'total_score':
-                continue  # Skip total_score
-            new_rubric = Rubric(
-                text=rubric_title,
-                score=score,
-                user_id=user_id
-            )
-            db.session.add(new_rubric)
+        # 删掉之前记录的 Rubric
+        Rubric.query.filter_by(user_id=user_id).delete()
+        logging.debug(f"Deleted previous rubrics for user_id: {user_id}")
+
+        # 保存新的 Rubric
+        if leed_scores:
+            for k, v in leed_scores.items():
+                if k == 'total_score':
+                    continue
+                try:
+                    new_rubric = Rubric(
+                        text=k,
+                        score=float(v),
+                        user_id=user_id
+                    )
+                    db.session.add(new_rubric)
+                    logging.debug(f"Added Rubric: {new_rubric}")
+                except ValueError as ve:
+                    logging.error(f"Invalid score value for rubric '{k}': {v}", exc_info=True)
+                    continue
 
         db.session.commit()
+        logging.debug("Committed chat history and rubrics to the database.")
     except Exception as e:
         logging.exception("Error saving chat history or rubrics:")
-        return jsonify({'success': False, 'error': f'Error saving data: {e}'}), 500
+        return jsonify({'success': False, 'error': f"Error saving data: {e}"}), 500
 
-    logging.debug("Scores being returned (backend): %s", scores)
-    return jsonify({'success': True, 'feedback': feedback_text, 'scores': scores, 'chat_history_id': chat_history.id})
+    # 7. 返回结果给前端
+    return jsonify({
+        'success': True,
+        'feedback': feedback_text,
+        'scores': leed_scores,
+        'chat_history_id': chat_history.id
+    })
 
 # Submit user feedback route
 @app.route('/submit_feedback', methods=['POST'])
@@ -569,13 +561,27 @@ def admin_save_leed_data():
 
     if not leed_data:
         return jsonify({'success': False, 'error': 'No LEED data provided.'})
+    
+    # 检查 leed_data 是否符合预期结构
+    if not isinstance(leed_data, dict):
+        return jsonify({'success': False, 'error': 'LEED data must be a dictionary.'})
 
-    # Save LEED data to a file
-    json_path = 'leed_data.json'  
-    with open(json_path, 'w', encoding='utf-8') as f:
-        json.dump(leed_data, f, ensure_ascii=False, indent=4)
+    if 'LEED_Credits_Collection' not in leed_data:
+        return jsonify({'success': False, 'error': 'LEED data must contain "LEED_Credits_Collection".'})
 
-    # Clear the cache so that you can get the latest data next time
+    if not isinstance(leed_data['LEED_Credits_Collection'], dict):
+        return jsonify({'success': False, 'error': '"LEED_Credits_Collection" must be a dictionary.'})
+
+        # 保存 LEED 数据到 'leed_credits.json'
+    json_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'leed_credits.json')  
+    try:
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(leed_data, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        logging.exception("Failed to save LEED data:")
+        return jsonify({'success': False, 'error': f"Failed to save LEED data: {e}"}), 500
+
+    # 清除缓存
     get_leed_data.cache_clear()
 
     return jsonify({'success': True})
@@ -597,7 +603,44 @@ def load_general_rubric():
             return rubric_data
         except json.JSONDecodeError as e:
             raise ValueError(f"Error parsing rubric JSON: {e}")
+        
+
+# 临时存储 Rubric 数据
+rubric_storage = None
+
+# 接收前端传来的 WRITING_RUBRIC 数据
+@app.route('/save_WRITING_RUBRICs', methods=['POST'])
+def save_writing_rubrics():
+    global rubric_storage  # 使用全局变量存储
+    try:
+        # 从请求中获取 JSON 数据
+        rubric_data = request.get_json()
+        if not rubric_data:
+            return jsonify({"error": "No data provided"}), 400
+
+        rubric_storage = rubric_data  # 保存到全局变量中
+        return jsonify({"message": "Rubric saved successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+# 获取当前存储的 Rubric 数据
+@app.route('/get_WRITING_RUBRICs', methods=['GET'])
+def get_writing_rubrics():
+    LEED_RUBRIC = [
+        {
+            "name": "LEED Certification Achievement",
+            "scoringCriteria": [
+                {"points": 3, "description": "This is a test rubric."}
+            ]
+        }
+    ]
+    return jsonify(LEED_RUBRIC)
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logging.exception("Unhandled exception occurred:")
+    return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Get the port from the environment variable, default to 5000
+    port = int(os.environ.get("PORT", 5002))  # Get the port from the environment variable, default to 5000
     app.run(host='0.0.0.0', port=port, debug=True)  # Host must be 0.0.0.0 to work on Heroku

@@ -1104,8 +1104,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        LEED_RUBRIC = data.leed_data;
-                        displayLeedRubrics(LEED_RUBRIC);
+                        WRITING_RUBRIC = data.leed_data;
+                        displayLeedRubrics(WRITING_RUBRIC);
                     } else {
                         console.error('Failed to load LEED data:', data.error);
                     }
@@ -1115,12 +1115,12 @@
                 });
             } else {
                 // students
-                fetch('/get_leed_rubrics')
+                fetch('/get_WRITING_RUBRICs')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        LEED_RUBRIC = data.rubrics;
-                        displayLeedRubrics(LEED_RUBRIC);
+                        WRITING_RUBRIC = data.rubrics;
+                        displayLeedRubrics(WRITING_RUBRIC);
                     } else {
                         console.error('Failed to load LEED rubrics:', data.error);
                     }
@@ -1313,7 +1313,7 @@
                     returnToMain();
 
                     // Load and display LEED Rubrics
-                    displayLeedRubrics(LEED_RUBRIC);
+                    displayLeedRubrics(WRITING_RUBRIC);
 
                 } else {
                     alert('Failed to submit LEED scores: ' + data.error);
@@ -1398,23 +1398,23 @@
         function addRubric() {
             const rubricName = prompt('Enter new rubric name:');
             if (rubricName) {
-                LEED_RUBRIC.push({
+                WRITING_RUBRIC.push({
                     name: rubricName,
                     scoringCriteria: []
                 });
-                displayLeedRubrics(LEED_RUBRIC);
+                displayLeedRubrics(WRITING_RUBRIC);
             }
         }
         
         function removeRubric(rubricIndex) {
             if (confirm('Are you sure you want to delete this rubric?')) {
-                LEED_RUBRIC.splice(rubricIndex, 1);
-                displayLeedRubrics(LEED_RUBRIC);
+                WRITING_RUBRIC.splice(rubricIndex, 1);
+                displayLeedRubrics(WRITING_RUBRIC);
             }
         }
         
         function editRubric(rubricIndex) {
-            const rubric = LEED_RUBRIC[rubricIndex];
+            const rubric = WRITING_RUBRIC[rubricIndex];
             const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
             const titleElem = rubricElem.querySelector('.rubric-title');
             const titleTextElem = titleElem.querySelector('.title-text');
@@ -1447,10 +1447,10 @@
         
         function saveRubricName(rubricIndex, newName) {
             // Update Rubric Name
-            LEED_RUBRIC[rubricIndex].name = newName;
+            WRITING_RUBRIC[rubricIndex].name = newName;
         
             // Re-display Rubrics
-            displayLeedRubrics(LEED_RUBRIC);
+            displayLeedRubrics(WRITING_RUBRIC);
         
             // Automatically save changes
             saveLeedRubrics();
@@ -1460,23 +1460,23 @@
             const points = prompt('Enter points for the scoring criteria:');
             const description = prompt('Enter description for the scoring criteria:');
             if (points && description) {
-                LEED_RUBRIC[rubricIndex].scoringCriteria.push({
+                WRITING_RUBRIC[rubricIndex].scoringCriteria.push({
                     points: parseFloat(points),
                     description: description
                 });
-                displayLeedRubrics(LEED_RUBRIC);
+                displayLeedRubrics(WRITING_RUBRIC);
             }
         }
         
         function removeScoringCriteria(rubricIndex, criteriaIndex) {
             if (confirm('Are you sure you want to delete this scoring criteria?')) {
-                LEED_RUBRIC[rubricIndex].scoringCriteria.splice(criteriaIndex, 1);
-                displayLeedRubrics(LEED_RUBRIC);
+                WRITING_RUBRIC[rubricIndex].scoringCriteria.splice(criteriaIndex, 1);
+                displayLeedRubrics(WRITING_RUBRIC);
             }
         }
         
         function editScoringCriteria(rubricIndex, criteriaIndex) {
-            const criteria = LEED_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex];
+            const criteria = WRITING_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex];
             const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
             const criteriaItemElem = rubricElem.querySelectorAll('.rubric-criteria-item')[criteriaIndex];
             const criteriaItemContent = criteriaItemElem.querySelector('div:nth-child(2)'); // 第二个子元素为描述
@@ -1507,10 +1507,10 @@
         }
         function saveScoringCriteriaDescription(rubricIndex, criteriaIndex, newDescription) {
             // Update Scoring Criteria description
-            LEED_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex].description = newDescription;
+            WRITING_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex].description = newDescription;
         
             // Re-display Rubrics
-            displayLeedRubrics(LEED_RUBRIC);
+            displayLeedRubrics(WRITING_RUBRIC);
         
             // Automatically save changes
             saveLeedRubrics();
@@ -1522,7 +1522,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ leed_data: LEED_RUBRIC })
+                body: JSON.stringify({ leed_data: WRITING_RUBRIC })
             })
             .then(response => response.json())
             .then(data => {
@@ -1567,7 +1567,7 @@
         const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
 
         // New LEED Rubric Data
-        const LEED_RUBRIC = [
+        const WRITING_RUBRIC = [
             {
                 name: 'LEED Certification Achievement',
                 scoringCriteria: [
