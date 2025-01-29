@@ -20,14 +20,14 @@ logging.basicConfig(
     ]
 )
 
-# 设置 OpenAI API 密钥
-openai.api_key = 'API_KEY'
+
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 if not openai.api_key:
     logging.error("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
     raise EnvironmentError("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
 
-# 初始化 ChromaDB，使用 PersistentClient 并指定持久化目录，同时禁用遥测
+# Initialize ChromaDB, use PersistentClient and specify the persistence directory, and disable telemetry
 persist_dir = "./temp_chroma"
 if not os.path.exists(persist_dir):
     os.makedirs(persist_dir)
@@ -35,13 +35,13 @@ if not os.path.exists(persist_dir):
 
 chroma_client = chromadb.PersistentClient(
     path=persist_dir,
-    settings=Settings(anonymized_telemetry=False)  # 禁用遥测
+    settings=Settings(anonymized_telemetry=False)  # Disable Telemetry
 )
 collection = chroma_client.get_or_create_collection(name="student_texts")
 
 def chunk_text(full_text, chunk_size=400):
     """
-    分块文本，用于后续嵌入生成和检索
+    Chunking text for subsequent embedding generation and retrieval
     """
     logging.debug("Start chunking text.")
     if not full_text:
@@ -52,14 +52,14 @@ def chunk_text(full_text, chunk_size=400):
     while start < len(full_text):
         end = start + chunk_size
         piece = full_text[start:end].strip()
-        if piece:  # 确保每块非空
+        if piece:  # Make sure each piece is not empty
             lines.append(piece)
         start = end
     logging.debug(f"Total chunks created: {len(lines)}")
     return lines
 
 def get_embeddings(texts):
-    """调用 OpenAI 批量嵌入生成接口"""
+    """Call OpenAI batch embedding generation interface"""
     try:
         resp = openai.Embedding.create(
             model="text-embedding-ada-002",
@@ -72,7 +72,7 @@ def get_embeddings(texts):
         return [None] * len(texts)
 
 def get_embedding(text):
-    """调用 OpenAI 嵌入生成接口"""
+    """Calling OpenAI embedding generation interface"""
     try:
         resp = openai.Embedding.create(
             model="text-embedding-ada-002",
@@ -86,7 +86,7 @@ def get_embedding(text):
 
 def process_leed_item(item_name, collection):
     """
-    处理单个 LEED 项目，生成反馈
+    Work on a single LEED project to generate feedback
     """
     logging.debug(f"Processing item: {item_name}")
     item_query = f"LEED item: {item_name}. Check compliance or missing info."
@@ -99,7 +99,7 @@ def process_leed_item(item_name, collection):
             query_embeddings=[item_emb],
             n_results=3,
         )
-        relevant_docs = results.get("documents", [[]])[0]  # 检查返回值是否为空
+        relevant_docs = results.get("documents", [[]])[0]  # Check if the return value is empty
 
         if not relevant_docs:
             return f"No relevant documents found for item: {item_name}"
@@ -125,7 +125,7 @@ def process_leed_item(item_name, collection):
                 {"role": "user", "content": prompt}
             ],
             temperature=0.2,
-            max_tokens=150  # 根据需要调整
+            max_tokens=150  # Adjust as needed
         )
         return gpt_resp["choices"][0]["message"]["content"].strip()
     except Exception as e:
@@ -134,7 +134,7 @@ def process_leed_item(item_name, collection):
 
 def process_leed_items(items, collection):
     """
-    处理多个 LEED 项目，生成详细反馈
+    Work on multiple LEED projects, generating detailed feedback
     """
     logging.debug("Processing multiple LEED items.")
     detailed_feedback = []
@@ -145,7 +145,7 @@ def process_leed_items(items, collection):
         if feedback != "This item is well addressed.":
             detailed_feedback.append(f"**{item_name}**:\n{feedback}")
 
-    # 合并详细反馈
+    # Merge detailed feedback
     if detailed_feedback:
         detailed_feedback_str = "\n\n".join(detailed_feedback)
         final_feedback = f"=== Detailed LEED Item Feedback ===\n{detailed_feedback_str}"
@@ -158,10 +158,10 @@ def process_leed_items(items, collection):
 
 def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None):
     """
-    核心功能：从用户输入或文件中获取文本 -> 分类 -> 分析 LEED 项目 -> 返回反馈
+    Core functionality: Get text from user input or file -> Classify -> Analyze LEED project -> Return feedback
     """
 
-    # ========== 1. 读取输入文本 ==========
+    # ========== 1. Reading input text ==========
     logging.debug("Start reading input text.")
     text = ""
     if file_path:
@@ -196,7 +196,7 @@ def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None
         logging.warning("Input text is too short.")
         return "Your writing is too short to get meaningful feedback.", {}, ""
 
-    # ========== 2. 检查是否为 LEED Narrative ==========
+    # ========== 2. Check if it is LEED Narrative ==========
     logging.debug("Classifying input as LEED Narrative or not.")
     classification_prompt = f"""
     Determine if the following text is specifically discussing a LEED Narrative for building certification. 
@@ -229,7 +229,7 @@ def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None
     logging.info("Input classified as LEED Narrative.")
     narrative_msg = "This passage is identified as part of a LEED Narrative."
 
-    # ========== 3. 准备 LEED 分数 ==========
+    # ========== 3. Preparing for LEED Points ==========
     logging.debug("Preparing LEED scores.")
     item_dict = {}
     total_score = 0.0
@@ -251,7 +251,7 @@ def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None
     logging.debug(f"LEED items to evaluate: {item_dict}")
     pass_msg = f"Total score is {total_score}. {'Pass (>=40)!' if total_score >= 40 else 'Less than 40, does not meet the LEED requirement.'}"
 
-    # ========== 4. 分块、嵌入和处理 LEED 项目 ==========
+    # ========== 4. Block, embed and process LEED projects ==========
     logging.debug("Chunking text for analysis.")
     chunks = chunk_text(text, chunk_size=400)
     logging.debug(f"Total chunks created: {len(chunks)}")
@@ -277,7 +277,7 @@ def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None
 
     logging.debug("Finished embedding and storing all chunks in ChromaDB.")
 
-    # 处理 LEED 项目
+    # Working on LEED projects
     logging.debug("Processing LEED items in parallel.")
     item_feedbacks = []
     if item_dict:
@@ -300,7 +300,7 @@ def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None
     else:
         logging.info("No LEED items to process.")
 
-    # 合并 LEED 项目反馈
+    # Incorporate LEED Project Feedback
     if item_feedbacks:
         detailed_feedback_str = "\n\n".join([f"**{k}**:\n{v}" for k, v in item_feedbacks])
         final_feedback = f"=== Detailed LEED Item Feedback ===\n{detailed_feedback_str}"
