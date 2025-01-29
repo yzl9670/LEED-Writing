@@ -99,13 +99,13 @@ def generate_leed_table_data():
 
     if not isinstance(credits_collection, dict):
         logging.error(f"Expected 'LEED_Credits_Collection' to be dict, got {type(credits_collection)}.")
-        return table_data  # 返回空表格或根据需要处理
+        return table_data  # Return an empty table or process as needed
 
     for category_name, category_data in credits_collection.items():
         logging.debug(f"Processing category_name: {category_name}, type: {type(category_data)}")
         if not isinstance(category_data, dict):
             logging.error(f"Expected 'category_data' to be dict for category '{category_name}', got {type(category_data)}. Skipping.")
-            continue  # 跳过无效结构
+            continue  # Skip invalid structures
 
         section = {
             'section': f"{category_name} ({category_data.get('total_points', 0)} Points)",
@@ -114,12 +114,12 @@ def generate_leed_table_data():
         credits = category_data.get('Credits', [])
         if not isinstance(credits, list):
             logging.error(f"Expected 'Credits' to be list for category '{category_name}', got {type(credits)}.")
-            continue  # 跳过无效结构
+            continue  # Skip invalid structures
 
         for credit in credits:
             if not isinstance(credit, dict):
                 logging.error(f"Expected each 'credit' to be dict in category '{category_name}', got {type(credit)}. Skipping.")
-                continue  # 跳过无效结构
+                continue  # Skip invalid structures
 
             item = {
                 'category': category_name,
@@ -332,13 +332,13 @@ def get_feedback_route():
     prompt_time = datetime.now(timezone.utc)
     logging.debug(f"User ID: {user_id}, Prompt Time: {prompt_time}")
 
-    # 1. 检查是否有文件上传
+    # 1. Check if there is a file uploaded
     file_path = None
     uploaded_file = request.files.get('file')
     if uploaded_file and uploaded_file.filename:
         filename = secure_filename(uploaded_file.filename)
         logging.debug(f"Uploaded file name: {filename}")
-        # 验证文件后缀
+        # Verify file suffix
         if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(file_path)
@@ -352,7 +352,7 @@ def get_feedback_route():
                 'error': 'Invalid file type. Only PDF and DOCX files are allowed.'
             }), 400
     else:
-        # 2. 若无文件，则读取 'message'
+        # 2. If there is no file, read 'message'
         user_input = request.form.get('message', '').strip()
         logging.debug(f"User input message: {user_input}")
         if not user_input:
@@ -360,14 +360,14 @@ def get_feedback_route():
             return jsonify({'success': False, 'error': 'No user input provided.'}), 400
         prompt_content = user_input
 
-    # 3. 获取 LEED 分数
+    # 3. Earn LEED Points
     leed_scores = None
     leed_scores_json = request.form.get('leed_scores')
     if leed_scores_json:
         try:
             leed_scores = json.loads(leed_scores_json)
             logging.debug(f"LEED scores: {leed_scores}")
-            # 计算总分 (可选)
+            # Calculate total score (optional)
             total_score = sum(
                 float(score) for key, score in leed_scores.items()
                 if key != 'total_score' and isinstance(score, (int, float, str)) and str(score).replace('.', '', 1).isdigit()
@@ -378,12 +378,12 @@ def get_feedback_route():
             logging.error("Invalid LEED scores provided.", exc_info=True)
             return jsonify({'success': False, 'error': 'Invalid LEED scores provided.'}), 400
 
-    # 4. 获取所有 LEED 项目
+    # 4. Get all LEED projects
     leed_table_data = generate_leed_table_data()  # Use function to generate data
     user_rubrics = Rubric.query.filter_by(user_id=user_id).all()
     rubrics = [rubric.text for rubric in user_rubrics]
 
-    # 构建项目列表
+    # Build project list
     leed_items = []
     for category in leed_table_data:
         for item in category['items']:
@@ -392,7 +392,7 @@ def get_feedback_route():
                 'points': item.get('points', 0)
             })
 
-    # 5. 调用 get_feedback (RAG + item-by-item)
+    # 5. Call get_feedback (RAG + item-by-item)
     try:
         feedback_text = process_leed_items(leed_items, collection)
         logging.debug(f"Feedback Text: {feedback_text}")
@@ -403,7 +403,7 @@ def get_feedback_route():
     response_time = datetime.now(timezone.utc)
     logging.debug(f"Response Time: {response_time}")
 
-    # 如果上传了文件，用完后清理
+    # If you uploaded a file, clean it up after use
     if file_path:
         try:
             os.remove(file_path)
@@ -411,7 +411,7 @@ def get_feedback_route():
         except Exception as e:
             logging.warning(f"Failed to remove uploaded file: {file_path}. Error: {e}")
 
-    # 6. 将对话记录保存到数据库
+    # 6. Save conversation records to the database
     try:
         chat_history = ChatHistory(
             user_id=user_id,
@@ -423,11 +423,11 @@ def get_feedback_route():
         db.session.add(chat_history)
         logging.debug(f"Added ChatHistory: {chat_history}")
 
-        # 删掉之前记录的 Rubric
+        # Delete the previously recorded Rubric
         Rubric.query.filter_by(user_id=user_id).delete()
         logging.debug(f"Deleted previous rubrics for user_id: {user_id}")
 
-        # 保存新的 Rubric
+        # Save New Rubric
         if leed_scores:
             for k, v in leed_scores.items():
                 if k == 'total_score':
@@ -450,7 +450,7 @@ def get_feedback_route():
         logging.exception("Error saving chat history or rubrics:")
         return jsonify({'success': False, 'error': f"Error saving data: {e}"}), 500
 
-    # 7. 返回结果给前端
+    # 7. Return results to the front end
     return jsonify({
         'success': True,
         'feedback': feedback_text,
@@ -562,7 +562,7 @@ def admin_save_leed_data():
     if not leed_data:
         return jsonify({'success': False, 'error': 'No LEED data provided.'})
     
-    # 检查 leed_data 是否符合预期结构
+    # Check if leed_data conforms to the expected structure
     if not isinstance(leed_data, dict):
         return jsonify({'success': False, 'error': 'LEED data must be a dictionary.'})
 
@@ -572,7 +572,7 @@ def admin_save_leed_data():
     if not isinstance(leed_data['LEED_Credits_Collection'], dict):
         return jsonify({'success': False, 'error': '"LEED_Credits_Collection" must be a dictionary.'})
 
-        # 保存 LEED 数据到 'leed_credits.json'
+        # Save LEED data to 'leed_credits.json'
     json_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'leed_credits.json')  
     try:
         with open(json_path, 'w', encoding='utf-8') as f:
@@ -581,7 +581,7 @@ def admin_save_leed_data():
         logging.exception("Failed to save LEED data:")
         return jsonify({'success': False, 'error': f"Failed to save LEED data: {e}"}), 500
 
-    # 清除缓存
+    # Clear the cache
     get_leed_data.cache_clear()
 
     return jsonify({'success': True})
@@ -605,25 +605,25 @@ def load_general_rubric():
             raise ValueError(f"Error parsing rubric JSON: {e}")
         
 
-# 临时存储 Rubric 数据
+# Temporarily storing Rubric data
 rubric_storage = None
 
-# 接收前端传来的 WRITING_RUBRIC 数据
+# Receive WRITING_RUBRIC data from the front end
 @app.route('/save_WRITING_RUBRICs', methods=['POST'])
 def save_writing_rubrics():
-    global rubric_storage  # 使用全局变量存储
+    global rubric_storage  # Using global variables to store
     try:
-        # 从请求中获取 JSON 数据
+        # Get JSON data from the request
         rubric_data = request.get_json()
         if not rubric_data:
             return jsonify({"error": "No data provided"}), 400
 
-        rubric_storage = rubric_data  # 保存到全局变量中
+        rubric_storage = rubric_data  # Save to global variable
         return jsonify({"message": "Rubric saved successfully"}), 200
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
-# 获取当前存储的 Rubric 数据
+# Get the currently stored Rubric data
 @app.route('/get_WRITING_RUBRICs', methods=['GET'])
 def get_writing_rubrics():
     LEED_RUBRIC = [
