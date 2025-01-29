@@ -642,5 +642,5 @@ def handle_exception(e):
     return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5002))  # Get the port from the environment variable, default to 5000
+    port = int(os.environ.get("PORT", 5000))  # Get the port from the environment variable, default to 5000
     app.run(host='0.0.0.0', port=port, debug=True)  # Host must be 0.0.0.0 to work on Heroku
