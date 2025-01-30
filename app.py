@@ -13,14 +13,12 @@ import logging  # Ensure logging is imported
 
 # Import feedback function
 from feedback import get_feedback, process_leed_items, collection
-from extensions import db, migrate
 #from leed_rubrics import LEED_TABLE_DATA
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/users.db')  # Use environment variable
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Adjust as needed
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
 # Configure file uploads
 UPLOAD_FOLDER = 'uploads'
@@ -30,9 +28,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Configure maximum upload size (optional)
 app.config['MAX_CONTENT_LENGTH'] = 80 * 1024 * 1024  # 80 MB
 
-# Initialize extensions
-db.init_app(app)
-migrate.init_app(app, db)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Ensure upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
