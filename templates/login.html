@@ -57,11 +57,7 @@
             color: #4CAF50;
             text-decoration: none;
         }
-        <!-- .register-link {
-            display: none;
-        } -->
         
-
         /* Custom pop-up window style */
         .dialog-overlay {
             position: fixed;
@@ -140,7 +136,7 @@
         <input type="password" id="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
     </form>
-    <p>Don't have an account? <a href="{{ url_for('register') }}" class="register-link">Register here</a>.</p>
+    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
 </div>
 
 <!-- Custom Dialog window -->
