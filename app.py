@@ -16,9 +16,14 @@ from feedback import get_feedback, process_leed_items, collection
 #from leed_rubrics import LEED_TABLE_DATA
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/users.db'  # Adjust as needed
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_default_secret_key')
+
+# 使用 PostgreSQL
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'users.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Configure file uploads
 UPLOAD_FOLDER = 'uploads'
