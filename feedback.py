@@ -308,3 +308,7 @@ def get_feedback(user_input=None, file_path=None, rubrics=None, leed_scores=None
 
     logging.info("Feedback generation completed.")
     return final_feedback, leed_scores, ""
+
+def read_pdf_in_chunks(file_path, chunk_size=1024):
+    # 占位实现：你已经使用其它方法处理 PDF，此处返回空字符串
+    return ""

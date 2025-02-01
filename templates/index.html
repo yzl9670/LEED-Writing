@@ -35,7 +35,7 @@
             background-color: #fff;
             display: flex;
             flex-direction: column;
-            position: relativea;
+            position: relative;
             overflow: hidden;
         }
         .chat-container {
@@ -1103,33 +1103,7 @@
 
         // When the page loads
         window.onload = function() {
-                // Get last feedback
-            fetch('/get_last_feedback', {
-                method: 'GET',
-                credentials: 'include' 
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.feedback) {
-                    // Get the chat container
-                    const chatContainer = document.getElementById('chat-container');
-
-                    // Create an AI message element and fill it with the last feedback content
-                    const aiMessageElem = document.createElement('div');
-                    aiMessageElem.classList.add('chat-message', 'ai');
-                    aiMessageElem.textContent = data.feedback;
-
-                    // Insert feedback at the top of the chat history
-                    if (chatContainer.firstChild) {
-                        chatContainer.insertBefore(aiMessageElem, chatContainer.firstChild);
-                    } else {
-                        chatContainer.appendChild(aiMessageElem);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Failed to get last feedback:', error);
-            });
+            
             //admin
             if (isAdmin) { 
                 fetch('/admin/get_leed_data')
@@ -1166,7 +1140,7 @@
             initDragAndDrop();
             document.getElementById('user-input').addEventListener('keydown', function (e) {
                 if (e.ctrlKey && e.key === 'Enter') {
-                    e.preventDefault(); ）
+                    e.preventDefault(); 
                     sendMessage();      
                 }
             });
