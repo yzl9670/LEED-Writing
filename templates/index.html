@@ -518,6 +518,11 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        /* 隐藏各个 rubric 的分数和总分 */
+        .rubric-score,
+        #rubrics-total-score {
+            display: none;
+        }
     </style>
     <script>
         var isAdmin = {{ is_admin | tojson }};
