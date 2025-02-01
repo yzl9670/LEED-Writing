@@ -1103,10 +1103,10 @@
 
         // When the page loads
         window.onload = function() {
-            // 1. 获取最后一条反馈，并插入到欢迎信息之后
+            // 1. Get the last feedback and insert it after the welcome message
             fetch('/get_last_feedback', {
                 method: 'GET',
-                credentials: 'include' // 确保携带 Cookie 用于验证登录状态
+                credentials: 'include' // Make sure to carry cookies to verify login status
             })
             .then(response => response.json())
             .then(data => {
@@ -1114,12 +1114,12 @@
                 if (data.success && data.feedback) {
                     const chatContainer = document.getElementById('chat-container');
                     if (chatContainer) {
-                        // 定位默认欢迎信息（假设其 class 为 "chat-message ai"）
+                        // Locate the default welcome message
                         const welcomeElem = chatContainer.querySelector('.chat-message.ai');
                         const feedbackElem = document.createElement('div');
                         feedbackElem.classList.add('chat-message', 'ai');
                         feedbackElem.textContent = data.feedback;
-                        // 如果找到欢迎信息，则将反馈插入到它的后面；否则插入到最前面
+                        // If the welcome message is found, insert the feedback after it; otherwise insert it at the beginning
                         if (welcomeElem && welcomeElem.nextSibling) {
                             chatContainer.insertBefore(feedbackElem, welcomeElem.nextSibling);
                         } else if (welcomeElem) {
@@ -1138,7 +1138,7 @@
                 console.error("Error fetching last feedback:", error);
             });
             
-            // 2. 根据用户角色加载 LEED 数据或 Rubrics 数据
+            // Load LEED data or Rubrics data based on user role
             if (isAdmin) {
                 fetch('/admin/get_leed_data')
                 .then(response => response.json())
@@ -1169,10 +1169,10 @@
                 });
             }
             
-            // 3. 初始化拖拽上传功能
+            // Initialize the drag and drop upload function
             initDragAndDrop();
             
-            // 4. 绑定 Ctrl+Enter 快捷键发送消息
+            // Bind Ctrl+Enter shortcut key to send message
             const userInput = document.getElementById('user-input');
             if (userInput) {
                 userInput.addEventListener('keydown', function(e) {
