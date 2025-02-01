@@ -641,6 +641,24 @@ def handle_exception(e):
     logging.exception("Unhandled exception occurred:")
     return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 
+@app.route('/get_last_feedback', methods=['GET'])
+def get_last_feedback():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'User not logged in.'}), 401
+
+    # Query the last feedback record in descending order of response_time
+    last_chat = ChatHistory.query.filter_by(user_id=user_id).order_by(ChatHistory.response_time.desc()).first()
+    if not last_chat:
+        return jsonify({'success': False, 'error': 'No previous feedback found.'})
+
+    return jsonify({
+        'success': True,
+        'feedback': last_chat.response_content,
+        'chat_history_id': last_chat.id  
+    })
+
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))  # Get the port from the environment variable, default to 5000
     app.run(host='0.0.0.0', port=port, debug=True)  # Host must be 0.0.0.0 to work on Heroku
