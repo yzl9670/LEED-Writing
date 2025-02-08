@@ -10,6 +10,8 @@ import os
 import json
 from functools import lru_cache
 import logging  # Ensure logging is imported
+import PyPDF2
+import docx
 
 # Import feedback function
 from feedback import get_feedback, process_leed_items, collection
@@ -337,14 +339,41 @@ def get_feedback_route():
     uploaded_file = request.files.get('file')
     if uploaded_file and uploaded_file.filename:
         filename = secure_filename(uploaded_file.filename)
+        extension = filename.rsplit('.', 1)[1].lower()
         logging.debug(f"Uploaded file name: {filename}")
         # Verify file suffix
-        if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+        if '.' in filename and extension in ALLOWED_EXTENSIONS:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(file_path)
             logging.debug(f"Saved uploaded file to: {file_path}")
             user_input = None
-            prompt_content = f"Uploaded file: {filename}"
+
+            # 提取文件内容
+            file_text = ""
+            if extension == 'pdf':
+                try:
+                    import PyPDF2  # 确保已安装 PyPDF2
+                    with open(file_path, 'rb') as f:
+                        reader = PyPDF2.PdfReader(f)
+                        for page in reader.pages:
+                            text = page.extract_text()
+                            if text:
+                                file_text += text + "\n"
+                except Exception as e:
+                    logging.error("Error extracting text from PDF", exc_info=True)
+            elif extension == 'docx':
+                try:
+                    import docx  # 确保已安装 python-docx
+                    doc = docx.Document(file_path)
+                    file_text = "\n".join([para.text for para in doc.paragraphs])
+                except Exception as e:
+                    logging.error("Error extracting text from DOCX", exc_info=True)
+            
+            # 若提取到文本则使用，否则仍使用文件名提示
+            if file_text.strip():
+                prompt_content = file_text
+            else:
+                prompt_content = f"Uploaded file: {filename}"
         else:
             logging.warning(f"Invalid file type: {filename}")
             return jsonify({
