@@ -334,25 +334,24 @@ def get_feedback_route():
     prompt_time = datetime.now(timezone.utc)
     logging.debug(f"User ID: {user_id}, Prompt Time: {prompt_time}")
 
-    # 1. 检查是否有文件上传
+    # Check if there is a file uploaded
     file_path = None
     uploaded_file = request.files.get('file')
     if uploaded_file and uploaded_file.filename:
         filename = secure_filename(uploaded_file.filename)
         extension = filename.rsplit('.', 1)[1].lower()
         logging.debug(f"Uploaded file name: {filename}")
-        # 验证文件后缀是否允许
+        # Verify that the file suffix is ​​allowed
         if '.' in filename and extension in ALLOWED_EXTENSIONS:
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(file_path)
             logging.debug(f"Saved uploaded file to: {file_path}")
             user_input = None
 
-            # 提取文件内容
+            # Extract file contents
             file_text = ""
             if extension == 'pdf':
                 try:
-                    import PyPDF2  # 确保已安装 PyPDF2
                     with open(file_path, 'rb') as f:
                         reader = PyPDF2.PdfReader(f)
                         for page in reader.pages:
@@ -363,13 +362,12 @@ def get_feedback_route():
                     logging.error("Error extracting text from PDF", exc_info=True)
             elif extension == 'docx':
                 try:
-                    import docx  # 确保已安装 python-docx
                     doc = docx.Document(file_path)
                     file_text = "\n".join([para.text for para in doc.paragraphs])
                 except Exception as e:
                     logging.error("Error extracting text from DOCX", exc_info=True)
 
-            # 直接使用提取到的所有文本
+            # Use all extracted text directly
             if file_text:
                 prompt_content = file_text
             else:
@@ -381,7 +379,7 @@ def get_feedback_route():
                 'error': 'Invalid file type. Only PDF and DOCX files are allowed.'
             }), 400
     else:
-        # 2. 如果没有上传文件，则读取 'message'
+        # 2. If no file is uploaded, read 'message'
         user_input = request.form.get('message', '').strip()
         logging.debug(f"User input message: {user_input}")
         if not user_input:
@@ -389,14 +387,14 @@ def get_feedback_route():
             return jsonify({'success': False, 'error': 'No user input provided.'}), 400
         prompt_content = user_input
 
-    # 3. 计算 LEED 分数
+    # 3. Calculate LEED points
     leed_scores = None
     leed_scores_json = request.form.get('leed_scores')
     if leed_scores_json:
         try:
             leed_scores = json.loads(leed_scores_json)
             logging.debug(f"LEED scores: {leed_scores}")
-            # 可选：计算总分
+            # Calculate the total score
             total_score = sum(
                 float(score) for key, score in leed_scores.items()
                 if key != 'total_score' and isinstance(score, (int, float, str)) and str(score).replace('.', '', 1).isdigit()
@@ -407,12 +405,12 @@ def get_feedback_route():
             logging.error("Invalid LEED scores provided.", exc_info=True)
             return jsonify({'success': False, 'error': 'Invalid LEED scores provided.'}), 400
 
-    # 4. 获取所有 LEED 项目数据
-    leed_table_data = generate_leed_table_data()  # 使用函数生成数据
+    # Get all LEED project data
+    leed_table_data = generate_leed_table_data()  
     user_rubrics = Rubric.query.filter_by(user_id=user_id).all()
     rubrics = [rubric.text for rubric in user_rubrics]
 
-    # 构建项目列表
+    # Build item list
     leed_items = []
     for category in leed_table_data:
         for item in category['items']:
@@ -421,7 +419,7 @@ def get_feedback_route():
                 'points': item.get('points', 0)
             })
 
-    # 5. 调用 process_leed_items 生成反馈（RAG + 项目逐项评分）
+    # Call process_leed_items to generate feedback (RAG + item-by-item scoring)
     try:
         feedback_text = process_leed_items(leed_items, collection)
         logging.debug(f"Feedback Text: {feedback_text}")
@@ -432,7 +430,7 @@ def get_feedback_route():
     response_time = datetime.now(timezone.utc)
     logging.debug(f"Response Time: {response_time}")
 
-    # 上传文件后清理（删除临时文件）
+    # Clean up after uploading files (delete temporary files)
     if file_path:
         try:
             os.remove(file_path)
@@ -440,7 +438,7 @@ def get_feedback_route():
         except Exception as e:
             logging.warning(f"Failed to remove uploaded file: {file_path}. Error: {e}")
 
-    # 6. 将对话记录存入数据库
+    # Save the conversation records into the database
     try:
         chat_history = ChatHistory(
             user_id=user_id,
@@ -452,11 +450,11 @@ def get_feedback_route():
         db.session.add(chat_history)
         logging.debug(f"Added ChatHistory: {chat_history}")
 
-        # 删除之前的 Rubric 记录
+        # Delete previous Rubric records
         Rubric.query.filter_by(user_id=user_id).delete()
         logging.debug(f"Deleted previous rubrics for user_id: {user_id}")
 
-        # 存储新的 Rubric
+        # Storing New Rubrics
         if leed_scores:
             for k, v in leed_scores.items():
                 if k == 'total_score':
@@ -479,7 +477,7 @@ def get_feedback_route():
         logging.exception("Error saving chat history or rubrics:")
         return jsonify({'success': False, 'error': f"Error saving data: {e}"}), 500
 
-    # 7. 返回结果给前端
+    # Return results to the front end
     return jsonify({
         'success': True,
         'feedback': feedback_text,
