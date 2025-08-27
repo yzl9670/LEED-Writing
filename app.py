@@ -60,7 +60,7 @@ class User(db.Model):
     __tablename__ = 'users' 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.Text, nullable=False)
     
     rubrics = db.relationship('Rubric', backref='user', lazy=True)
     chat_histories = db.relationship('ChatHistory', backref='user', lazy=True)
@@ -94,15 +94,27 @@ class ChatHistory(db.Model):
 # First run: create tables (avoids "no such table")
 with app.app_context():
     db.create_all()
-    if db.engine.url.get_backend_name() == 'postgresql':
+
+    logging.info("DB URL: %s", db.engine.url.render_as_string(hide_password=True))
+
+    if db.engine.url.get_backend_name().startswith('postgresql'):
         try:
-            db.session.execute(
-                sa.text("ALTER TABLE users ALTER COLUMN password_hash TYPE VARCHAR(255)")
-            )
-            db.session.commit()
-            logging.info("Altered users.password_hash to VARCHAR(255)")
+            maxlen = db.session.execute(sa.text("""
+                SELECT character_maximum_length
+                FROM information_schema.columns
+                WHERE table_name='users' AND column_name='password_hash'
+            """)).scalar()
+
+            logging.info(f"users.password_hash current maxlen: {maxlen}")
+
+            if maxlen is not None:
+                db.session.execute(sa.text(
+                    "ALTER TABLE users ALTER COLUMN password_hash TYPE TEXT"
+                ))
+                db.session.commit()
+                logging.info("users.password_hash has been changed to TEXT")
         except Exception as e:
-            logging.warning(f"Skipping/failed to alter users.password_hash: {e}")
+            logging.warning(f"Failed to modify users.password_hash to TEXT or it is already TEXT: {e}")
 
 # Cache LEED data
 @lru_cache(maxsize=1)
