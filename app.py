@@ -76,13 +76,13 @@ class Rubric(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
     score = db.Column(db.Float, nullable=True)  
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 # Chat history model
 class ChatHistory(db.Model):
     __tablename__ = 'chat_history' 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     prompt_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     prompt_content = db.Column(db.Text, nullable=False)
     response_time = db.Column(db.DateTime, nullable=False)
