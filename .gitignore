@@ -1,5 +1,6 @@
 @"
 venv/
+Lib_backup/
 .env
 __pycache__/
 *.pyc
