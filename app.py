@@ -12,6 +12,7 @@ from functools import lru_cache
 import logging  # Ensure logging is imported
 import PyPDF2
 import docx
+import sqlalchemy as sa
 
 # Import feedback function
 from feedback import get_feedback, process_leed_items, collection
@@ -59,7 +60,7 @@ class User(db.Model):
     __tablename__ = 'users' 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), nullable=False, unique=True)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     
     rubrics = db.relationship('Rubric', backref='user', lazy=True)
     chat_histories = db.relationship('ChatHistory', backref='user', lazy=True)
@@ -93,6 +94,15 @@ class ChatHistory(db.Model):
 # First run: create tables (avoids "no such table")
 with app.app_context():
     db.create_all()
+    if db.engine.url.get_backend_name() == 'postgresql':
+        try:
+            db.session.execute(
+                sa.text("ALTER TABLE users ALTER COLUMN password_hash TYPE VARCHAR(255)")
+            )
+            db.session.commit()
+            logging.info("Altered users.password_hash to VARCHAR(255)")
+        except Exception as e:
+            logging.warning(f"Skipping/failed to alter users.password_hash: {e}")
 
 # Cache LEED data
 @lru_cache(maxsize=1)
