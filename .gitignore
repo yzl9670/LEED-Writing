@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 uploads/
 *.db
+var/
 .DS_Store
 .idea/
 .vscode/
