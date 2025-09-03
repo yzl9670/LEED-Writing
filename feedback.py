@@ -82,6 +82,18 @@ def generate_feedback(
     priority = _normalize_items(priority_items)
     supplement = _normalize_items(supplement_items)
 
+    priority   = _dedup_by_name_max(priority)
+    supplement = _dedup_by_name_max(supplement)
+
+    pri_map = {i["name"]: _safe_points(i["points"]) for i in priority}
+    sup_map = {i["name"]: _safe_points(i["points"]) for i in supplement}
+    supplement_delta: List[Dict[str, Any]] = []
+    for name, s2 in sup_map.items():
+        base = pri_map.get(name, 0.0)
+        delta = max(0.0, s2 - base)
+        if delta > 0:
+            supplement_delta.append({"name": name, "points": delta})
+
     # If neither list is provided, fall back to flat leed_scores (all as priority)
     if not priority and not supplement and isinstance(leed_scores, dict):
         priority = [
@@ -102,7 +114,7 @@ def generate_feedback(
     payload = {
         "narrative_excerpt": narrative,
         "priority": [{"name": i["name"], "claimed_points": i["points"]} for i in priority],
-        "supplement": [{"name": i["name"], "claimed_points": i["points"]} for i in supplement],
+        "supplement_delta": [{"name": i["name"], "claimed_points": i["points"]} for i in supplement],
         "rules": [
             "Judge only based on content in the narrative excerpt; do not assume facts that are not present.",
             "For PRIORITY, focus on whether evidence supports the claimed points (meet/partial/miss/unclear).",
@@ -146,9 +158,9 @@ def generate_feedback(
     if not model_json:
         # Fallback minimal message if LLM is unavailable or parsing failed
         return (
-            _fallback_text(priority, supplement),
+            _fallback_text(priority, supplement_delta),
             {},
-            _fallback_summary(priority, supplement)
+            _fallback_summary(priority, supplement_delta)
         )
 
     # Compose feedback sections
@@ -190,46 +202,42 @@ def generate_feedback(
 def _ask_llm_for_json(payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if not USE_LLM:
         return None
-
     system = (
         "You are a LEED BD+C reviewer. Output ONLY valid minified JSON matching the provided schema. "
         "No prose, no markdown, no explanations outside JSON."
     )
-    user = "Evaluate the LEED narrative vs selected credits. Respect the rules and schema.\n\n" + \
-           json.dumps(payload, ensure_ascii=False)
-
+    user = (
+        "Evaluate the LEED narrative vs selected credits. Respect the rules and schema.\n\n"
+        + json.dumps(payload, ensure_ascii=False)
+    )
     try:
-
-        if _client is not None:
-            resp = _client.chat.completions.create(
+        # 尝试新 SDK（openai>=1.x）
+        try:
+            from openai import OpenAI as _OpenAI
+            client = _OpenAI(api_key=OPENAI_API_KEY)
+            resp = client.chat.completions.create(
                 model=CHAT_MODEL,
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user",   "content": user},
-                ],
+                messages=[{"role": "system", "content": system},
+                          {"role": "user", "content": user}],
                 temperature=0.2,
                 max_tokens=MAX_TOKENS,
+                timeout=REQUEST_TIMEOUT,
             )
             text = resp.choices[0].message.content.strip()
-            return _extract_json(text)
-
-
-        if _openai_legacy is not None and hasattr(_openai_legacy, "ChatCompletion"):
-            resp = _openai_legacy.ChatCompletion.create(
+        except Exception:
+            # 回退到老 SDK（openai<1.x）
+            resp = openai.ChatCompletion.create(
                 model=CHAT_MODEL,
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user",   "content": user},
-                ],
+                messages=[{"role": "system", "content": system},
+                          {"role": "user", "content": user}],
                 temperature=0.2,
                 max_tokens=MAX_TOKENS,
                 timeout=REQUEST_TIMEOUT,
             )
             text = resp["choices"][0]["message"]["content"].strip()
-            return _extract_json(text)
 
-        return None
-
+        obj = _extract_json(text)
+        return obj
     except Exception as e:
         log.warning(f"LLM call failed: {e}")
         return None
@@ -368,7 +376,18 @@ def _safe_points(v: Any) -> float:
         return float(v)
     except Exception:
         return 0.0
-
+    
+def _dedup_by_name_max(items: Optional[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    acc: Dict[str, Dict[str, Any]] = {}
+    for it in items or []:
+        name = (it.get("name") or "").strip()
+        pts = _safe_points(it.get("points"))
+        if not name or pts <= 0:
+            continue
+        keep = acc.get(name)
+        if (keep is None) or (pts > _safe_points(keep.get("points"))):
+            acc[name] = {"name": name, "points": pts}
+    return list(acc.values())
 # ----------------------------- Fallbacks ------------------------------------
 def _fallback_text(priority: List[Dict[str, Any]], supplement: List[Dict[str, Any]]) -> str:
     pri_total = sum(_safe_points(i.get("points")) for i in priority)
