@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+ENV/
+build/
+dist/
+
+# OS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/

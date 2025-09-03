@@ -1,0 +1,1694 @@
+{% set is_admin = user.username == 'admin' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LEED Rubrics Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+        /*hide*/
+        .left-menu {
+            width: 0; 
+            background-color: #4a76a8;
+            color: #fff;
+            padding: 0; 
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .content {
+            width: 70%; 
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            position: relativea;
+            overflow: hidden;
+        }
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: #e9ecef;
+            padding: 20px;
+            padding-bottom: 80px;
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            max-width: 70%;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .chat-message.user {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .chat-message.ai {
+            background-color: #d0e2f2;
+            align-self: flex-start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            white-space: pre-wrap;
+        }
+        .input-container {
+            position: static; 
+            bottom: auto;
+            left: auto;
+            right: auto;
+            background-color: #fff;
+            padding: 10px 0;
+            z-index: 2;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #ccc;
+        }
+        .input-container textarea {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+            min-height: 50px;
+            max-height: 50%;
+            overflow-y: auto;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-button {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-button input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .rubrics-container {
+            width: 30%;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+        .rubrics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        .rubrics-header h3 {
+            margin: 0;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .rubrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 80vh; 
+        }
+        .rubrics-list div {
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 5px;
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .rubrics-list textarea {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            resize: none;
+            overflow-y: hidden;
+            min-height: 50px;
+            margin-right: 10px;
+            background-color: transparent;
+        }
+        .rubrics-list textarea:focus {
+            outline: none;
+        }
+        .rubric-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: none;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .rubric-button:hover {
+            background-color: #c0392b;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .feedback-panel {
+            position: absolute;
+            bottom: 0;
+            left: calc(100% + 10px);
+            width: 175px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 100;
+        }
+        .feedback-panel h4 {
+            margin-top: 0;
+        }
+        .feedback-panel .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+        .feedback-panel .stars {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .feedback-panel .stars span {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .feedback-panel .stars span.selected {
+            color: gold;
+        }
+        .feedback-panel textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 50px;
+            margin-top: 10px;
+        }
+        .feedback-panel button.submit-feedback {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .feedback-button {
+            margin-top: 10px;
+            align-self: flex-end;
+            font-size: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        #leed-page {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+        #leed-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        #leed-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        #leed-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #leed-table th, #leed-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+        #leed-table th {
+            background-color: #e9ecef;
+        }
+        #leed-table .section-header {
+            background-color: #d0e2f2;
+            font-weight: bold;
+        }
+        #leed-table input[type="number"] {
+            width: 80px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .button-container .back-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Style for the submit button */
+        .button-container #leed-submit-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        
+        }
+    
+        .rubrics-list textarea[readonly] {
+            background-color: transparent;
+            cursor: default;
+        }
+        
+        .chat-container.dragover {
+            background-color: #c8e6c9;
+        }
+        /* Rubrics */
+        .rubric-item {
+            width: 95%;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: block;
+        }
+        .rubric-title {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 90%;
+            position: relative;
+        }
+        .rubric-title .title-text {
+            flex-grow: 1;
+        }
+        .rubric-title .rubric-score {
+            margin-left: 10px;
+        }
+        .rubric-content {
+            display: none;
+            flex-direction: column;
+            padding: 0;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .rubric-content.visible {
+            display: block;
+        }
+        .message {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .message.red {
+            color: red;
+        }
+        .message.green {
+            color: green;
+        }
+        .rubric-criteria-item {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .rubric-criteria-item div {
+            margin-bottom: 5px;
+        }
+        .rubric-subcontent {
+            padding: 10px 20px;
+            margin: 0;
+            background-color: #fff;
+            border-left: 3px solid #ccc;
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .rubric-subcontent.visible {
+            display: flex;
+        }
+        .rubric-subtitle {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            margin: 0;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        .rubric-subtitle::after {
+            content: '\25BA'; 
+            position: absolute;
+            right: 10px;
+            transition: transform 0.3s;
+        }
+        .rubric-subtitle.expanded::after {
+            transform: rotate(90deg); 
+        }
+        .rubric-score {
+            font-weight: bold;
+        }
+        .rubrics-total-score {
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .leed-rubric-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            position: relative; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .resubmit-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px; 
+            transition: all 0.3s ease; 
+        }
+        @media (max-width: 600px) {
+            .resubmit-button {
+                font-size: 12px;
+                padding: 4px 8px;
+                border-radius: 2px;
+                position: static;
+                margin-top: 10px;
+            }
+        }
+        @media (max-width: 400px) {
+            .resubmit-button {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+        }
+        .resubmit-button:hover {
+            background-color: #c0392b;
+        }
+        .rubric-criteria-item.highlight {
+            background-color: #d0e2f2;
+            border-left: 3px solid #4a76a8;
+        }
+
+        .logout-container {
+            position: fixed;
+            bottom: 20px; 
+            right: 20px;  
+            z-index: 1000; 
+        }
+
+        .logout-button {
+            padding: 10px 20px;
+            background-color: #e74c3c; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b; 
+        }
+        .edit-button {
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            background-color: #4CAF50; 
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        /* Loading animation style */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #4a76a8;
+            animation: spin 1s linear infinite;
+            margin: 10px; 
+        }
+        .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Hide individual rubric scores and total scores */
+        .rubric-score,
+        #rubrics-total-score {
+            display: none;
+        }
+    </style>
+    <script>
+        var isAdmin = {{ is_admin | tojson }};
+    </script>
+</head>
+<body>
+    <div class="main-container" id="main-container">
+        <!-- Left button section (hidden)） -->
+        <div class="left-menu">
+        </div>
+
+        <div class="content">
+            <div class="chat-container" id="chat-container">
+                <div class="chat-message ai">Welcome to the AI feedback system!</div>
+            </div>
+            <div class="input-container">
+                <label class="upload-button">
+                    Upload
+                    <input type="file" id="file-input" accept=".docx,.pdf" onchange="sendMessage()">
+                </label>
+                <textarea id="user-input" placeholder="Type your message here..." oninput="autoResizeTextarea(this)"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            <div class="input-hint">
+                Press <b>Ctrl+Enter</b> to send message
+            </div>
+        </div>
+
+        <!-- Rubrics section on the right -->
+        <div class="rubrics-container" id="rubrics-container">
+            <div class="leed-rubric-header" id="leed-rubric-header">
+                LEED Narrative Assignment Rubric
+                <button class="resubmit-button" onclick="resubmitLeed()">LEED Certification Form</button>
+            </div>
+            <div class="rubrics-total-score" id="rubrics-total-score">
+                Total Score: 0/15
+            </div>
+            <!-- LEED Rubrics List -->
+            <div class="rubrics-list" id="leed-rubrics-list">
+                <!-- LEED rubrics will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- LEED -->
+    <div id="leed-page" class="main-container">
+        <!-- LEED Form -->
+        <div class="content" id="leed-content">
+            <h2>LEED Certification Form</h2>
+            <div id="leed-table-container">
+                <form id="leed-form">
+                    <table id="leed-table">
+                        <!-- Header -->
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Prereq/Credit</th>
+                                <th>Points</th>
+                                <th>Earned</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="button-container">
+                <button class="back-button" onclick="returnToMain()">Back</button>
+                <button id="leed-submit-button" onclick="submitLeedForm()">Submit LEED Scores</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentChatHistoryId = null;  
+        let currentMode = 'LEED'; 
+
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * 0.5) + 'px';
+        }
+
+        // Get the current Rubrics (in Writing mode only)
+        function getCurrentRubrics() {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            const rubricTextareas = rubricsList.querySelectorAll('textarea');
+            let rubrics = '';
+            rubricTextareas.forEach(textarea => {
+                rubrics += textarea.value + '\n\n';
+            });
+            return rubrics.trim();
+        }
+
+        function sendMessage() {
+            // Get user input and file input 
+            const input = document.getElementById('user-input');
+            const fileInput = document.getElementById('file-input');
+            const message = input.value;
+            const file = fileInput.files[0];
+        
+            if (!message.trim() && !file) {
+                alert("Please enter a message or upload a file.");
+                return;
+            }
+        
+            // Create a FormData object to send to the backend
+            const formData = new FormData();
+            formData.append('message', message);
+        
+            // Depending on the current model (LEED or other), attach the corresponding data
+            if (currentMode === 'LEED') {
+                const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
+                if (leedScores) {
+                    formData.append('leed_scores', JSON.stringify(leedScores));
+                } else {
+                    alert('Please submit LEED scores first.');
+                    return;
+                }
+            } else {
+                const rubrics = getCurrentRubrics();
+                formData.append('rubrics', rubrics);
+            }
+        
+            // If the user selects a file, add it to FormData
+            if (file) {
+                console.log('Selected file:', file);
+                formData.append('file', file);
+            } else {
+                console.log('No file selected.');
+            }
+        
+            // debug
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            }
+        
+            // Get the chat container 
+            const chatContainer = document.getElementById('chat-container');
+        
+            // Display User Messages
+            if (message.trim()) {
+                const userMessageElem = document.createElement('div');
+                userMessageElem.classList.add('chat-message', 'user');
+                userMessageElem.textContent = message;
+                chatContainer.appendChild(userMessageElem);
+            } else if (file) {
+                const userMessageElem = document.createElement('div');
+                userMessageElem.classList.add('chat-message', 'user');
+                userMessageElem.textContent = `Uploaded file: ${file.name}`;
+                chatContainer.appendChild(userMessageElem);
+            }
+        
+            // Add AI reply bubble, showing loading animation
+            const aiMessageElem = document.createElement('div');
+            aiMessageElem.classList.add('chat-message', 'ai');
+        
+            // Creating a loading animation element
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.classList.add('loading-spinner');
+            aiMessageElem.appendChild(loadingSpinner);
+        
+            // Adding the AI ​​Message element to the chat container
+            chatContainer.appendChild(aiMessageElem);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+            // Clear the input box and file input
+            input.value = '';
+            input.style.height = '50px';
+            fileInput.value = '';
+        
+            // Sending request to the backend
+            fetch('/get_feedback', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === false) {
+                        alert(data.error);
+                        // Remove loading animation
+                        aiMessageElem.remove();
+                        return;
+                    }
+        
+                    console.log("Scores from backend (frontend):", data.scores);
+                    // Updated AI reply bubble content, replacing loading animation with actual reply
+                    aiMessageElem.innerHTML = ''; 
+        
+                    const aiContent = document.createElement('div');
+                    aiContent.textContent = data.feedback; 
+        
+                    aiMessageElem.appendChild(aiContent);
+        
+                    // Feedback Button
+                    const feedbackBtn = document.createElement('button');
+                    feedbackBtn.classList.add('feedback-button');
+                    feedbackBtn.textContent = 'Feedback';
+                    feedbackBtn.onclick = function () {
+                        toggleFeedbackPanel(aiMessageElem, data.chat_history_id, feedbackBtn);
+                    };
+                    aiMessageElem.appendChild(feedbackBtn);
+        
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+                    // Updated Rubrics rating display
+                    if (currentMode === 'LEED') {
+                        updateLeedRubricScores(data.scores);
+                    } else {
+                        updateWritingRubricScores(data.scores);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your request.');
+        
+                    // Remove loading animation
+                    aiMessageElem.remove();
+                });
+        }
+        
+        // Update LEED Rubrics Ratings
+        function updateLeedRubricScores(scores) {
+            const rubricsList = document.getElementById('leed-rubrics-list');
+            const rubricItems = rubricsList.querySelectorAll('.rubric-item');
+        
+            let totalScore = 0; 
+            let totalPossibleScore = 0; 
+        
+            rubricItems.forEach(rubricElem => {
+                const titleElem = rubricElem.querySelector('.rubric-title');
+                const rubricName = titleElem.getAttribute('data-rubric-name');
+        
+                if (scores && scores[rubricName]) {
+                    let scoreElem = titleElem.querySelector('.rubric-score');
+                    if (!scoreElem) {
+                        scoreElem = document.createElement('span');
+                        scoreElem.classList.add('rubric-score');
+                        titleElem.appendChild(scoreElem);
+                    }
+                    const scoreValue = scores[rubricName].score;
+                    const totalValue = scores[rubricName].total;
+                    scoreElem.textContent = `Score: ${scoreValue}/${totalValue}`;
+        
+                    // Set color according to scores
+                    const scoreColor = getScoreColor(scoreValue, totalValue);
+                    scoreElem.style.color = scoreColor;
+        
+                    // Highlight the corresponding scoring criteria
+                    const criteriaItems = rubricElem.querySelectorAll('.rubric-criteria-item');
+                    criteriaItems.forEach(criteriaItem => {
+                        const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
+                        criteriaItem.classList.remove('highlight'); 
+        
+                        if (criteriaPoints === scoreValue) {
+                            criteriaItem.classList.add('highlight');
+                        }
+                    });
+        
+                    // Handling the case where there is no exact match
+                    const exactMatch = Array.from(criteriaItems).some(item => {
+                        return parseFloat(item.getAttribute('data-points')) === scoreValue;
+                    });
+        
+                    if (!exactMatch) {
+                        // Find the closest upper and lower rating scale
+                        let lowerCriteria = null;
+                        let higherCriteria = null;
+                        criteriaItems.forEach(criteriaItem => {
+                            const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
+                            if (criteriaPoints < scoreValue) {
+                                if (!lowerCriteria || criteriaPoints > parseFloat(lowerCriteria.getAttribute('data-points'))) {
+                                    lowerCriteria = criteriaItem;
+                                }
+                            } else if (criteriaPoints > scoreValue) {
+                                if (!higherCriteria || criteriaPoints < parseFloat(higherCriteria.getAttribute('data-points'))) {
+                                    higherCriteria = criteriaItem;
+                                }
+                            }
+                        });
+        
+                        // Highlight the closest upper and lower scoring criteria
+                        if (lowerCriteria) lowerCriteria.classList.add('highlight');
+                        if (higherCriteria) higherCriteria.classList.add('highlight');
+                    }
+                    console.log("Rubric:", rubricName, "Score:", scores[rubricName].score, "Total:", scores[rubricName].total);
+                    totalScore += scoreValue;
+                    totalPossibleScore += totalValue;
+                }
+            });
+            
+
+            // Update total score
+            const totalScoreElem = document.getElementById('rubrics-total-score');
+            totalScoreElem.textContent = `Total Score: ${totalScore}/15`;
+
+            const totalScoreColor = getScoreColor(totalScore, 15);
+            totalScoreElem.style.color = totalScoreColor;
+        }
+
+        function displayScoreMessage(totalScore) {
+            let messageElem = document.getElementById('leed-score-message');
+            if (!messageElem) {
+                messageElem = document.createElement('div');
+                messageElem.id = 'leed-score-message';
+                messageElem.style.fontWeight = 'bold';
+                messageElem.style.marginTop = '10px';
+                messageElem.style.textAlign = 'center';
+                document.getElementById('rubrics-container').appendChild(messageElem);
+            }
+        
+            if (totalScore >= 40) {
+                messageElem.textContent = `Congratulations! Your total LEED score is ${totalScore}, which meets the minimum requirement for LEED certification.`;
+                messageElem.style.color = 'green';
+            } else {
+                messageElem.textContent = `Your total LEED score is ${totalScore}. You need at least 40 points to achieve LEED certification.`;
+                messageElem.style.color = 'red';
+            }
+            const headerElem = document.getElementById('leed-rubric-header');
+            const totalScoreElem = document.getElementById('rubrics-total-score');
+
+            if (headerElem && totalScoreElem) {
+                if (messageElem.parentNode !== headerElem.parentNode || messageElem.nextSibling !== totalScoreElem) {
+                    headerElem.parentNode.insertBefore(messageElem, totalScoreElem);
+                }
+            }
+        }
+
+        function getScoreColor(score, maxScore) {
+            const percentage = (score / maxScore) * 100;
+            if (percentage < 50) {
+                return '#FF0000';
+            } else if (percentage >= 50 && percentage < 80) {
+                return '#FFA500';
+            } else {
+                return '#008000';
+            }
+        }
+
+        // Update the ratings for Writing Rubrics
+        function updateWritingRubricScores(scores) {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            const rubricItems = rubricsList.querySelectorAll('.rubric-item');
+
+            rubricItems.forEach(rubricElem => {
+                const textarea = rubricElem.querySelector('textarea');
+                const rubricName = textarea.getAttribute('data-rubric-name');
+
+                if (scores && scores[rubricName]) {
+                    let scoreElem = rubricElem.querySelector('.rubric-score');
+                    if (!scoreElem) {
+                        scoreElem = document.createElement('span');
+                        scoreElem.classList.add('rubric-score');
+                        rubricElem.appendChild(scoreElem);
+                    }
+                    scoreElem.textContent = `Score: ${scores[rubricName].score}/${scores[rubricName].total}`;
+                }
+            });
+        }
+
+        // Toggle display of the feedback panel
+        function toggleFeedbackPanel(aiMessageElem, chatHistoryId, feedbackBtn) {
+            let feedbackPanel = aiMessageElem.querySelector('.feedback-panel');
+            if (feedbackPanel) {
+                feedbackPanel.remove();
+            } else {
+                feedbackPanel = document.createElement('div');
+                feedbackPanel.classList.add('feedback-panel');
+
+                // Close button
+                const closeButton = document.createElement('button');
+                closeButton.classList.add('close-button');
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = function() {
+                    feedbackPanel.remove();
+                };
+                feedbackPanel.appendChild(closeButton);
+
+                const title = document.createElement('h4');
+                title.textContent = 'How do you like this response?';
+                feedbackPanel.appendChild(title);
+
+                // Star Rating
+                const starsDiv = document.createElement('div');
+                starsDiv.classList.add('stars');
+                for (let i = 1; i <= 5; i++) {
+                    const starSpan = document.createElement('span');
+                    starSpan.textContent = '★';
+                    starSpan.dataset.value = i;
+                    starSpan.onclick = function() {
+                        selectStars(starsDiv, i);
+                    };
+                    starsDiv.appendChild(starSpan);
+                }
+                feedbackPanel.appendChild(starsDiv);
+
+                // Feedback text box
+                const feedbackTextarea = document.createElement('textarea');
+                feedbackTextarea.placeholder = 'Enter your feedback...';
+                feedbackPanel.appendChild(feedbackTextarea);
+
+                // Submit Button
+                const submitButton = document.createElement('button');
+                submitButton.classList.add('submit-feedback');
+                submitButton.textContent = 'Submit';
+                submitButton.onclick = function() {
+                    submitFeedback(chatHistoryId, getSelectedStars(starsDiv), feedbackTextarea.value);
+                    feedbackPanel.remove();
+                    feedbackBtn.style.display = 'none';
+                };
+                feedbackPanel.appendChild(submitButton);
+
+                aiMessageElem.appendChild(feedbackPanel);
+
+                // Check if the feedback panel exceeds the visible area and adjust its position
+                const rect = feedbackPanel.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    feedbackPanel.style.left = 'auto';
+                    feedbackPanel.style.right = 'calc(100% + 10px)';
+                }
+            }
+        }
+
+        // Select star rating
+        function selectStars(starsDiv, rating) {
+            const stars = starsDiv.querySelectorAll('span');
+            stars.forEach(star => {
+                if (parseInt(star.dataset.value) <= rating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        // Get the number of selected stars
+        function getSelectedStars(starsDiv) {
+            const selectedStars = starsDiv.querySelectorAll('span.selected');
+            return selectedStars.length;
+        }
+
+        // Submit user feedback on AI responses
+        function submitFeedback(chatHistoryId, rating, feedback) {
+            fetch('/submit_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_history_id: chatHistoryId,
+                    rating: rating,
+                    feedback: feedback
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thank you for your feedback!');
+                } else {
+                    alert('Failed to submit feedback: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting your feedback.');
+            });
+        }
+
+        // Function to display LEED Rubrics (updated)
+        function displayLeedRubrics(rubrics) {
+            const rubricsList = document.getElementById('leed-rubrics-list');
+            rubricsList.innerHTML = ''; 
+
+            rubrics.forEach((rubricData, rubricIndex)=> {
+                const rubricElem = document.createElement('div');
+                rubricElem.classList.add('rubric-item');
+                rubricElem.style.display = 'block';  // Ensure vertical alignment
+
+                // Rubric Title 
+                const titleElem = document.createElement('div');
+                titleElem.classList.add('rubric-title');
+                titleElem.setAttribute('data-rubric-name', rubricData.name);
+
+                // Title Text
+                const titleTextElem = document.createElement('span');
+                titleTextElem.classList.add('title-text');
+                titleTextElem.textContent = `${rubricData.name}`;
+
+                // Score
+                const scoreElem = document.createElement('span');
+                scoreElem.classList.add('rubric-score');
+                scoreElem.textContent = 'Score: 0/0'; // 初始得分
+
+                // Add title text and fraction to title element
+                titleElem.appendChild(titleTextElem);
+                titleElem.appendChild(scoreElem);
+
+                // If admin, add `+/-` buttons
+                // ADD EDIT BUTTON CODE HERE
+                if (isAdmin) {
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.classList.add('edit-button');
+                    editButton.onclick = (event) => {
+                        event.stopPropagation(); 
+                        editRubric(rubricIndex);
+                    };
+                    titleElem.appendChild(editButton);
+                }
+
+                // Content container (used to store scoring criteria)
+                const contentElem = document.createElement('div');
+                contentElem.classList.add('rubric-content');
+                contentElem.style.display = 'none'; 
+
+                // Fill in the scoring criteria
+                if (Array.isArray(rubricData.scoringCriteria) && rubricData.scoringCriteria.length > 0) {
+                    rubricData.scoringCriteria.forEach((criteria, criteriaIndex) => {
+                        const criteriaItemElem = document.createElement('div');
+                        criteriaItemElem.classList.add('rubric-criteria-item');
+                        criteriaItemElem.setAttribute('data-points', criteria.points);
+
+                        // The title of the grading criteria (e.g. "2 Points")
+                        const criteriaItemTitle = document.createElement('div');
+                        criteriaItemTitle.textContent = `${criteria.points} Points`;
+                        criteriaItemTitle.style.fontWeight = 'bold';
+
+                        // Description of scoring criteria
+                        const criteriaItemContent = document.createElement('div');
+                        criteriaItemContent.textContent = `${criteria.description}`;
+
+                        // Add a title and description to a rubric item
+                        criteriaItemElem.appendChild(criteriaItemTitle);
+                        criteriaItemElem.appendChild(criteriaItemContent);
+
+                        // If admin, add an edit button
+                        if (isAdmin) {
+                            const editCriteriaButton = document.createElement('button');
+                            editCriteriaButton.textContent = 'Edit';
+                            editCriteriaButton.classList.add('edit-button');
+                            editCriteriaButton.onclick = (event) => {
+                                event.stopPropagation();
+                                editScoringCriteria(rubricIndex, criteriaIndex);
+                            };
+                            criteriaItemElem.appendChild(editCriteriaButton);
+                        }
+
+                        // Add a rubric item to a content container
+                        contentElem.appendChild(criteriaItemElem);
+                    });
+                } else {
+                    contentElem.textContent = 'No scoring criteria available.';
+                }
+
+                // Toggle content display when clicking on title
+                titleElem.addEventListener('click', function() {
+                    if (contentElem.style.display === 'none') {
+                        contentElem.style.display = 'block';
+                        titleElem.classList.add('expanded');
+                    } else {
+                        contentElem.style.display = 'none';
+                        titleElem.classList.remove('expanded');
+                    }
+                });
+
+                // Adding a title and content to a Rubric element
+                rubricElem.appendChild(titleElem);
+                rubricElem.appendChild(contentElem);
+
+                // Adding a Rubric Element to the Rubrics List
+                rubricsList.appendChild(rubricElem);
+            });
+        }
+
+        
+        
+
+        // When the page loads
+        window.onload = function() {
+            //admin
+            if (isAdmin) { 
+                fetch('/admin/get_leed_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        WRITING_RUBRIC = data.leed_data;
+                        displayLeedRubrics(WRITING_RUBRIC);
+                    } else {
+                        console.error('Failed to load LEED data:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching LEED data:', error);
+                });
+            } else {
+                // students
+                fetch('/get_WRITING_RUBRICs')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        WRITING_RUBRIC = data.rubrics;
+                        displayLeedRubrics(WRITING_RUBRIC);
+                    } else {
+                        console.error('Failed to load LEED rubrics:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching LEED rubrics:', error);
+                });
+            }
+        
+            // Initialize the drag and drop file upload function
+            initDragAndDrop();
+            document.getElementById('user-input').addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault(); // 阻止默认行为（如换行）
+                    sendMessage();      // 调用现有的发送消息函数
+                }
+            });
+        }
+
+        // Filling the LEED form
+        function fillLeedForm(leedScores) {
+            const form = document.getElementById('leed-form');
+            for (let [key, value] of Object.entries(leedScores)) {
+                const input = form.querySelector(`input[name="${key}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            }
+        }
+
+        function returnToMain() {
+            // Show main interface, hide LEED page
+            document.getElementById('main-container').style.display = 'flex';
+            document.getElementById('leed-page').style.display = 'none';
+
+            // Show LEED Rubrics
+            document.getElementById('leed-rubric-header').style.display = 'flex';
+            document.getElementById('leed-rubrics-list').style.display = 'flex';
+        }
+
+        // Generate LEED tables
+        function generateLeedTable() {
+            const tbody = document.querySelector('#leed-table tbody');
+            tbody.innerHTML = '';
+
+            LEED_TABLE_DATA.forEach(section => {
+                // Adding a section title
+                const sectionHeader = document.createElement('tr');
+                sectionHeader.classList.add('section-header');
+                const sectionTd = document.createElement('td');
+                sectionTd.colSpan = '4';
+                sectionTd.textContent = section.section;
+                sectionHeader.appendChild(sectionTd);
+                tbody.appendChild(sectionHeader);
+
+                // Traverse the items under the chapter
+                section.items.forEach(item => {
+                    const tr = document.createElement('tr');
+
+                    const tdTitle = document.createElement('td');
+                    tdTitle.textContent = item.name || '';
+                    tr.appendChild(tdTitle);
+                    
+                    const tdType = document.createElement('td');
+                    tdType.textContent = item.type || '';
+                    tr.appendChild(tdType);
+
+                    const tdPoints = document.createElement('td');
+                    let pointsDisplay;
+
+                    // Determine whether it is required
+                    if (item.type && item.type.toLowerCase() === 'prereq') {
+                        pointsDisplay = 'Required';
+                    } else {
+                        pointsDisplay = getMaxPoints(item.points);
+                        // If pointsDisplay is '0', set to 'Required'
+                        if (pointsDisplay === '0') {
+                            pointsDisplay = 'Required';
+                        }
+                    }
+
+                    tdPoints.textContent = pointsDisplay;
+                    tr.appendChild(tdPoints);
+
+                    const tdEarned = document.createElement('td');
+                    // Modify here: Determine whether to display 'Required' or the input box based on whether pointsDisplay is 'Required'
+                    if (pointsDisplay === 'Required') {
+                        tdEarned.textContent = 'Required';
+                    } else if (pointsDisplay) {
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.name = item.name;
+                        input.min = 0;
+                        input.max = parseFloat(pointsDisplay);
+                        input.step = 0.5;
+                        tdEarned.appendChild(input);
+
+                        input.addEventListener('input', function() {
+                            const max = parseFloat(this.max);
+                            const min = parseFloat(this.min);
+                            let value = parseFloat(this.value);
+        
+                            if (value > max) {
+                                this.value = max;
+                            } else if (value < min) {
+                                this.value = min;
+                            }
+                        });
+        
+                        tdEarned.appendChild(input);
+
+                        // If the user has entered a score before, fill it into the input box
+                        const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
+                        if (input && savedLeedScores[item.name] !== undefined) {
+                            input.value = savedLeedScores[item.name];
+                        }
+                    } else {
+                        tdEarned.textContent = '';
+                    }
+                    tr.appendChild(tdEarned);
+
+                    tbody.appendChild(tr);
+                });
+            });
+        }  
+
+        // New getMaxPoints function to get the maximum score
+        function getMaxPoints(points) {
+            if (typeof points === 'number') {
+                return points.toString();
+            } else if (Array.isArray(points)) {
+                return Math.max(...points).toString();
+            } else if (typeof points === 'object' && points !== null) {
+                // Extract all numeric point values ​​and expand the array
+                let pointValues = [];
+                Object.values(points).forEach(val => {
+                    if (Array.isArray(val)) {
+                        pointValues = pointValues.concat(val);
+                    } else if (typeof val === 'number') {
+                        pointValues.push(val);
+                    }
+                });
+                // Remove duplicate values
+                pointValues = [...new Set(pointValues)];
+                if (pointValues.length === 0) {
+                    return '';
+                }
+                return Math.max(...pointValues).toString();
+            }
+            return '';
+        }
+
+        // Submit LEED Form
+        function submitLeedForm() {
+            const form = document.getElementById('leed-form');
+            const formData = new FormData(form);
+
+            const leedScores = {};
+            let totalScore = 0;
+
+            for (let [key, value] of formData.entries()) {
+                if (value && !isNaN(parseFloat(value))) {
+                    leedScores[key] = parseFloat(value);
+                    totalScore += parseFloat(value);
+                }
+            }
+
+            if (Object.keys(leedScores).length === 0) {
+                alert('Please enter at least one score.');
+                return;
+            }
+
+            displayScoreMessage(totalScore);
+
+            // Send the user input score to the backend
+            fetch('/submit_leed_scores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ leed_scores: leedScores })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('leedSubmitted', 'true');
+                    sessionStorage.setItem('leedScores', JSON.stringify(leedScores));
+                    sessionStorage.setItem('leedTotalScore', totalScore);
+
+                    returnToMain();
+
+                    // Load and display LEED Rubrics
+                    displayLeedRubrics(WRITING_RUBRIC);
+
+                } else {
+                    alert('Failed to submit LEED scores: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting LEED scores.');
+            });
+        }
+
+        // Resubmit LEED Form
+        function resubmitLeed() {
+            sessionStorage.removeItem('leedSubmitted');
+            sessionStorage.removeItem('leedScores');
+            sessionStorage.removeItem('leedTotalScore');
+
+            showLeedPage();
+        }
+
+        function initDragAndDrop() {
+
+            const chatContainer = document.getElementById('chat-container');
+            const inputContainer = document.querySelector('.input-container');
+            const mainContainer = document.getElementById('main-container');
+
+                // 统一在 mainContainer 上监听拖拽事件
+            [chatContainer, inputContainer, mainContainer].forEach(element => {
+                element.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.add('dragover');
+                });
+
+                element.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.remove('dragover');
+                });
+
+                element.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.remove('dragover');
+
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const fileInput = document.getElementById('file-input');
+                        fileInput.files = files;
+                        sendMessage();
+                    }
+                });
+            });
+            /* const chatContainer = document.getElementById('chat-container');
+            const fileInput = document.getElementById('file-input');
+
+            chatContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.add('dragover');
+            });
+
+            chatContainer.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.remove('dragover');
+            });
+
+            chatContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    sendMessage();
+                }
+            });*/
+        }
+
+        function addRubric() {
+            const rubricName = prompt('Enter new rubric name:');
+            if (rubricName) {
+                WRITING_RUBRIC.push({
+                    name: rubricName,
+                    scoringCriteria: []
+                });
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function removeRubric(rubricIndex) {
+            if (confirm('Are you sure you want to delete this rubric?')) {
+                WRITING_RUBRIC.splice(rubricIndex, 1);
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function editRubric(rubricIndex) {
+            const rubric = WRITING_RUBRIC[rubricIndex];
+            const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
+            const titleElem = rubricElem.querySelector('.rubric-title');
+            const titleTextElem = titleElem.querySelector('.title-text');
+        
+            // Create an input box to replace the title text
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = rubric.name;
+            input.style.width = '100%';
+        
+            // Replace title text with input box
+            titleElem.replaceChild(input, titleTextElem);
+        
+            // Focus the input box and select text
+            input.focus();
+            input.select();
+        
+            // When the input box loses focus or the Enter key is pressed, the changes are saved
+            input.onblur = function() {
+                saveRubricName(rubricIndex, input.value);
+            };
+        
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    input.blur();
+                }
+            };
+        }
+        
+        function saveRubricName(rubricIndex, newName) {
+            // Update Rubric Name
+            WRITING_RUBRIC[rubricIndex].name = newName;
+        
+            // Re-display Rubrics
+            displayLeedRubrics(WRITING_RUBRIC);
+        
+            // Automatically save changes
+            saveLeedRubrics();
+        }
+        
+        function addScoringCriteria(rubricIndex) {
+            const points = prompt('Enter points for the scoring criteria:');
+            const description = prompt('Enter description for the scoring criteria:');
+            if (points && description) {
+                WRITING_RUBRIC[rubricIndex].scoringCriteria.push({
+                    points: parseFloat(points),
+                    description: description
+                });
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function removeScoringCriteria(rubricIndex, criteriaIndex) {
+            if (confirm('Are you sure you want to delete this scoring criteria?')) {
+                WRITING_RUBRIC[rubricIndex].scoringCriteria.splice(criteriaIndex, 1);
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function editScoringCriteria(rubricIndex, criteriaIndex) {
+            const criteria = WRITING_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex];
+            const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
+            const criteriaItemElem = rubricElem.querySelectorAll('.rubric-criteria-item')[criteriaIndex];
+            const criteriaItemContent = criteriaItemElem.querySelector('div:nth-child(2)'); // 第二个子元素为描述
+        
+            // Create a text area to replace the description text
+            const textarea = document.createElement('textarea');
+            textarea.value = criteria.description;
+            textarea.style.width = '100%';
+        
+            // Replace description text with text area
+            criteriaItemElem.replaceChild(textarea, criteriaItemContent);
+        
+            // Focus the text area and select the text
+            textarea.focus();
+            textarea.select();
+        
+            // Save changes when the text area loses focus or the Enter key is pressed
+            textarea.onblur = function() {
+                saveScoringCriteriaDescription(rubricIndex, criteriaIndex, textarea.value);
+            };
+        
+            textarea.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    textarea.blur();
+                }
+            };
+        }
+        function saveScoringCriteriaDescription(rubricIndex, criteriaIndex, newDescription) {
+            // Update Scoring Criteria description
+            WRITING_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex].description = newDescription;
+        
+            // Re-display Rubrics
+            displayLeedRubrics(WRITING_RUBRIC);
+        
+            // Automatically save changes
+            saveLeedRubrics();
+        }
+        
+        function saveLeedRubrics() {
+            fetch('/admin/save_leed_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ leed_data: WRITING_RUBRIC })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('LEED rubrics saved successfully.');
+                } else {
+                    alert('Failed to save LEED rubrics: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving LEED rubrics:', error);
+            });
+        }
+
+        function showLeedPage() {
+            // Hide the main interface and display the LEED page
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('leed-page').style.display = 'flex';
+        
+            // Hide LEED Rubrics
+            document.getElementById('leed-rubric-header').style.display = 'none';
+            document.getElementById('leed-rubrics-list').style.display = 'none';
+        
+            // Generate LEED tables
+            generateLeedTable();
+
+            // Insert the prompt
+            const leedContent = document.getElementById('leed-content');
+            const existingPrompt = document.querySelector('.leed-prompt');
+            if (!existingPrompt) {
+                const promptDiv = document.createElement('div');
+                promptDiv.className = 'leed-prompt';
+                promptDiv.textContent = 'Note: You do not need to fill in every item. Only input scores for the items where your project obtains points; other items will be counted as zero points.';
+                
+                // Change the font color to red
+                promptDiv.style.color = 'red';
+
+                leedContent.insertBefore(promptDiv, leedContent.querySelector('#leed-table-container'));
+            }
+        }
+        // Loading LEED data
+        const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
+
+        // New LEED Rubric Data
+        const WRITING_RUBRIC = [
+            {
+                name: 'LEED Certification Achievement',
+                scoringCriteria: [
+                    {
+                        points: 3,
+                        description: 'The narrative clearly demonstrates that the project achieves at least LEED Certified status (40-49 points). This includes selecting the necessary credits and meeting all prerequisite requirements as outlined in LEED v4 BD+C. The student’s narrative must show that the combination of credits chosen would, in reality, enable the project to achieve certification, with no missing or misinterpreted prerequisites or credits.'
+                    },
+                    {
+                        points: 2,
+                        description: 'The project demonstrates an effort to achieve LEED certification but falls short of meeting all the prerequisite credits or does not fully align the credit selection with the required number of points for certification. There may be minor misunderstandings about specific credit requirements or a lack of clarity about how the project will meet the minimum certification threshold.'
+                    },
+                    {
+                        points: 1,
+                        description: 'The project fails to adequately address key LEED prerequisites or selected credits are significantly misaligned with achieving certification. It may attempt to claim certification without showing how the credit requirements are realistically met.'
+                    },
+                    {
+                        points: 0,
+                        description: 'The narrative does not address how the project will achieve LEED certification, or no credit selections are provided.'
+                    }
+                ]
+            },
+            {
+                name: 'Reflection of Credit Requirements',
+                scoringCriteria: [
+                    {
+                        points: 4,
+                        description: 'The narrative must accurately reflect the specific requirements for each credit selected, including the minimum thresholds, performance metrics, and technical criteria as outlined in LEED v4 BD+C. For example, if the student claims points for Water Efficiency, the narrative should describe how the project meets the exact reductions in water use required for the chosen credit level. Each credit should be fully justified with a clear explanation of how the project meets all quantifiable and qualitative requirements necessary to claim the credit’s points.'
+                    },
+                    {
+                        points: 3,
+                        description: 'Most credit requirements are correctly identified and explained, though some credits may lack the level of detail needed to fully demonstrate compliance with LEED standards. There may be minor misinterpretations of the performance thresholds or metrics for a few credits.'
+                    },
+                    {
+                        points: 2,
+                        description: 'Several credit requirements are not adequately reflected, with important aspects of LEED compliance misunderstood or missing. The narrative may generalize credit requirements rather than explaining how the specific thresholds or criteria are met.'
+                    },
+                    {
+                        points: 1,
+                        description: 'The narrative mentions credits but provides little to no explanation of how the project will meet the detailed requirements. The understanding of LEED requirements is either vague or incorrect.'
+                    },
+                    {
+                        points: 0,
+                        description: 'The narrative does not reflect any LEED credit requirements, or no credits are discussed.'
+                    }
+                ]
+            },
+            {
+                name: 'Formatting: Credit Names and Points Claimed',
+                scoringCriteria: [
+                    {
+                        points: 3,
+                        description: 'The narrative must clearly list the name of each credit pursued and the points claimed for each one, following the LEED v4 BD+C structure. The credit names should be accurately listed as they appear in the LEED reference guide, and the corresponding points should reflect the exact level claimed based on the project\'s anticipated performance (e.g., low, medium, or high point tiers for Energy Performance). The formatting should make it easy to identify each credit and its associated points within the narrative.'
+                    },
+                    {
+                        points: 2,
+                        description: 'Most credits are clearly named and points claimed, but there may be some minor inconsistencies in how credits or point totals are presented. Formatting may require some clarification but still allows the reader to generally follow the credit selection.'
+                    },
+                    {
+                        points: 1,
+                        description: 'The credit names or points claimed are incomplete or inconsistent, making it difficult to understand which credits are being pursued or how many points the student aims to achieve. The formatting lacks clarity, and important details are missing.'
+                    },
+                    {
+                        points: 0,
+                        description: 'No credit names or points claimed are provided, or the formatting is so unclear that it is difficult to determine which credits are being pursued.'
+                    }
+                ]
+            },
+            {
+                name: 'Realistic and Detailed Implementation of Credits',
+                scoringCriteria: [
+                    {
+                        points: 3,
+                        description: 'The narrative must provide a realistic and detailed explanation of how the project will achieve each credit selected. The explanation should not only outline general strategies but also address specific technical requirements, such as system performance, material selections, or site strategies that align with LEED’s detailed credit standards. For instance, if claiming points for Indoor Environmental Quality, the student should specify exactly how ventilation, material off-gassing limits, or lighting controls will meet LEED thresholds.'
+                    },
+                    {
+                        points: 2,
+                        description: 'The narrative provides a generally realistic description of how credits will be achieved but lacks some depth in the technical or detailed aspects. Some strategies may be too general or not fully aligned with LEED’s specific performance or compliance standards.'
+                    },
+                    {
+                        points: 1,
+                        description: 'The explanation of how credits will be achieved is vague or unrealistic, with minimal attention to the detailed requirements necessary for LEED compliance. The strategies may be impractical for the project\'s scope.'
+                    },
+                    {
+                        points: 0,
+                        description: 'The student does not provide any realistic strategies for achieving the credits, or no explanation is provided.'
+                    }
+                ]
+            },
+            {
+                name: 'Grammar, Structure, and Clarity',
+                scoringCriteria: [
+                    {
+                        points: 2,
+                        description: 'The narrative is clearly written, well-organized, and free of significant grammatical or spelling errors. The structure is logical, with headings and subheadings that make it easy to navigate through the different credits and their explanations. The use of technical language is appropriate, and the narrative maintains a professional tone throughout.'
+                    },
+                    {
+                        points: 1.5,
+                        description: 'The narrative is mostly well-written and organized, but may contain a few minor grammatical or structural issues. Headings and subheadings are generally used but may not always be clear or consistent.'
+                    },
+                    {
+                        points: 1,
+                        description: 'The narrative contains several grammatical or structural errors that impact readability. The organization is somewhat unclear, and the structure of the document may be confusing or inconsistent.'
+                    },
+                    {
+                        points: 0,
+                        description: 'The narrative is poorly written, difficult to follow, and lacks organization. Grammar and spelling errors significantly impair the reader’s ability to understand the content.'
+                    }
+                ]
+            }
+        ];
+
+    </script>
+    {% if user %}
+        <div class="logout-container">
+            <a href="{{ url_for('logout') }}" class="logout-button">Log Out</a>
+        </div>
+    {% endif %}
+</body>
+</html>

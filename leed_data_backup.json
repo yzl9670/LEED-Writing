@@ -1,0 +1,325 @@
+{
+    "LEED_Credits_Collection": {
+        "New Construction": {
+            "Location and Transportation": {
+                "Credits": [
+                    {
+                        "name": "Sensitive Land Protection",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "High Priority Site",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Surrounding Density and Diverse Uses",
+                        "type": "Credit",
+                        "points": 5
+                    },
+                    {
+                        "name": "Access to Quality Transit",
+                        "type": "Credit",
+                        "points": 5
+                    },
+                    {
+                        "name": "Bicycle Facilities",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Reduced Parking Footprint",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Green Vehicles",
+                        "type": "Credit",
+                        "points": 1
+                    }
+                ],
+                "total_points": 16
+            },
+            "Sustainable Sites": {
+                "Credits": [
+                    {
+                        "name": "Construction Activity Pollution Prevention",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Site Assessment",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Site Development - Protect or Restore Habitat",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Open Space",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Rainwater Management",
+                        "type": "Credit",
+                        "points": 3
+                    },
+                    {
+                        "name": "Heat Island Reduction",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Light Pollution Reduction",
+                        "type": "Credit",
+                        "points": 1
+                    }
+                ],
+                "total_points": 10
+            },
+            "Water Efficiency": {
+                "Credits": [
+                    {
+                        "name": "Outdoor Water Use Reduction",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Indoor Water Use Reduction",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Building-Level Water Metering",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Outdoor Water Use Reduction",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Indoor Water Use Reduction",
+                        "type": "Credit",
+                        "points": 6
+                    },
+                    {
+                        "name": "Cooling Tower Water Use",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Water Metering",
+                        "type": "Credit",
+                        "points": 1
+                    }
+                ],
+                "total_points": 11
+            },
+            "Energy and Atmosphere": {
+                "Credits": [
+                    {
+                        "name": "Fundamental Commissioning and Verification",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Minimum Energy Performance",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Building-Level Energy Metering",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Fundamental Refrigerant Management",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Enhanced Commissioning",
+                        "type": "Credit",
+                        "points": 6
+                    },
+                    {
+                        "name": "Optimize Energy Performance",
+                        "type": "Credit",
+                        "points": 18
+                    },
+                    {
+                        "name": "Advanced Energy Metering",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Demand Response",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Renewable Energy Production",
+                        "type": "Credit",
+                        "points": 3
+                    },
+                    {
+                        "name": "Enhanced Refrigerant Management",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Green Power and Carbon Offsets",
+                        "type": "Credit",
+                        "points": 2
+                    }
+                ],
+                "total_points": 33
+            },
+            "Materials and Resources": {
+                "Credits": [
+                    {
+                        "name": "Storage and Collection of Recyclables",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Construction and Demolition Waste Management Planning",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Building Life-Cycle Impact Reduction",
+                        "type": "Credit",
+                        "points": 5
+                    },
+                    {
+                        "name": "Building Product Disclosure and Optimization - Environmental Product Declarations",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Building Product Disclosure and Optimization - Sourcing of Raw Materials",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Building Product Disclosure and Optimization - Material Ingredients",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Construction and Demolition Waste Management",
+                        "type": "Credit",
+                        "points": 2
+                    }
+                ],
+                "total_points": 13
+            },
+            "Indoor Environmental Quality": {
+                "Credits": [
+                    {
+                        "name": "Minimum Indoor Air Quality Performance",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Environmental Tobacco Smoke Control",
+                        "type": "Prereq",
+                        "points": "Required"
+                    },
+                    {
+                        "name": "Enhanced Indoor Air Quality Strategies",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Low-Emitting Materials",
+                        "type": "Credit",
+                        "points": 3
+                    },
+                    {
+                        "name": "Construction Indoor Air Quality Management Plan",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Indoor Air Quality Assessment",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Thermal Comfort",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Interior Lighting",
+                        "type": "Credit",
+                        "points": 2
+                    },
+                    {
+                        "name": "Daylight",
+                        "type": "Credit",
+                        "points": 3
+                    },
+                    {
+                        "name": "Quality Views",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Acoustic Performance",
+                        "type": "Credit",
+                        "points": 1
+                    }
+                ],
+                "total_points": 16
+            },
+            "Innovation": {
+                "Credits": [
+                    {
+                        "name": "Innovation",
+                        "type": "Credit",
+                        "points": 5
+                    },
+                    {
+                        "name": "LEED Accredited Professional",
+                        "type": "Credit",
+                        "points": 1
+                    }
+                ],
+                "total_points": 6
+            },
+            "Regional Priority": {
+                "Credits": [
+                    {
+                        "name": "Regional Priority: Specific Credit",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Regional Priority: Specific Credit",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Regional Priority: Specific Credit",
+                        "type": "Credit",
+                        "points": 1
+                    },
+                    {
+                        "name": "Regional Priority: Specific Credit",
+                        "type": "Credit",
+                        "points": 1
+                    }
+                ],
+                "total_points": 4
+            }
+        }
+}
