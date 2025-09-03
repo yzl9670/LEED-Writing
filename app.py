@@ -165,23 +165,22 @@ class Interaction(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("account.id"), nullable=False)
 
-    # 选择（JSON存快照：[{category,name,points}, ...]）
     step1_json = db.Column(db.Text, default="[]")
     step2_json = db.Column(db.Text, default="[]")
     step1_total = db.Column(db.Float, default=0)
     step2_total = db.Column(db.Float, default=0)
     total_points = db.Column(db.Float, default=0)
 
-    # 交互内容
-    chat_history_id = db.Column(db.String(64))  # 前端传回来的 id
-    prompt_text = db.Column(db.Text)            # 提示（学生输入）
+    # interaction
+    chat_history_id = db.Column(db.String(64))  
+    prompt_text = db.Column(db.Text)            
     prompt_time = db.Column(db.DateTime)
     feedback_text = db.Column(db.Text)  
     feedback_summary = db.Column(db.Text)         
     feedback_time = db.Column(db.DateTime)
 
-    rating = db.Column(db.Integer)              # 1-5
-    student_feedback_text = db.Column(db.Text)  # 学生对回复的主观评价
+    rating = db.Column(db.Integer)              
+    student_feedback_text = db.Column(db.Text) 
 
     status = db.Column(db.String(32), default="draft")  # draft/final
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -255,13 +254,12 @@ def get_last_feedback():
 
 @app.post("/get_feedback")
 def get_feedback():
-    # 1) 基本入参
+
     msg = request.form.get("message", "").strip()
     leed_scores_json = request.form.get("leed_scores")
     rubrics_text = request.form.get("rubrics", "")
     f = request.files.get("file")
 
-    # 2) 解析前端合并后的 flat 分数（兜底用）
     leed_scores = None
     if leed_scores_json:
         try:
@@ -269,7 +267,21 @@ def get_feedback():
         except Exception:
             leed_scores = None
 
-    # 3) 取当前用户的草稿，拿到后端保存的 Step1/Step2（就是你要“传过去”的 items+分数）
+    user = get_current_user()
+    draft = get_or_create_draft(user.id)
+    try:
+        priority_items = json.loads(draft.step1_json or "[]")
+    except Exception:
+        priority_items = []
+    try:
+        supplement_items = json.loads(draft.step2_json or "[]")
+    except Exception:
+        supplement_items = []
+    app.logger.info(f"[FEEDBACK] priority_items={len(priority_items)}, "
+                    f"supplement_items={len(supplement_items)}, "
+                    f"leed_scores_keys={(len(leed_scores) if isinstance(leed_scores, dict) else 0)}")
+    
+
     user = get_current_user()
     draft = get_or_create_draft(user.id)
     try:
@@ -281,13 +293,12 @@ def get_feedback():
     except Exception:
         supplement_items = []
 
-    # 调试日志（方便你在终端看）
+    # debug
     app.logger.info(
         "[FEEDBACK] using priority=%d items, supplement=%d items; msg_len=%d; file=%s",
         len(priority_items), len(supplement_items), len(msg), (f.filename if f else None)
     )
 
-    # 4) 若有上传文件，尽量抽文本（可选依赖：pdfminer.six / python-docx）
     uploaded_text = ""
     if f and f.filename:
         fname = f.filename.lower()
@@ -311,7 +322,6 @@ def get_feedback():
             elif fname.endswith(".docx"):
                 try:
                     import docx as _docx
-                    # 直接读文件对象在部分环境不行，先落到临时文件
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp:
                         f.save(tmp.name)
                         doc = _docx.Document(tmp.name)
@@ -327,7 +337,6 @@ def get_feedback():
                     except Exception:
                         uploaded_text = ""
             else:
-                # 其它类型，尝试按文本读
                 try:
                     uploaded_text = f.read().decode("utf-8", "ignore")
                 except Exception:
@@ -335,23 +344,19 @@ def get_feedback():
         except Exception as e:
             app.logger.warning(f"[FEEDBACK] upload handling failed: {e}")
 
-    # 5) 选用 message 或上传文件的文本（优先用用户输入）
     narrative_text = msg or uploaded_text
 
-    # 6) 调用 feedback 生成（把 step1/step2 明确传进去！）
     feedback_text, scores, feedback_summary = generate_feedback(
         message=narrative_text,
-        leed_scores=leed_scores,                  # 兜底：如果没存 step1/2，也能工作
+        leed_scores=leed_scores,                
         rubrics_text=rubrics_text,
         uploaded_filename=(f.filename if f else None),
-        priority_items=priority_items,            # <<< 关键：传 Step 1
-        supplement_items=supplement_items,        # <<< 关键：传 Step 2
+        priority_items=priority_items,            
+        supplement_items=supplement_items,        
     )
 
-    # 7) 仍然保留 last_feedback 的文件写入（可选）
     dump_json(LAST_FEEDBACK_PATH, {"feedback": feedback_text})
 
-    # 8) 入库（一样，保存一次快照）
     chat_id = str(uuid.uuid4())
     rec = Interaction(
         user_id=user.id,
@@ -376,7 +381,7 @@ def get_feedback():
         "success": True,
         "feedback": feedback_text,
         "feedback_summary": feedback_summary,
-        "scores": scores,                 # 维持原有字段，前端可继续用
+        "scores": scores,                 
         "chat_history_id": chat_id,
     })
 
