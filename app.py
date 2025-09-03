@@ -12,6 +12,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from pprint import pformat
+import tempfile
 
 # --- App & Paths -------------------------------------------------------------
 ROOT = Path(__file__).resolve().parent
@@ -263,8 +264,9 @@ def get_feedback():
     leed_scores = None
     if leed_scores_json:
         try:
-            leed_scores = _json.loads(leed_scores_json)
+            leed_scores = json.loads(leed_scores_json)
         except Exception:
+            app.logger.warning("[FEEDBACK] invalid leed_scores_json")
             leed_scores = None
 
     user = get_current_user()
@@ -277,26 +279,11 @@ def get_feedback():
         supplement_items = json.loads(draft.step2_json or "[]")
     except Exception:
         supplement_items = []
-    app.logger.info(f"[FEEDBACK] priority_items={len(priority_items)}, "
-                    f"supplement_items={len(supplement_items)}, "
-                    f"leed_scores_keys={(len(leed_scores) if isinstance(leed_scores, dict) else 0)}")
-    
 
-    user = get_current_user()
-    draft = get_or_create_draft(user.id)
-    try:
-        priority_items = _json.loads(draft.step1_json or "[]")
-    except Exception:
-        priority_items = []
-    try:
-        supplement_items = _json.loads(draft.step2_json or "[]")
-    except Exception:
-        supplement_items = []
-
-    # debug
     app.logger.info(
-        "[FEEDBACK] using priority=%d items, supplement=%d items; msg_len=%d; file=%s",
-        len(priority_items), len(supplement_items), len(msg), (f.filename if f else None)
+        "[FEEDBACK] priority_items=%d, supplement_items=%d, leed_scores_keys=%d",
+        len(priority_items), len(supplement_items),
+        (len(leed_scores) if isinstance(leed_scores, dict) else 0)
     )
 
     uploaded_text = ""
@@ -306,6 +293,7 @@ def get_feedback():
             if fname.endswith(".pdf"):
                 try:
                     from pdfminer.high_level import extract_text as _pdf_extract
+                    import tempfile
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
                         f.save(tmp.name)
                         uploaded_text = _pdf_extract(tmp.name) or ""
@@ -322,6 +310,7 @@ def get_feedback():
             elif fname.endswith(".docx"):
                 try:
                     import docx as _docx
+                    import tempfile
                     with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp:
                         f.save(tmp.name)
                         doc = _docx.Document(tmp.name)
@@ -346,13 +335,18 @@ def get_feedback():
 
     narrative_text = msg or uploaded_text
 
+    app.logger.info(
+        "[FEEDBACK] using priority=%d items, supplement=%d items; msg_len=%d; file=%s",
+        len(priority_items), len(supplement_items), len(narrative_text), (f.filename if f else None)
+    )
+
     feedback_text, scores, feedback_summary = generate_feedback(
         message=narrative_text,
         leed_scores=leed_scores,                
         rubrics_text=rubrics_text,
         uploaded_filename=(f.filename if f else None),
-        priority_items=priority_items,            
-        supplement_items=supplement_items,        
+        priority_items=priority_items,          #  Step 1
+        supplement_items=supplement_items,      #  Step 2
     )
 
     dump_json(LAST_FEEDBACK_PATH, {"feedback": feedback_text})
@@ -381,7 +375,7 @@ def get_feedback():
         "success": True,
         "feedback": feedback_text,
         "feedback_summary": feedback_summary,
-        "scores": scores,                 
+        "scores": scores,                  
         "chat_history_id": chat_id,
     })
 
