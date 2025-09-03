@@ -35,7 +35,11 @@
             background-color: #fff;
             display: flex;
             flex-direction: column;
+<<<<<<< HEAD
             position: relative;
+=======
+            position: relativea;
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
             overflow: hidden;
         }
         .chat-container {
@@ -348,10 +352,13 @@
             width: 90%;
             position: relative;
         }
+<<<<<<< HEAD
         
         .rubric-title::after { content:'\25BA'; position:absolute; right:10px; transition:transform .3s; }
         .rubric-title.expanded::after { transform: rotate(90deg); }
 
+=======
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
         .rubric-title .title-text {
             flex-grow: 1;
         }
@@ -396,6 +403,10 @@
             display: none;
             width: 100%;
             box-sizing: border-box;
+<<<<<<< HEAD
+=======
+            display: flex;
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
             flex-direction: column;
         }
         .rubric-subcontent.visible {
@@ -526,6 +537,7 @@
         #rubrics-total-score {
             display: none;
         }
+<<<<<<< HEAD
         .stepper { display:flex; gap:12px; margin-bottom:12px; }
         .stepper button { padding:6px 10px; border:1px solid #ddd; border-radius:8px; background:#f7f7f7; cursor:pointer; }
         .stepper button.active { background:#eef6ff; border-color:#9cc4ff; }
@@ -539,6 +551,8 @@
         th, td { border:1px solid #eee; padding:6px 8px; text-align:left; }
         tr.prereq { background:#fafafa; color:#888; }
         .hidden { display:none; }
+=======
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
     </style>
     <script>
         var isAdmin = {{ is_admin | tojson }};
@@ -612,6 +626,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
 
 
     <div class="stepper">
@@ -708,6 +723,8 @@
     {{ leed_table_data|tojson }}
     </script>
 
+=======
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
     <script>
         let currentChatHistoryId = null;  
         let currentMode = 'LEED'; 
@@ -747,12 +764,22 @@
         
             // Depending on the current model (LEED or other), attach the corresponding data
             if (currentMode === 'LEED') {
+<<<<<<< HEAD
                 const raw = sessionStorage.getItem('leedScores');
                 const leedScores = raw ? JSON.parse(raw) : null;
                 if (leedScores) {
                     formData.append('leed_scores', JSON.stringify(leedScores));
                 }
                 // 没有分数也照样发，让后端用已选条目兜底
+=======
+                const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
+                if (leedScores) {
+                    formData.append('leed_scores', JSON.stringify(leedScores));
+                } else {
+                    alert('Please submit LEED scores first.');
+                    return;
+                }
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
             } else {
                 const rubrics = getCurrentRubrics();
                 formData.append('rubrics', rubrics);
@@ -1250,6 +1277,7 @@
             });
             
             // Load LEED data or Rubrics data based on user role
+<<<<<<< HEAD
             fetch('/get_WRITING_RUBRICs')
                 .then(r => r.json())
                 .then(data => {
@@ -1264,6 +1292,37 @@
                     console.error('Error fetching rubrics:', err);
                     displayLeedRubrics(WRITING_RUBRIC); // 回退到内置
                 });
+=======
+            if (isAdmin) {
+                fetch('/admin/get_leed_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        WRITING_RUBRIC = data.leed_data;
+                        displayLeedRubrics(WRITING_RUBRIC);
+                    } else {
+                        console.error("Failed to load LEED data:", data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching LEED data:", error);
+                });
+            } else {
+                fetch('/get_WRITING_RUBRICs')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        WRITING_RUBRIC = data.rubrics;
+                        displayLeedRubrics(WRITING_RUBRIC);
+                    } else {
+                        console.error("Failed to load LEED rubrics:", data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching LEED rubrics:", error);
+                });
+            }
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
             
             // Initialize the drag and drop upload function
             initDragAndDrop();
@@ -1336,9 +1395,15 @@
                     } else {
                         pointsDisplay = getMaxPoints(item.points);
                         // If pointsDisplay is '0', set to 'Required'
+<<<<<<< HEAD
                         const isPrereq = (item.type && item.type.toLowerCase() === 'prereq')
                         || String(item.points).toLowerCase() === 'required';
                         const pointsDisplay = isPrereq ? 'Required' : getMaxPoints(item.points);
+=======
+                        if (pointsDisplay === '0') {
+                            pointsDisplay = 'Required';
+                        }
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
                     }
 
                     tdPoints.textContent = pointsDisplay;
@@ -1368,7 +1433,13 @@
                                 this.value = min;
                             }
                         });
+<<<<<<< HEAD
                         
+=======
+        
+                        tdEarned.appendChild(input);
+
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
                         // If the user has entered a score before, fill it into the input box
                         const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
                         if (input && savedLeedScores[item.name] !== undefined) {
@@ -1499,9 +1570,13 @@
                     const files = e.dataTransfer.files;
                     if (files.length > 0) {
                         const fileInput = document.getElementById('file-input');
+<<<<<<< HEAD
                         const dt = new DataTransfer();
                         dt.items.add(files[0]);           // 只取第一个，或自行循环添加
                         document.getElementById('file-input').files = dt.files;
+=======
+                        fileInput.files = files;
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
                         sendMessage();
                     }
                 });
@@ -1656,6 +1731,7 @@
         }
         
         function saveLeedRubrics() {
+<<<<<<< HEAD
             fetch('/save_WRITING_RUBRICs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1676,6 +1752,28 @@
                 console.error('Error saving rubrics:', err);
             });
         }
+=======
+            fetch('/admin/save_leed_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ leed_data: WRITING_RUBRIC })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('LEED rubrics saved successfully.');
+                } else {
+                    alert('Failed to save LEED rubrics: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving LEED rubrics:', error);
+            });
+        }
+
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
         function showLeedPage() {
             // Hide the main interface and display the LEED page
             document.getElementById('main-container').style.display = 'none';
@@ -1702,6 +1800,7 @@
                 leedContent.insertBefore(promptDiv, leedContent.querySelector('#leed-table-container'));
             }
         }
+<<<<<<< HEAD
 
         (function() {
         // 简易工具
@@ -1897,11 +1996,17 @@
         refreshPlan().catch(() => {});
         })();
 
+=======
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
         // Loading LEED data
         const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
 
         // New LEED Rubric Data
+<<<<<<< HEAD
         let  WRITING_RUBRIC = [
+=======
+        const WRITING_RUBRIC = [
+>>>>>>> dac79ff818159051f5076784da316ba3e020095f
             {
                 name: 'LEED Certification Achievement',
                 scoringCriteria: [
