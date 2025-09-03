@@ -1,34 +1,35 @@
-<<<<<<< HEAD
-# Python
+# Byte-compiled / caches
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.env
-.venv/
-venv/
-ENV/
+*.py[cod]
+*.so
+
+# Distribution / packaging
 build/
 dist/
+*.egg-info/
+*.dist-info/
 
-# OS
-.DS_Store
-
-# Editors
-.vscode/
-.idea/
-=======
-@"
+# Virtual environments (Windows & Unix)
+env/
 venv/
+.venv/
+ENV/
+Lib/
+Include/
+Scripts/
 Lib_backup/
-.env
-__pycache__/
-*.pyc
-uploads/
-*.db
-var/
+
+# Flask
+instance/
+
+# Logs
+*.log
+
+# OS / IDE
 .DS_Store
-.idea/
+Thumbs.db
 .vscode/
-"@ | Out-File -Encoding utf8 .gitignore
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
+.idea/
+
+# DB / misc
+*.sqlite
