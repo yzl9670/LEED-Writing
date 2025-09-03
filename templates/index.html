@@ -2028,6 +2028,21 @@
 
                         // Write two steps separately
                         const r1 = await postPhase('priority',   SCORES_P1);
+                        const DATA = Array.isArray(window.LEED_TABLE_DATA) ? window.LEED_TABLE_DATA : [];
+                        const deltaScores = {};
+                        for (const sec of DATA) {
+                            for (const it of (sec.items || [])) {
+                                if (isRequiredItem(it)) continue;
+                                const name = it.name || '';
+                                const p1 = parseFloat(SCORES_P1[name] ?? 0) || 0;
+                                const p2 = parseFloat(SCORES_P2[name] ?? 0) || 0;
+                                const d  = p2 - p1;
+                                if (d > 0) {
+
+                                    deltaScores[name] = +d.toFixed(3);
+                                }
+                            }
+                        }
                         const r2 = await postPhase('supplement', SCORES_P2);
                         if (!r1.success || !r2.success) throw new Error((r1.error || r2.error) || 'Save failed');
 
