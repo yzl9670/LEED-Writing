@@ -20,12 +20,26 @@ REQUEST_TIMEOUT  = float(os.getenv("FEEDBACK_LLM_TIMEOUT", "15"))  # seconds per
 MAX_TOKENS       = int(os.getenv("FEEDBACK_MAX_TOKENS", "700"))    # keep it compact
 NARRATIVE_CLIP   = int(os.getenv("FEEDBACK_MAX_CHARS", "8000"))    # safety clip for long essays
 
-USE_LLM = bool(OPENAI_API_KEY and openai is not None)
+_client = None
+try:
+    from openai import OpenAI  # 新 SDK
+    if OPENAI_API_KEY:
+        _client = OpenAI(api_key=OPENAI_API_KEY)
+except Exception:
+    _client = None
+
+try:
+    import openai as _openai_legacy
+    if OPENAI_API_KEY and _client is None:
+        _openai_legacy.api_key = OPENAI_API_KEY
+except Exception:
+    _openai_legacy = None
+
+USE_LLM = bool(_client or (_openai_legacy and OPENAI_API_KEY))
 if USE_LLM:
-    openai.api_key = OPENAI_API_KEY
     log.info(f"Feedback LLM enabled: {CHAT_MODEL}")
 else:
-    log.warning("Feedback LLM disabled (no OPENAI_API_KEY or openai missing).")
+    log.warning("Feedback LLM disabled (no OPENAI_API_KEY or OpenAI SDK missing).")
 
 # ============================= Public API ===================================
 def generate_feedback(
@@ -176,33 +190,50 @@ def generate_feedback(
 def _ask_llm_for_json(payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if not USE_LLM:
         return None
-    try:
-        system = (
-            "You are a LEED BD+C reviewer. Output ONLY valid minified JSON matching the provided schema. "
-            "No prose, no markdown, no explanations outside JSON."
-        )
-        user = (
-            "Evaluate the LEED narrative vs selected credits. Respect the rules and schema.\n\n"
-            + json.dumps(payload, ensure_ascii=False)
-        )
-        resp = openai.ChatCompletion.create(
-            model=CHAT_MODEL,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
-            ],
-            temperature=0.2,
-            max_tokens=MAX_TOKENS,
-            timeout=REQUEST_TIMEOUT,
-        )
-        text = resp["choices"][0]["message"]["content"].strip()
 
-        # Be robust to accidental prose: extract JSON substring
-        obj = _extract_json(text)
-        return obj
+    system = (
+        "You are a LEED BD+C reviewer. Output ONLY valid minified JSON matching the provided schema. "
+        "No prose, no markdown, no explanations outside JSON."
+    )
+    user = "Evaluate the LEED narrative vs selected credits. Respect the rules and schema.\n\n" + \
+           json.dumps(payload, ensure_ascii=False)
+
+    try:
+
+        if _client is not None:
+            resp = _client.chat.completions.create(
+                model=CHAT_MODEL,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user",   "content": user},
+                ],
+                temperature=0.2,
+                max_tokens=MAX_TOKENS,
+            )
+            text = resp.choices[0].message.content.strip()
+            return _extract_json(text)
+
+
+        if _openai_legacy is not None and hasattr(_openai_legacy, "ChatCompletion"):
+            resp = _openai_legacy.ChatCompletion.create(
+                model=CHAT_MODEL,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user",   "content": user},
+                ],
+                temperature=0.2,
+                max_tokens=MAX_TOKENS,
+                timeout=REQUEST_TIMEOUT,
+            )
+            text = resp["choices"][0]["message"]["content"].strip()
+            return _extract_json(text)
+
+        return None
+
     except Exception as e:
         log.warning(f"LLM call failed: {e}")
         return None
+
 
 
 def _extract_json(s: str) -> Optional[Dict[str, Any]]:
