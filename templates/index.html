@@ -18,6 +18,7 @@
             display: flex;
             flex: 1;
             height: 100%;
+            min-height: 0;
         }
         /*hide*/
         .left-menu {
@@ -35,11 +36,9 @@
             background-color: #fff;
             display: flex;
             flex-direction: column;
-<<<<<<< HEAD
+
             position: relative;
-=======
-            position: relativea;
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
+
             overflow: hidden;
         }
         .chat-container {
@@ -261,17 +260,116 @@
             padding: 5px 10px;
             cursor: pointer;
         }
-        
+
         #leed-page {
             display: none;
             flex-direction: column;
             flex: 1;
+            min-height: 0; 
         }
         #leed-content {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;  
+            overflow: hidden; /* prevent outer scroll; inner pane will scroll */
+            margin: 6px 0 10px;
+            font-weight: 700;
+            letter-spacing:.2px;
         }
+        #leed-content h2{
+            margin:6px 0 10px;
+            font-weight:700;
+            letter-spacing:.2px;
+        }
+        /* Sticky top summary */
+        #planSummary {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            background: #fff;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee; 
+            align-items:center;
+            gap:10px;
+        }
+        #planSummary>div:first-child{ white-space:nowrap; color:#111827; }
+
+        #step1,
+        #step2 {
+            flex: 1;
+            min-height: 0;       
+            display: flex;
+            flex-direction: column;
+        }
+        .step-actions{
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:8px;
+        }
+        .step-actions button{
+            padding:8px 14px;
+            border:none;
+            border-radius:6px;
+            background:#4CAF50;
+            color:#fff;
+            cursor:pointer;
+        }
+
+        .step-actions button:disabled{ opacity:.6; cursor:not-allowed; }
+
+        /* Scrollable “window” that holds the table */
+        .pane-scroll {
+            flex: 1;
+            min-height: 0;          /* required so flex children can shrink */
+            overflow: auto;         /* wheel scroll lives here */
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 8px;           /* small inner padding so borders don’t hug table */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .pane-scroll::-webkit-scrollbar{ width:10px; }
+        .pane-scroll::-webkit-scrollbar-track{ background:#f3f4f6; border-radius:10px; }
+        .pane-scroll::-webkit-scrollbar-thumb{
+        background:#cfd8e3; border-radius:10px; border:2px solid #f3f4f6;
+        }
+        .pane-scroll:hover::-webkit-scrollbar-thumb{ background:#b7c4d6; }
+
+        /* Sticky bottom bar (Back + actions) */
+        .button-container {
+            position: sticky;
+            bottom: 0;
+            z-index: 3;
+            background: #fff;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+        }
+
+        /* Make table headers stick inside the pane while scrolling */
+        .pane-scroll thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
+        }
+
+        /* Optional: keep section headers visible just under the table header */
+        .pane-scroll .section-header td {
+            position: sticky;
+            top: 37px; /* ~ thead height */
+            background: #f9fbff;
+            z-index: 1;
+        }
+
         #leed-table-container {
             max-height: 60vh;
             overflow-y: auto;
@@ -294,13 +392,28 @@
             font-weight: bold;
         }
         #leed-table input[type="number"] {
-            width: 80px;
+            width:90px;
+            border:1px solid var(--border);
+            border-radius:8px;
+            padding:6px 8px;
+            outline:none;
+            transition:border .15s, box-shadow .15s;
         }
+        #leed-table input[type="number"]:focus{
+            border-color:#b7e2c3;
+            box-shadow:0 0 0 3px rgba(76,175,80,.12);
+        }
+        #leed-table input[type="number"]::-webkit-outer-spin-button,
+        #leed-table input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+        #leed-table input[type="number"]{ -moz-appearance: textfield; }
         
         .button-container {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+            background:#fff;
+            border-top:1px solid var(--border);
+            box-shadow: 0 -4px 12px rgba(0,0,0,.04);
         }
         .button-container .back-button {
             padding: 10px 20px;
@@ -352,13 +465,12 @@
             width: 90%;
             position: relative;
         }
-<<<<<<< HEAD
+
         
         .rubric-title::after { content:'\25BA'; position:absolute; right:10px; transition:transform .3s; }
         .rubric-title.expanded::after { transform: rotate(90deg); }
 
-=======
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
+
         .rubric-title .title-text {
             flex-grow: 1;
         }
@@ -403,10 +515,6 @@
             display: none;
             width: 100%;
             box-sizing: border-box;
-<<<<<<< HEAD
-=======
-            display: flex;
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
             flex-direction: column;
         }
         .rubric-subcontent.visible {
@@ -537,26 +645,205 @@
         #rubrics-total-score {
             display: none;
         }
-<<<<<<< HEAD
-        .stepper { display:flex; gap:12px; margin-bottom:12px; }
-        .stepper button { padding:6px 10px; border:1px solid #ddd; border-radius:8px; background:#f7f7f7; cursor:pointer; }
-        .stepper button.active { background:#eef6ff; border-color:#9cc4ff; }
-        .tag { font-size:12px; padding:2px 6px; border-radius:6px; background:#eee; }
-        .tag.req { background:#ffe7e7; color:#b10000; }
-        .muted { color:#777; }
-        .actions { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
-        .progress { height:10px; background:#f0f0f0; border-radius:6px; overflow:hidden; }
-        .progress > div { height:100%; background:#4caf50; width:0%; transition:width .3s; }
-        table { width:100%; border-collapse:collapse; margin-top:10px; }
-        th, td { border:1px solid #eee; padding:6px 8px; text-align:left; }
-        tr.prereq { background:#fafafa; color:#888; }
-        .hidden { display:none; }
-=======
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
+
+        .stepper { 
+            display:flex; 
+            gap:12px;
+            margin-bottom:12px; 
+            gap:10px;
+        }
+        .stepper button { 
+            padding:6px 10px; 
+            border:1px solid #ddd; 
+            border-radius:8px; 
+            background:#f7f7f7; 
+            cursor:pointer; 
+            background:#fff;
+            border:1px solid var(--border);
+            color:#374151;
+            border-radius:999px;
+            padding:8px 12px;
+            box-shadow: var(--shadow);
+        }
+        .stepper button.active { 
+            background:#eef6ff; 
+            border-color:#9cc4ff; 
+            background:#eefbf0;
+            border-color:#cdebd3;
+            color:#1f7a34;
+        }
+        .tag { 
+            font-size:12px; 
+            padding:2px 6px; 
+            border-radius:6px; 
+            background:#eee; 
+        }
+        .tag.req { 
+            background:#ffe7e7; 
+            color:#b10000; 
+        }
+        .muted { 
+            color:#777; 
+        }
+        .actions { 
+            display:flex; 
+            gap:8px; 
+            flex-wrap:wrap; 
+            margin:10px 0; 
+        }
+        .progress { 
+            height:10px; 
+            background:#f0f0f0; 
+            border-radius:6px; 
+            overflow:hidden; 
+        }
+        .progress > div { 
+            height:100%; 
+            background:#4caf50; 
+            width:0%; 
+            transition:width .3s; 
+        }
+        table { 
+            width:100%; 
+            border-collapse:collapse; 
+            margin-top:10px; 
+        }
+        th, td { 
+            border:1px solid #eee; 
+            padding:6px 8px; 
+            text-align:left; 
+        }
+        tr.prereq { 
+            background:#fafafa; 
+            color:#888; 
+        }
+        .hidden { 
+            display:none; 
+        }
+
+        #step1.hidden, #step2.hidden { display: none !important; }
+
+        .primary-button { background:#4CAF50; color:#fff; }
+
+
+        :root{
+            --card:#fff;
+            --bg:#f7f9fc;
+            --border:#e5e7eb;
+            --text:#111827;
+            --muted:#6b7280;
+            --primary:#4CAF50;
+            --primary-600:#43a047;
+            --primary-700:#388e3c;
+            --radius:12px;
+            --shadow:0 6px 24px rgba(0,0,0,.06);
+        }
+        body{ background:var(--bg); color:var(--text); }
+
+        #btnRefreshPlan{
+            background:#fff;
+            color:#374151;
+            border:1px solid var(--border);
+            border-radius:8px;
+            padding:6px 10px;
+        }
+        #btnRefreshPlan:hover{ background:#f7f7f7; }
+        
+        .leed-prompt{
+            background:#fff8e1;
+            border:1px solid #ffe4a3;
+            color:#9a6a00 !important;
+            border-radius:10px;
+            padding:8px 12px !important;
+        }
+
+        .back-button{
+            background:#e9f0ff;
+            color:#1f3b7a;
+            border:none;
+            border-radius:10px;
+            padding:10px 16px;
+            min-width:110px;
+            box-shadow: var(--shadow);
+            }
+            .back-button:hover{ filter:brightness(.98); }
+            .primary-button{
+            background:var(--primary);
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:10px 16px;
+            min-width:110px;
+            box-shadow: var(--shadow);
+            }
+            .primary-button:hover{ background:var(--primary-600); }
+            .primary-button:active{ background:var(--primary-700); }
+                
+            table{ border-collapse:separate; border-spacing:0; }
+            thead th{
+            background: linear-gradient(180deg,#f9fafb 0%, #f2f6fb 100%);
+            font-weight:600;
+            color:#374151;
+            border-bottom:1px solid var(--border) !important;
+            }
+            tbody tr:not(.section-header):nth-child(even){ background:#fafcff; }
+            tbody tr:not(.section-header):hover{ background:#f3f8ff; }
+
+            @media (max-width: 720px){
+                #leed-content { padding: 10px; }
+                table thead th:nth-child(2),
+                table tbody td:nth-child(2){ display:none; }
+            }
+
+            .pane-scroll .section-header td{
+                position: sticky;
+                top: 37px;          /* 与 thead 高度一致 */
+                z-index: 1;
+                background: #f0fdf4;
+                color: #065f46;
+                font-weight: 700;
+                font-size: 14px;
+                padding: 10px 12px;
+                border-top: 1px solid #cdebd3;
+                border-bottom: 1px solid #cdebd3;
+                border-left: 6px solid var(--primary);
+                border-right: 1px solid #e5e7eb;
+                border-radius: 6px;
+            }
     </style>
+
+    <script>
+        let WRITING_RUBRIC = []; 
+    </script>
+
     <script>
         var isAdmin = {{ is_admin | tojson }};
     </script>
+
+    <script id="LEED_DATA_JSON" type="application/json">
+        {{ leed_table_data|tojson }}
+    </script>
+
+    <script>
+        // hydrate LEED_TABLE_DATA from embedded JSON (robust)
+        (function () {
+            let parsed = [];
+            try {
+            const raw = document.getElementById('LEED_DATA_JSON')?.textContent?.trim();
+            parsed = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+            parsed = [];
+            console.warn('Failed to parse LEED_DATA_JSON:', e);
+            }
+            if (!Array.isArray(parsed)) {
+            if (parsed && Array.isArray(parsed.sections)) parsed = parsed.sections;
+            else parsed = [];
+            }
+            window.LEED_TABLE_DATA = parsed;
+            console.log('LEED_TABLE_DATA loaded. length =', parsed.length);
+        })();
+    </script>
+
 </head>
 <body>
     <div class="main-container" id="main-container">
@@ -598,133 +885,53 @@
     </div>
 
     <!-- LEED -->
-    <div id="leed-page" class="main-container">
-        <!-- LEED Form -->
+    <div id="leed-page" class="main-container" style="display:none;">
         <div class="content" id="leed-content">
-            <h2>LEED Certification Form</h2>
-            <div id="leed-table-container">
-                <form id="leed-form">
-                    <table id="leed-table">
-                        <!-- Header -->
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Prereq/Credit</th>
-                                <th>Points</th>
-                                <th>Earned</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </form>
+            <h2>LEED Certification Planner</h2>
+
+            <!-- Stepper lives INSIDE the LEED page -->
+            <div class="stepper" id="leed-stepper">
+                <button id="btnStep1" class="active" type="button">Step 1: Priority review</button>
+                <button id="btnStep2" type="button">Step 2: Low-cost top-ups</button>
             </div>
+
+            <!-- Plan summary -->
+            <div id="planSummary" class="actions">
+                <div><strong>Total points (so far):</strong> <span id="totalPoints">0</span> / 40</div>
+                <div style="flex:1;">
+                    <div class="progress"><div id="progressBar"></div></div>
+                </div>
+                <button id="btnRefreshPlan" type="button">Refresh</button>
+            </div>
+
+            <!-- Step 1: full catalog with numeric inputs -->
+            <section id="step1">
+                <div class="pane-scroll">
+                    <div id="catalogStep1"></div>
+                </div>
+            </section>
+
+            <!-- Step 2: the same full catalog, prefilled with the same scores -->
+            <section id="step2" class="hidden">
+                <div class="pane-scroll">
+                    <div id="catalogStep2"></div>
+                </div>
+            </section>
+
+            <!-- Optional free text for feedback generation -->
+            <div class="actions">
+                <textarea id="feedbackMessage" rows="4" style="width:100%;"
+                    placeholder="(Optional) Add any context you want me to consider when generating feedback."></textarea>
+            </div>
+
             <div class="button-container">
                 <button class="back-button" onclick="returnToMain()">Back</button>
-                <button id="leed-submit-button" onclick="submitLeedForm()">Submit LEED Scores</button>
+                <button id="wizardPrimaryBtn" class="back-button primary-button" type="button">Next</button>
             </div>
         </div>
     </div>
 
-<<<<<<< HEAD
 
-
-    <div class="stepper">
-        <button id="btnStep1" class="active" type="button">Step 1：选择优先项</button>
-        <button id="btnStep2" type="button">Step 2：低成本补项</button>
-    </div>
-
-    <!-- 进度与方案总览 -->
-    <div id="planSummary" class="actions">
-        <div><strong>当前总分：</strong><span id="totalPoints">0</span> / 40</div>
-        <div style="flex:1;">
-            <div class="progress"><div id="progressBar"></div></div>
-        </div>
-        <button id="btnRefreshPlan" type="button">刷新方案</button>
-        <button id="btnGenerateFeedback" type="button">生成反馈</button>
-    </div>
-
-    <!-- Step 1：优先项（渲染全量，Prereq 禁用） -->
-    <section id="step1">
-        <div class="actions">
-            <button id="btnSavePriority" type="button">保存优先项</button>
-        </div>
-
-        {% for section in leed_table_data %}
-            <details open>
-                <summary>
-                    <strong>{{ section.section }}</strong>
-                </summary>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width:40px;">选</th>
-                        <th>条目</th>
-                        <th style="width:120px;">分值</th>
-                    </tr>
-                </thead>
-            <tbody>
-                {% for item in section.items %}
-                    {% set is_req = item.points|string|lower == 'required' %}
-                    <tr class="{{ 'prereq' if is_req }}">
-                        <td>
-                            <input type="checkbox"
-                                class="chk-priority"
-                                {% if is_req %}disabled{% endif %}
-                                data-category="{{ item.category }}"
-                                data-name="{{ item.name }}"
-                                data-points="{{ item.points }}">
-                        </td>
-                        <td>
-                            {{ item.name }}
-                            {% if is_req %}<span class="tag req">必需（不计分）</span>{% endif %}
-                        </td>
-                        <td>
-                            {% if is_req %}<span class="muted">Required</span>
-                            {% else %}{{ item.points }}{% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        </details>
-    {% endfor %}
-    </section>
-
-    <!-- Step 2：低成本补项（默认从 /leed/suggestions 加载） -->
-    <section id="step2" class="hidden">
-    <div class="actions">
-        <button id="btnLoadSuggestions" type="button">加载低成本候选</button>
-        <button id="btnShowAllRemaining" type="button">显示全部剩余项</button>
-        <button id="btnSaveSupplement" type="button">保存补项</button>
-    </div>
-
-    <table id="tblSupplement">
-        <thead>
-        <tr>
-            <th style="width:40px;">选</th>
-            <th>条目</th>
-            <th style="width:160px;">类别</th>
-            <th style="width:120px;">分值</th>
-        </tr>
-        </thead>
-        <tbody><!-- 由 JS 渲染 --></tbody>
-    </table>
-    </section>
-
-    <!-- 反馈输入（可选） -->
-    <div class="actions">
-    <textarea id="feedbackMessage" rows="4" style="width:100%;" placeholder="（可选）在此输入你希望我参考的一段说明或上下文；不填也能生成反馈"></textarea>
-    </div>
-        
-
-    <!-- 把后端数据嵌一份到前端，方便 Step2 回退使用 -->
-    <script id="LEED_DATA_JSON" type="application/json">
-    {{ leed_table_data|tojson }}
-    </script>
-
-=======
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
     <script>
         let currentChatHistoryId = null;  
         let currentMode = 'LEED'; 
@@ -764,22 +971,13 @@
         
             // Depending on the current model (LEED or other), attach the corresponding data
             if (currentMode === 'LEED') {
-<<<<<<< HEAD
-                const raw = sessionStorage.getItem('leedScores');
-                const leedScores = raw ? JSON.parse(raw) : null;
-                if (leedScores) {
-                    formData.append('leed_scores', JSON.stringify(leedScores));
-                }
-                // 没有分数也照样发，让后端用已选条目兜底
-=======
-                const leedScores = JSON.parse(sessionStorage.getItem('leedScores'));
-                if (leedScores) {
-                    formData.append('leed_scores', JSON.stringify(leedScores));
-                } else {
-                    alert('Please submit LEED scores first.');
-                    return;
-                }
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
+                const raw1 = sessionStorage.getItem('leedScores_p1');
+                const raw2 = sessionStorage.getItem('leedScores_p2');
+                const s1 = raw1 ? JSON.parse(raw1) : {};
+                const s2 = raw2 ? JSON.parse(raw2) : {};
+                const allScores = Object.assign({}, s1, s2);
+                formData.append('leed_scores', JSON.stringify(allScores));
+                // Even if there is no score, it will still be sent, and the backend will use the selected items 
             } else {
                 const rubrics = getCurrentRubrics();
                 formData.append('rubrics', rubrics);
@@ -1236,9 +1434,6 @@
             });
         }
 
-        
-        
-
         // When the page loads
         window.onload = function() {
             // 1. Get the last feedback and insert it after the welcome message
@@ -1277,7 +1472,6 @@
             });
             
             // Load LEED data or Rubrics data based on user role
-<<<<<<< HEAD
             fetch('/get_WRITING_RUBRICs')
                 .then(r => r.json())
                 .then(data => {
@@ -1292,37 +1486,6 @@
                     console.error('Error fetching rubrics:', err);
                     displayLeedRubrics(WRITING_RUBRIC); // 回退到内置
                 });
-=======
-            if (isAdmin) {
-                fetch('/admin/get_leed_data')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        WRITING_RUBRIC = data.leed_data;
-                        displayLeedRubrics(WRITING_RUBRIC);
-                    } else {
-                        console.error("Failed to load LEED data:", data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching LEED data:", error);
-                });
-            } else {
-                fetch('/get_WRITING_RUBRICs')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        WRITING_RUBRIC = data.rubrics;
-                        displayLeedRubrics(WRITING_RUBRIC);
-                    } else {
-                        console.error("Failed to load LEED rubrics:", data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching LEED rubrics:", error);
-                });
-            }
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
             
             // Initialize the drag and drop upload function
             initDragAndDrop();
@@ -1338,16 +1501,6 @@
                 });
             }
         };
-        // Filling the LEED form
-        function fillLeedForm(leedScores) {
-            const form = document.getElementById('leed-form');
-            for (let [key, value] of Object.entries(leedScores)) {
-                const input = form.querySelector(`input[name="${key}"]`);
-                if (input) {
-                    input.value = value;
-                }
-            }
-        }
 
         function returnToMain() {
             // Show main interface, hide LEED page
@@ -1357,190 +1510,11 @@
             // Show LEED Rubrics
             document.getElementById('leed-rubric-header').style.display = 'flex';
             document.getElementById('leed-rubrics-list').style.display = 'flex';
+
+            loadScoresFromStorage();
+            displayScoreMessage(computeTotalPoints());
         }
 
-        // Generate LEED tables
-        function generateLeedTable() {
-            const tbody = document.querySelector('#leed-table tbody');
-            tbody.innerHTML = '';
-
-            LEED_TABLE_DATA.forEach(section => {
-                // Adding a section title
-                const sectionHeader = document.createElement('tr');
-                sectionHeader.classList.add('section-header');
-                const sectionTd = document.createElement('td');
-                sectionTd.colSpan = '4';
-                sectionTd.textContent = section.section;
-                sectionHeader.appendChild(sectionTd);
-                tbody.appendChild(sectionHeader);
-
-                // Traverse the items under the chapter
-                section.items.forEach(item => {
-                    const tr = document.createElement('tr');
-
-                    const tdTitle = document.createElement('td');
-                    tdTitle.textContent = item.name || '';
-                    tr.appendChild(tdTitle);
-                    
-                    const tdType = document.createElement('td');
-                    tdType.textContent = item.type || '';
-                    tr.appendChild(tdType);
-
-                    const tdPoints = document.createElement('td');
-                    let pointsDisplay;
-
-                    // Determine whether it is required
-                    if (item.type && item.type.toLowerCase() === 'prereq') {
-                        pointsDisplay = 'Required';
-                    } else {
-                        pointsDisplay = getMaxPoints(item.points);
-                        // If pointsDisplay is '0', set to 'Required'
-<<<<<<< HEAD
-                        const isPrereq = (item.type && item.type.toLowerCase() === 'prereq')
-                        || String(item.points).toLowerCase() === 'required';
-                        const pointsDisplay = isPrereq ? 'Required' : getMaxPoints(item.points);
-=======
-                        if (pointsDisplay === '0') {
-                            pointsDisplay = 'Required';
-                        }
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
-                    }
-
-                    tdPoints.textContent = pointsDisplay;
-                    tr.appendChild(tdPoints);
-
-                    const tdEarned = document.createElement('td');
-                    // Modify here: Determine whether to display 'Required' or the input box based on whether pointsDisplay is 'Required'
-                    if (pointsDisplay === 'Required') {
-                        tdEarned.textContent = 'Required';
-                    } else if (pointsDisplay) {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.name = item.name;
-                        input.min = 0;
-                        input.max = parseFloat(pointsDisplay);
-                        input.step = 0.5;
-                        tdEarned.appendChild(input);
-
-                        input.addEventListener('input', function() {
-                            const max = parseFloat(this.max);
-                            const min = parseFloat(this.min);
-                            let value = parseFloat(this.value);
-        
-                            if (value > max) {
-                                this.value = max;
-                            } else if (value < min) {
-                                this.value = min;
-                            }
-                        });
-<<<<<<< HEAD
-                        
-=======
-        
-                        tdEarned.appendChild(input);
-
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
-                        // If the user has entered a score before, fill it into the input box
-                        const savedLeedScores = JSON.parse(sessionStorage.getItem('leedScores') || '{}');
-                        if (input && savedLeedScores[item.name] !== undefined) {
-                            input.value = savedLeedScores[item.name];
-                        }
-                    } else {
-                        tdEarned.textContent = '';
-                    }
-                    tr.appendChild(tdEarned);
-
-                    tbody.appendChild(tr);
-                });
-            });
-        }  
-
-        // New getMaxPoints function to get the maximum score
-        function getMaxPoints(points) {
-            if (typeof points === 'number') {
-                return points.toString();
-            } else if (Array.isArray(points)) {
-                return Math.max(...points).toString();
-            } else if (typeof points === 'object' && points !== null) {
-                // Extract all numeric point values ​​and expand the array
-                let pointValues = [];
-                Object.values(points).forEach(val => {
-                    if (Array.isArray(val)) {
-                        pointValues = pointValues.concat(val);
-                    } else if (typeof val === 'number') {
-                        pointValues.push(val);
-                    }
-                });
-                // Remove duplicate values
-                pointValues = [...new Set(pointValues)];
-                if (pointValues.length === 0) {
-                    return '';
-                }
-                return Math.max(...pointValues).toString();
-            }
-            return '';
-        }
-
-        // Submit LEED Form
-        function submitLeedForm() {
-            const form = document.getElementById('leed-form');
-            const formData = new FormData(form);
-
-            const leedScores = {};
-            let totalScore = 0;
-
-            for (let [key, value] of formData.entries()) {
-                if (value && !isNaN(parseFloat(value))) {
-                    leedScores[key] = parseFloat(value);
-                    totalScore += parseFloat(value);
-                }
-            }
-
-            if (Object.keys(leedScores).length === 0) {
-                alert('Please enter at least one score.');
-                return;
-            }
-
-            displayScoreMessage(totalScore);
-
-            // Send the user input score to the backend
-            fetch('/submit_leed_scores', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ leed_scores: leedScores })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    sessionStorage.setItem('leedSubmitted', 'true');
-                    sessionStorage.setItem('leedScores', JSON.stringify(leedScores));
-                    sessionStorage.setItem('leedTotalScore', totalScore);
-
-                    returnToMain();
-
-                    // Load and display LEED Rubrics
-                    displayLeedRubrics(WRITING_RUBRIC);
-
-                } else {
-                    alert('Failed to submit LEED scores: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while submitting LEED scores.');
-            });
-        }
-
-        // Resubmit LEED Form
-        function resubmitLeed() {
-            sessionStorage.removeItem('leedSubmitted');
-            sessionStorage.removeItem('leedScores');
-            sessionStorage.removeItem('leedTotalScore');
-
-            showLeedPage();
-        }
 
         function initDragAndDrop() {
 
@@ -1548,7 +1522,7 @@
             const inputContainer = document.querySelector('.input-container');
             const mainContainer = document.getElementById('main-container');
 
-                // 统一在 mainContainer 上监听拖拽事件
+                // Listen for drag events on mainContainer
             [chatContainer, inputContainer, mainContainer].forEach(element => {
                 element.addEventListener('dragover', function(e) {
                     e.preventDefault();
@@ -1570,13 +1544,9 @@
                     const files = e.dataTransfer.files;
                     if (files.length > 0) {
                         const fileInput = document.getElementById('file-input');
-<<<<<<< HEAD
                         const dt = new DataTransfer();
-                        dt.items.add(files[0]);           // 只取第一个，或自行循环添加
+                        dt.items.add(files[0]);           
                         document.getElementById('file-input').files = dt.files;
-=======
-                        fileInput.files = files;
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
                         sendMessage();
                     }
                 });
@@ -1731,11 +1701,10 @@
         }
         
         function saveLeedRubrics() {
-<<<<<<< HEAD
             fetch('/save_WRITING_RUBRICs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // 这个接口期望整个 rubrics 数据本体作为 JSON 传过去
+                // This interface expects the entire rubrics data body to be passed as JSON
                 body: JSON.stringify(WRITING_RUBRIC)
             })
             .then(r => r.json())
@@ -1752,373 +1721,436 @@
                 console.error('Error saving rubrics:', err);
             });
         }
-=======
-            fetch('/admin/save_leed_data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ leed_data: WRITING_RUBRIC })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('LEED rubrics saved successfully.');
-                } else {
-                    alert('Failed to save LEED rubrics: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error saving LEED rubrics:', error);
-            });
+
+    // -------- Shared in-memory store mirrored to sessionStorage ----------
+    let SCORES_P1 = {}; // Step 1 (priority)
+    let SCORES_P2 = {}; // Step 2 (supplement)
+
+    function loadScoresFromStorage() {
+        try { SCORES_P1 = JSON.parse(sessionStorage.getItem('leedScores_p1') || '{}') || {}; } catch { SCORES_P1 = {}; }
+        try { SCORES_P2 = JSON.parse(sessionStorage.getItem('leedScores_p2') || '{}') || {}; } catch { SCORES_P2 = {}; }
+    }
+    function saveScoresToStorage() {
+        sessionStorage.setItem('leedScores_p1', JSON.stringify(SCORES_P1));
+        sessionStorage.setItem('leedScores_p2', JSON.stringify(SCORES_P2));
+        sessionStorage.setItem('leedTotalScore', computeTotalPoints().toFixed(1));
+    }
+
+    function sumObj(obj) {
+        let t = 0;
+        for (const v of Object.values(obj)) {
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) t += n;
         }
+        return t;
+    }
 
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
-        function showLeedPage() {
-            // Hide the main interface and display the LEED page
-            document.getElementById('main-container').style.display = 'none';
-            document.getElementById('leed-page').style.display = 'flex';
-        
-            // Hide LEED Rubrics
-            document.getElementById('leed-rubric-header').style.display = 'none';
-            document.getElementById('leed-rubrics-list').style.display = 'none';
-        
-            // Generate LEED tables
-            generateLeedTable();
+    function computeTotalPoints() {
+        const merged = {};
+        for (const [k, v] of Object.entries(SCORES_P1 || {})) {
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) merged[k] = n;
+        }
+        for (const [k, v] of Object.entries(SCORES_P2 || {})) {
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) merged[k] = Math.max(merged[k] || 0, n);
+        }
+        return Object.values(merged).reduce((t, n) => t + n, 0);
+    }
 
-            // Insert the prompt
-            const leedContent = document.getElementById('leed-content');
-            const existingPrompt = document.querySelector('.leed-prompt');
-            if (!existingPrompt) {
-                const promptDiv = document.createElement('div');
-                promptDiv.className = 'leed-prompt';
-                promptDiv.textContent = 'Note: You do not need to fill in every item. Only input scores for the items where your project obtains points; other items will be counted as zero points.';
-                
-                // Change the font color to red
-                promptDiv.style.color = 'red';
+    const norm = s => (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
 
-                leedContent.insertBefore(promptDiv, leedContent.querySelector('#leed-table-container'));
+    function filterSuppForDisplay(step1Arr, step2Arr, mode = 'upgrade') {
+        const map1 = Object.create(null);
+        (step1Arr || []).forEach(it => {
+            const key = norm(it?.name);
+            const p = Number(it?.points) || 0;
+            if (key) map1[key] = Math.max(map1[key] || 0, p);
+        });
+
+        if (mode === 'all') return step2Arr || [];
+
+        const out = [];
+        (step2Arr || []).forEach(it => {
+            const key = norm(it?.name);
+            const p2 = Number(it?.points) || 0;
+            const p1 = map1[key] || 0;
+
+            if (mode === 'delta') {
+                if (p1 === 0 && p2 > 0) out.push({ ...it, points: p2 });
+            } else if (mode === 'upgrade') {
+                if (p2 > p1) out.push({ ...it, points: p2 });
             }
+        });
+        return out;
+    }
+
+    function getMaxPoints(points) {
+        if (typeof points === 'number') return points;
+        if (Array.isArray(points)) return Math.max(...points);
+        if (typeof points === 'object' && points !== null) {
+        let vals = [];
+        for (const v of Object.values(points)) {
+            if (Array.isArray(v)) vals = vals.concat(v);
+            else if (typeof v === 'number') vals.push(v);
         }
-<<<<<<< HEAD
-
-        (function() {
-        // 简易工具
-        const $ = s => document.querySelector(s);
-        const $$ = s => Array.from(document.querySelectorAll(s));
-
-        const btnStep1 = $("#btnStep1");
-        const btnStep2 = $("#btnStep2");
-        const step1 = $("#step1");
-        const step2 = $("#step2");
-        const totalPointsEl = $("#totalPoints");
-        const progressBar = $("#progressBar");
-
-        function switchStep(step) {
-            if (step === 1) {
-            step1.classList.remove("hidden");
-            step2.classList.add("hidden");
-            btnStep1.classList.add("active");
-            btnStep2.classList.remove("active");
-            } else {
-            step1.classList.add("hidden");
-            step2.classList.remove("hidden");
-            btnStep1.classList.remove("active");
-            btnStep2.classList.add("active");
-            }
+        if (!vals.length) return 0;
+        return Math.max(...vals);
         }
-        btnStep1.addEventListener("click", () => switchStep(1));
-        btnStep2.addEventListener("click", () => switchStep(2));
+        if (String(points).toLowerCase() === 'required') return 0;
+        return 0;
+    }
+    function isRequiredItem(item) {
+        return (item.type && String(item.type).toLowerCase() === 'prereq')
+            || String(item.points).toLowerCase() === 'required';
+    }
 
-        // 把复选框收集为 credits 数组
-        function collectCredits(selector) {
-            return $$(selector).filter(chk => chk.checked).map(chk => ({
-            category: chk.dataset.category,
-            name: chk.dataset.name,
-            points: chk.dataset.points
-            }));
-        }
+    // --------- Render a full catalog table with numeric inputs ----------
+    function renderCatalog(containerId, store) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
 
-        function isRequired(points) {
-            return String(points).trim().toLowerCase() === 'required';
-        }
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
 
-        function safePoints(points) {
-            if (isRequired(points) || points == null || points === '') return 0;
-            const n = parseFloat(points);
-            return Number.isFinite(n) ? n : 0;
-        }
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr>
+                <th style="width:40%">Item</th>
+                <th style="width:15%">Type</th>
+                <th style="width:15%">Max points</th>
+                <th style="width:30%">Your points</th>
+            </tr>`;
+        table.appendChild(thead);
 
-        // 保存 Step1 / Step2
-        async function savePhase(phase, credits) {
-            const res = await fetch('/leed/selection', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ phase, credits })
-            });
-            const data = await res.json();
-            if (!data.success) throw new Error(data.error || '保存失败');
-            return data;
-        }
-
-        // 读取合并方案并更新进度条
-        async function refreshPlan() {
-            const res = await fetch('/leed/plan');
-            const data = await res.json();
-            if (!data.success) throw new Error(data.error || '获取方案失败');
-
-            // 更新总分与进度
-            const tp = data.total_points || 0;
-            totalPointsEl.textContent = tp.toFixed(1);
-            const pct = Math.max(0, Math.min(100, (tp / 40) * 100));
-            progressBar.style.width = pct + '%';
-            progressBar.style.background = tp >= 40 ? '#4caf50' : '#ff9800';
-
-            // 回填 Step1 的勾选状态（防止刷新后丢失）
-            const p1 = new Set((data.priority || []).map(x => `${x.category}|||${x.name}`));
-            $$(".chk-priority").forEach(chk => {
-            const key = `${chk.dataset.category}|||${chk.dataset.name}`;
-            chk.checked = p1.has(key);
-            });
-
-            return data;
-        }
-
-        // Step2：渲染候选表格
-        function renderSupplementRows(items) {
-            const tb = $("#tblSupplement tbody");
-            tb.innerHTML = '';
-            for (const it of items) {
-            if (isRequired(it.points)) continue;
+        const tbody = document.createElement('tbody');
+        const DATA = Array.isArray(window.LEED_TABLE_DATA) ? window.LEED_TABLE_DATA : [];
+        if (DATA.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><input type="checkbox" class="chk-supplement"
-                        data-category="${it.category}"
-                        data-name="${it.name}"
-                        data-points="${it.points}"></td>
-                <td>${it.name}</td>
-                <td>${it.category}</td>
-                <td>${it.points}</td>
-            `;
-            tb.appendChild(tr);
-            }
+            tr.innerHTML = `<td colspan="4" class="muted">No LEED items found. Check leed_table_data on server.</td>`;
+            tbody.appendChild(tr);
         }
 
-        // 从后端拿低成本候选
-        async function loadSuggestions() {
-            const res = await fetch('/leed/suggestions', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({})});
-            const data = await res.json();
-            if (!data.success) throw new Error(data.error || '加载候选失败');
-            renderSupplementRows(data.candidates || []);
+        DATA.forEach(section => {
+            const trHead = document.createElement('tr');
+            trHead.classList.add('section-header');
+            const th = document.createElement('td');
+            th.colSpan = 4;
+            th.textContent = section.section;
+            trHead.appendChild(th);
+            tbody.appendChild(trHead);
+
+            (section.items || section["items"] || []).forEach(item => {
+                const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.textContent = item.name || '';
+                tr.appendChild(tdName);
+
+                const tdType = document.createElement('td');
+                tdType.textContent = isRequiredItem(item) ? 'Prereq' : (item.type || 'Credit');
+                tr.appendChild(tdType);
+
+                const tdMax = document.createElement('td');
+                const maxP = getMaxPoints(item.points);
+                tdMax.textContent = isRequiredItem(item) ? 'Required' : (maxP || 0);
+                tr.appendChild(tdMax);
+
+                const tdEarned = document.createElement('td');
+                if (isRequiredItem(item)) {
+                    tdEarned.textContent = 'Required';
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = 0;
+                    input.max = maxP;
+                    input.step = 0.5;
+                    input.name = item.name;
+                    input.value = store[item.name] ?? '';
+                    input.addEventListener('input', () => {
+                        let v = parseFloat(input.value);
+                        if (!Number.isFinite(v)) {
+                            delete store[item.name];
+                        } else {
+                            v = Math.max(0, Math.min(maxP, v));
+                            input.value = v;
+                            store[item.name] = v;
+                        }
+                        saveScoresToStorage();
+                        updateProgressBar();
+                    });
+                    tdEarned.appendChild(input);
+                }
+                tr.appendChild(tdEarned);
+
+                tbody.appendChild(tr);
+                });
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+    }
+
+
+    // -------- Progress bar ----------
+    function updateProgressBar() {
+        const total = computeTotalPoints();
+        const el = document.getElementById('totalPoints');
+        const bar = document.getElementById('progressBar');
+        el.textContent = total.toFixed(1);
+        const pct = Math.max(0, Math.min(100, (total / 40) * 100));
+        bar.style.width = pct + '%';
+        bar.style.background = total >= 40 ? '#4caf50' : '#ff9800';
+    }
+
+    // -------- Show LEED page and init wizard ----------
+    function showLeedPage() {
+        // swap views
+        document.getElementById('main-container').style.display = 'none';
+        document.getElementById('leed-page').style.display = 'flex';
+
+        // hide right rubric column while in planner
+        document.getElementById('leed-rubric-header').style.display = 'none';
+        document.getElementById('leed-rubrics-list').style.display = 'none';
+
+        // one-time notice
+        const leedContent = document.getElementById('leed-content');
+        if (!document.querySelector('.leed-prompt')) {
+        const promptDiv = document.createElement('div');
+        promptDiv.className = 'leed-prompt';
+        promptDiv.textContent = 'Tip: You don’t need to fill every item. Only enter points for credits your project will pursue; others stay at 0.';
+        promptDiv.style.color = 'red';
+        leedContent.insertBefore(promptDiv, document.getElementById('leed-stepper'));
         }
 
-        // 备用：显示“全部剩余项”（不用低成本过滤）
-        function showAllRemainingFromEmbeddedData(plan) {
-            const raw = document.getElementById('LEED_DATA_JSON').textContent;
-            const tableData = JSON.parse(raw || '[]');
-            const picked = new Set([...(plan.priority||[]), ...(plan.supplement||[])]
-            .map(x => `${x.category}|||${x.name}`));
+        initLeedWizard();
+    }
 
-            const remaining = [];
-            for (const sec of tableData) {
-            for (const it of sec.items || []) {
-                if (isRequired(it.points)) continue;
-                const key = `${it.category}|||${it.name}`;
-                if (!picked.has(key)) remaining.push(it);
+    function initLeedWizard() {
+        loadScoresFromStorage();
+
+
+        (async () => {
+            if (Object.keys(SCORES_P1).length === 0 && Object.keys(SCORES_P2).length === 0) {
+                try {
+                    const r = await fetch('/leed/plan');
+                    const data = await r.json();
+                    if (data && data.success) {
+                        (data.priority || []).forEach(it => {
+                            const n = parseFloat(it.points);
+                            if (Number.isFinite(n) && n > 0) SCORES_P1[it.name || ''] = n;
+                        });
+                        (data.supplement || []).forEach(it => {
+                            const n = parseFloat(it.points);
+                            if (Number.isFinite(n) && n > 0) SCORES_P2[it.name || ''] = n;
+                        });
+                        saveScoresToStorage();
+                    }
+                } catch (e) { console.warn('prefill from server failed', e); }
             }
-            }
-            renderSupplementRows(remaining);
-        }
-
-        // 事件绑定
-        $("#btnSavePriority").addEventListener("click", async () => {
-            try {
-            const credits = collectCredits(".chk-priority");
-            await savePhase('priority', credits);
-            await refreshPlan();
-            alert('优先项已保存 ✅');
-            } catch (e) {
-            alert(e.message);
-            }
-        });
-
-        $("#btnLoadSuggestions").addEventListener("click", async () => {
-            try {
-            await loadSuggestions();
-            switchStep(2);
-            } catch (e) {
-            alert(e.message);
-            }
-        });
-
-        $("#btnShowAllRemaining").addEventListener("click", async () => {
-            try {
-            const plan = await refreshPlan();
-            showAllRemainingFromEmbeddedData(plan);
-            switchStep(2);
-            } catch (e) {
-            alert(e.message);
-            }
-        });
-
-        $("#btnSaveSupplement").addEventListener("click", async () => {
-            try {
-            const credits = collectCredits(".chk-supplement");
-            await savePhase('supplement', credits);
-            await refreshPlan();
-            alert('补项已保存 ✅');
-            } catch (e) {
-            alert(e.message);
-            }
-        });
-
-        $("#btnRefreshPlan").addEventListener("click", () => refreshPlan().catch(e => alert(e.message)));
-
-        // 生成反馈（用 message；也支持你后端已有的文件上传逻辑）
-        $("#btnGenerateFeedback").addEventListener("click", async () => {
-            try {
-            const fd = new FormData();
-            const msg = $("#feedbackMessage").value || '';
-            fd.append('message', msg);
-
-            const res = await fetch('/get_feedback', { method:'POST', body: fd });
-            const data = await res.json();
-            if (!data.success) throw new Error(data.error || '生成失败');
-
-            // 你可以把反馈显示到页面右侧某个容器，这里先简单 alert
-            alert('反馈已生成 ✅\n\n' + (data.feedback || '').slice(0, 1000));
-            } catch (e) {
-            alert(e.message);
-            }
-        });
-
-        // 初始：刷新方案做一次回填
-        refreshPlan().catch(() => {});
+            renderCatalog('catalogStep1', SCORES_P1);
+            renderCatalog('catalogStep2', SCORES_P2);
+            updateProgressBar();
         })();
 
-=======
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
-        // Loading LEED data
-        const LEED_TABLE_DATA = {{ leed_table_data|tojson|safe }};
 
-        // New LEED Rubric Data
-<<<<<<< HEAD
-        let  WRITING_RUBRIC = [
-=======
-        const WRITING_RUBRIC = [
->>>>>>> dac79ff818159051f5076784da316ba3e020095f
-            {
-                name: 'LEED Certification Achievement',
-                scoringCriteria: [
-                    {
-                        points: 3,
-                        description: 'The narrative clearly demonstrates that the project achieves at least LEED Certified status (40-49 points). This includes selecting the necessary credits and meeting all prerequisite requirements as outlined in LEED v4 BD+C. The student’s narrative must show that the combination of credits chosen would, in reality, enable the project to achieve certification, with no missing or misinterpreted prerequisites or credits.'
-                    },
-                    {
-                        points: 2,
-                        description: 'The project demonstrates an effort to achieve LEED certification but falls short of meeting all the prerequisite credits or does not fully align the credit selection with the required number of points for certification. There may be minor misunderstandings about specific credit requirements or a lack of clarity about how the project will meet the minimum certification threshold.'
-                    },
-                    {
-                        points: 1,
-                        description: 'The project fails to adequately address key LEED prerequisites or selected credits are significantly misaligned with achieving certification. It may attempt to claim certification without showing how the credit requirements are realistically met.'
-                    },
-                    {
-                        points: 0,
-                        description: 'The narrative does not address how the project will achieve LEED certification, or no credit selections are provided.'
+        const btnStep1 = document.getElementById('btnStep1');
+        const btnStep2 = document.getElementById('btnStep2');
+        const step1   = document.getElementById('step1');
+        const step2   = document.getElementById('step2');
+
+        function switchStep(n) {
+            const onStep1 = n === 1;
+
+            if (!onStep1) {
+                let changed = false;
+                for (const [k, v] of Object.entries(SCORES_P1 || {})) {
+                    if (SCORES_P2[k] == null && Number.isFinite(parseFloat(v))) {
+                        SCORES_P2[k] = parseFloat(v);
+                        changed = true;
                     }
-                ]
-            },
-            {
-                name: 'Reflection of Credit Requirements',
-                scoringCriteria: [
-                    {
-                        points: 4,
-                        description: 'The narrative must accurately reflect the specific requirements for each credit selected, including the minimum thresholds, performance metrics, and technical criteria as outlined in LEED v4 BD+C. For example, if the student claims points for Water Efficiency, the narrative should describe how the project meets the exact reductions in water use required for the chosen credit level. Each credit should be fully justified with a clear explanation of how the project meets all quantifiable and qualitative requirements necessary to claim the credit’s points.'
-                    },
-                    {
-                        points: 3,
-                        description: 'Most credit requirements are correctly identified and explained, though some credits may lack the level of detail needed to fully demonstrate compliance with LEED standards. There may be minor misinterpretations of the performance thresholds or metrics for a few credits.'
-                    },
-                    {
-                        points: 2,
-                        description: 'Several credit requirements are not adequately reflected, with important aspects of LEED compliance misunderstood or missing. The narrative may generalize credit requirements rather than explaining how the specific thresholds or criteria are met.'
-                    },
-                    {
-                        points: 1,
-                        description: 'The narrative mentions credits but provides little to no explanation of how the project will meet the detailed requirements. The understanding of LEED requirements is either vague or incorrect.'
-                    },
-                    {
-                        points: 0,
-                        description: 'The narrative does not reflect any LEED credit requirements, or no credits are discussed.'
-                    }
-                ]
-            },
-            {
-                name: 'Formatting: Credit Names and Points Claimed',
-                scoringCriteria: [
-                    {
-                        points: 3,
-                        description: 'The narrative must clearly list the name of each credit pursued and the points claimed for each one, following the LEED v4 BD+C structure. The credit names should be accurately listed as they appear in the LEED reference guide, and the corresponding points should reflect the exact level claimed based on the project\'s anticipated performance (e.g., low, medium, or high point tiers for Energy Performance). The formatting should make it easy to identify each credit and its associated points within the narrative.'
-                    },
-                    {
-                        points: 2,
-                        description: 'Most credits are clearly named and points claimed, but there may be some minor inconsistencies in how credits or point totals are presented. Formatting may require some clarification but still allows the reader to generally follow the credit selection.'
-                    },
-                    {
-                        points: 1,
-                        description: 'The credit names or points claimed are incomplete or inconsistent, making it difficult to understand which credits are being pursued or how many points the student aims to achieve. The formatting lacks clarity, and important details are missing.'
-                    },
-                    {
-                        points: 0,
-                        description: 'No credit names or points claimed are provided, or the formatting is so unclear that it is difficult to determine which credits are being pursued.'
-                    }
-                ]
-            },
-            {
-                name: 'Realistic and Detailed Implementation of Credits',
-                scoringCriteria: [
-                    {
-                        points: 3,
-                        description: 'The narrative must provide a realistic and detailed explanation of how the project will achieve each credit selected. The explanation should not only outline general strategies but also address specific technical requirements, such as system performance, material selections, or site strategies that align with LEED’s detailed credit standards. For instance, if claiming points for Indoor Environmental Quality, the student should specify exactly how ventilation, material off-gassing limits, or lighting controls will meet LEED thresholds.'
-                    },
-                    {
-                        points: 2,
-                        description: 'The narrative provides a generally realistic description of how credits will be achieved but lacks some depth in the technical or detailed aspects. Some strategies may be too general or not fully aligned with LEED’s specific performance or compliance standards.'
-                    },
-                    {
-                        points: 1,
-                        description: 'The explanation of how credits will be achieved is vague or unrealistic, with minimal attention to the detailed requirements necessary for LEED compliance. The strategies may be impractical for the project\'s scope.'
-                    },
-                    {
-                        points: 0,
-                        description: 'The student does not provide any realistic strategies for achieving the credits, or no explanation is provided.'
-                    }
-                ]
-            },
-            {
-                name: 'Grammar, Structure, and Clarity',
-                scoringCriteria: [
-                    {
-                        points: 2,
-                        description: 'The narrative is clearly written, well-organized, and free of significant grammatical or spelling errors. The structure is logical, with headings and subheadings that make it easy to navigate through the different credits and their explanations. The use of technical language is appropriate, and the narrative maintains a professional tone throughout.'
-                    },
-                    {
-                        points: 1.5,
-                        description: 'The narrative is mostly well-written and organized, but may contain a few minor grammatical or structural issues. Headings and subheadings are generally used but may not always be clear or consistent.'
-                    },
-                    {
-                        points: 1,
-                        description: 'The narrative contains several grammatical or structural errors that impact readability. The organization is somewhat unclear, and the structure of the document may be confusing or inconsistent.'
-                    },
-                    {
-                        points: 0,
-                        description: 'The narrative is poorly written, difficult to follow, and lacks organization. Grammar and spelling errors significantly impair the reader’s ability to understand the content.'
-                    }
-                ]
+                }
+                if (changed) {
+                    saveScoresToStorage();  
+                }
             }
-        ];
 
+            step1.classList.toggle('hidden', !onStep1);
+            step2.classList.toggle('hidden', onStep1);
+            btnStep1.classList.toggle('active', onStep1);
+            btnStep2.classList.toggle('active', !onStep1);
+
+            renderCatalog(onStep1 ? 'catalogStep1' : 'catalogStep2', onStep1 ? SCORES_P1 : SCORES_P2);
+
+            // Total Sync Bottom Button
+            setPrimaryForStep(n);
+            }
+
+        // 
+        btnStep1.onclick = () => switchStep(1);
+        btnStep2.onclick = () => switchStep(2);
+
+        const primaryBtn = document.getElementById('wizardPrimaryBtn');
+        const btnRefresh = document.getElementById('btnRefreshPlan');
+        if (btnRefresh) {
+            btnRefresh.onclick = () => {
+                SCORES_P1 = {};
+                SCORES_P2 = {};
+                saveScoresToStorage();
+                const onStep1 = !document.getElementById('step1').classList.contains('hidden');
+                renderCatalog(onStep1 ? 'catalogStep1' : 'catalogStep2', onStep1 ? SCORES_P1 : SCORES_P2);
+                updateProgressBar();
+            };
+        }
+
+        function setPrimaryForStep(n) {
+            const primaryBtn = document.getElementById('wizardPrimaryBtn');
+
+            if (n === 1) {
+                primaryBtn.textContent = 'Next';
+                primaryBtn.onclick = () => switchStep(2);
+                primaryBtn.classList.remove('primary-button');
+            } else {
+                primaryBtn.textContent = 'Submit';
+                primaryBtn.onclick = async () => {
+                    try {
+                        const postPhase = (phase, scores) =>
+                            fetch('/leed/scores', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ phase, scores, replace: true })
+                            }).then(r => r.json());
+
+                        // Clear old data on the server (optional; can be omitted if the backend overwrites)
+                        await postPhase('priority', {});
+                        await postPhase('supplement', {});
+
+                        // Write two steps separately
+                        const r1 = await postPhase('priority',   SCORES_P1);
+                        const r2 = await postPhase('supplement', SCORES_P2);
+                        if (!r1.success || !r2.success) throw new Error((r1.error || r2.error) || 'Save failed');
+
+                        // Read back the latest value from the database
+                        let plan = null;
+                        try { const r = await fetch('/leed/plan'); plan = await r.json(); } catch (e) { console.warn(e); }
+
+                        // Return to the main interface and print (no pop-up window)
+                        returnToMain();
+                        printSavedPlanToChat(plan);
+
+                    } catch (e) {
+                        console.warn(e);
+                        returnToMain();
+                        printSavedPlanToChat(null, '提交失败，但本地分数已保存。');
+                    }
+                };
+                primaryBtn.classList.add('primary-button');
+
+            }
+        }
+
+        // 初始进入 Step 1
+        switchStep(1);
+    }
+
+    function printSavedPlanToChat(plan, fallbackMsg) {
+        const chat = document.getElementById('chat-container');
+        if (!chat) return;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-message ai';
+
+        if (fallbackMsg) {
+            wrap.textContent = fallbackMsg;
+            chat.appendChild(wrap);
+            chat.scrollTop = chat.scrollHeight;
+            return;
+        }
+
+        const title = document.createElement('div');
+        title.style.fontWeight = 'bold';
+        title.style.marginBottom = '6px';
+        title.textContent = 'Scores saved to the database (read back from the server):';
+        wrap.appendChild(title);
+
+        // Render a simple table
+        const renderSection = (label, arr) => {
+            const h = document.createElement('div');
+            h.style.margin = '6px 0';
+            h.innerHTML = `<span style="font-weight:600">${label}</span>`;
+            wrap.appendChild(h);
+
+            if (!arr || !arr.length) {
+                const none = document.createElement('div');
+                none.className = 'muted';
+                none.textContent = 'null';
+                wrap.appendChild(none);
+                return;
+            }
+
+            const tbl = document.createElement('table');
+            tbl.style.width = '100%';
+            tbl.style.borderCollapse = 'collapse';
+            tbl.style.marginBottom = '8px';
+
+            const thead = document.createElement('thead');
+            thead.innerHTML = `<tr>
+                <th style="text-align:left;border-bottom:1px solid #eee;padding:4px 6px;">Item</th>
+                <th style="text-align:left;border-bottom:1px solid #eee;padding:4px 6px;">Points</th>
+            </tr>`;
+            tbl.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            let total = 0;
+            arr.forEach(it => {
+                const name = it.name ?? '';
+                const pts = Number(it.points) || 0;
+                total += pts;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="border-bottom:1px solid #f2f2f2;padding:4px 6px;">${name}</td>
+                    <td style="border-bottom:1px solid #f2f2f2;padding:4px 6px;">${pts}</td>`;
+                tbody.appendChild(tr);
+            });
+            
+            const trSum = document.createElement('tr');
+            trSum.innerHTML = `
+                <td style="padding:6px 6px;font-weight:600;">Subtotal</td>
+                <td style="padding:6px 6px;font-weight:600;">${total}</td>`;
+            tbody.appendChild(trSum);
+
+            tbl.appendChild(tbody);
+            wrap.appendChild(tbl);
+        };
+
+        if (plan && plan.success) {
+            const step1Arr = Array.isArray(plan.priority) ? plan.priority : [];
+            const step2Arr = Array.isArray(plan.supplement) ? plan.supplement : [];
+
+            renderSection('Step 1 (priority)', step1Arr);
+
+            const step2Display = filterSuppForDisplay(step1Arr, step2Arr, 'upgrade');
+            renderSection('Step 2 (supplement)', step2Display);
+        } else {
+            const err = document.createElement('div');
+            err.textContent = 'Failed to read the plan (/leed/plan) from the server. Please try again later.';
+            wrap.appendChild(err);
+        }
+
+        chat.appendChild(wrap);
+        chat.scrollTop = chat.scrollHeight;
+        }
+
+
+    // Keep existing resubmitLeed() to call showLeedPage()
+    function resubmitLeed() {
+        sessionStorage.removeItem('leedSubmitted');
+    // DO NOT clear scores now; teacher asked to preserve across steps
+       showLeedPage();
+     }
     </script>
+
     {% if user %}
         <div class="logout-container">
             <a href="{{ url_for('logout') }}" class="logout-button">Log Out</a>

@@ -1,0 +1,111 @@
+[
+  {
+    "name": "LEED Certification Achievement",
+    "scoringCriteria": [
+      {
+        "points": 3,
+        "description": "Project clearly achieves at least LEED Certified (40-49)."
+      },
+      {
+        "points": 2,
+        "description": "Effort shown but some prerequisites/points misaligned."
+      },
+      {
+        "points": 1,
+        "description": "Key prerequisites unmet or credits unrealistic."
+      },
+      {
+        "points": 0,
+        "description": "No credible certification path presented."
+      }
+    ]
+  },
+  {
+    "name": "Reflection of Credit Requirements",
+    "scoringCriteria": [
+      {
+        "points": 4,
+        "description": "Accurate, specific requirements for each selected credit."
+      },
+      {
+        "points": 3,
+        "description": "Mostly correct; minor gaps."
+      },
+      {
+        "points": 2,
+        "description": "Several requirements missing/misunderstood."
+      },
+      {
+        "points": 1,
+        "description": "Vague or incorrect understanding."
+      },
+      {
+        "points": 0,
+        "description": "No requirements reflected."
+      }
+    ]
+  },
+  {
+    "name": "Formatting: Credit Names and Points Claimed",
+    "scoringCriteria": [
+      {
+        "points": 3,
+        "description": "Clearly lists credit names & claimed points."
+      },
+      {
+        "points": 2,
+        "description": "Mostly clear; minor inconsistencies."
+      },
+      {
+        "points": 1,
+        "description": "Incomplete or confusing."
+      },
+      {
+        "points": 0,
+        "description": "Not listed / unreadable."
+      }
+    ]
+  },
+  {
+    "name": "Realistic and Detailed Implementation of Credits",
+    "scoringCriteria": [
+      {
+        "points": 3,
+        "description": "Realistic, detailed strategies tied to LEED criteria."
+      },
+      {
+        "points": 2,
+        "description": "Generally realistic but lacks depth."
+      },
+      {
+        "points": 1,
+        "description": "Vague or impractical strategies."
+      },
+      {
+        "points": 0,
+        "description": "No credible strategies provided."
+      }
+    ]
+  },
+  {
+    "name": "Grammar, Structure, and Clarity",
+    "scoringCriteria": [
+      {
+        "points": 2,
+        "description": "Clear, well-structured, minimal errors."
+      },
+      {
+        "points": 1.5,
+        "description": "Mostly clear; a few issues."
+      },
+      {
+        "points": 1,
+        "description": "Noticeable errors/structure issues."
+      },
+      {
+        "points": 0,
+        "description": "Hard to read; many errors."
+      }
+    ]
+  }
+]
