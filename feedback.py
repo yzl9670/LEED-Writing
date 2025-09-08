@@ -97,7 +97,7 @@ def generate_feedback(
             icon = {"meet": "✅", "partial": "🟠", "miss": "❌", "unclear": "❓"}.get(judge, "•")
             out.append(
                 f"- {icon} **{name}** — claimed {claim:g} pts; supported ≈ {maxpt:.1f} pts\n"
-                f"  - Why: {rationale}\n"
+                f"  - Scoring Reason: {rationale}\n"
             )
             if missing:
                 out.append(f"  - Missing: " + "; ".join(_trim(m, 80) for m in missing))
@@ -131,7 +131,7 @@ def generate_feedback(
             suggestion = _trim(r.get("suggestion", ""), 100)
             out.append(f"- **{name}**: {sc:g}/{tot:g}")
             if rationale:
-                out.append(f"  - Why: {rationale}")
+                out.append(f"  - Scoring Reason: {rationale}")
             if suggestion and suggestion.lower() != "none.":
                 out.append(f"  - Next: {suggestion}")
         out.insert(1, f"_Total: {total_scored:.1f}/{total_max:.0f}_")
@@ -464,7 +464,7 @@ def _render_credit_block(rows: List[Dict[str, Any]]) -> str:
         suggestion = _trim(r.get("suggestion", ""), 100)
 
         icon = {"meet": "✅", "partial": "🟠", "miss": "❌", "unclear": "❓"}.get(judge, "•")
-        line = f"- {icon} **{name}** — claimed {claim:g} pts; supported ≈ {maxpt:.1f} pts\n  - Why: {rationale}"
+        line = f"- {icon} **{name}** — claimed {claim:g} pts; supported ≈ {maxpt:.1f} pts\n  - Scoring Reason: {rationale}"
         out.append(line)
         if missing:
             out.append("  - Missing: " + "; ".join(_trim(m, 80) for m in missing))
