@@ -27,6 +27,5 @@ Thumbs.db
 # Project specific
 instance/            
 *.sqlite
-*.db
-data/*.json          
+*.db         
 uploads/

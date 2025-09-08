@@ -1,0 +1,20 @@
+{
+  "priority": [
+    {
+      "category": "EA",
+      "name": "Optimize Energy Performance (high tier)",
+      "points": "18"
+    },
+    {
+      "category": "WE",
+      "name": "Outdoor Water Use Reduction",
+      "points": "2"
+    },
+    {
+      "category": "WE",
+      "name": "Indoor Water Use Reduction (credit)",
+      "points": "6"
+    }
+  ],
+  "supplement": []
+}
