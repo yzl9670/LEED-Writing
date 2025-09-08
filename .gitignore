@@ -1,0 +1,32 @@
+# Python / Flask
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual env / Conda
+.venv/
+venv/
+env/
+.env
+.env.*        
+# IDE
+.vscode/
+.idea/
+
+# Build / cache
+dist/
+build/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+instance/            
+*.sqlite
+*.db
+data/*.json          
+uploads/

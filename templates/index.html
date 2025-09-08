@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LEED Rubrics Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+            min-height: 0;
+        }
+        /*hide*/
+        .left-menu {
+            width: 0; 
+            background-color: #4a76a8;
+            color: #fff;
+            padding: 0; 
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .content {
+            width: 70%; 
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: #e9ecef;
+            padding: 20px;
+            padding-bottom: 80px;
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            max-width: 70%;
+            word-wrap: break-word;
+            position: relative;
+        }
+        .chat-message.user {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .chat-message.ai {
+            background-color: #d0e2f2;
+            align-self: flex-start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            white-space: pre-wrap;
+        }
+        .input-container {
+            position: static; 
+            bottom: auto;
+            left: auto;
+            right: auto;
+            background-color: #fff;
+            padding: 10px 0;
+            z-index: 2;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #ccc;
+        }
+        .input-container textarea {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+            min-height: 50px;
+            max-height: 50%;
+            overflow-y: auto;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-button {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .upload-button input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .rubrics-container {
+            width: 30%;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+        .rubrics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        .rubrics-header h3 {
+            margin: 0;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .rubrics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 80vh; 
+        }
+        .rubrics-list div {
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 5px;
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .rubrics-list textarea {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            resize: none;
+            overflow-y: hidden;
+            min-height: 50px;
+            margin-right: 10px;
+            background-color: transparent;
+        }
+        .rubrics-list textarea:focus {
+            outline: none;
+        }
+        .rubric-button {
+            padding: 5px 10px;
+            font-size: 16px;
+            border: none;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .rubric-button:hover {
+            background-color: #c0392b;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .feedback-panel {
+            position: absolute;
+            bottom: 0;
+            left: calc(100% + 10px);
+            width: 175px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 100;
+        }
+        .feedback-panel h4 {
+            margin-top: 0;
+        }
+        .feedback-panel .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 18px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #888;
+        }
+        .feedback-panel .stars {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .feedback-panel .stars span {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .feedback-panel .stars span.selected {
+            color: gold;
+        }
+        .feedback-panel textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 50px;
+            margin-top: 10px;
+        }
+        .feedback-panel button.submit-feedback {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .feedback-button {
+            margin-top: 10px;
+            align-self: flex-end;
+            font-size: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #leed-page {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0; 
+        }
+        #leed-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;  
+            overflow: hidden; /* prevent outer scroll; inner pane will scroll */
+            margin: 6px 0 10px;
+            font-weight: 700;
+            letter-spacing:.2px;
+        }
+        #leed-content h2{
+            margin:6px 0 10px;
+            font-weight:700;
+            letter-spacing:.2px;
+        }
+        /* Sticky top summary */
+        #planSummary {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            background: #fff;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee; 
+            align-items:center;
+            gap:10px;
+        }
+        #planSummary>div:first-child{ white-space:nowrap; color:#111827; }
+
+        #step1,
+        #step2 {
+            flex: 1;
+            min-height: 0;       
+            display: flex;
+            flex-direction: column;
+        }
+        .step-actions{
+            display:flex;
+            justify-content:flex-end;
+            gap:8px;
+            margin-top:8px;
+        }
+        .step-actions button{
+            padding:8px 14px;
+            border:none;
+            border-radius:6px;
+            background:#4CAF50;
+            color:#fff;
+            cursor:pointer;
+        }
+
+        .step-actions button:disabled{ opacity:.6; cursor:not-allowed; }
+
+        /* Scrollable “window” that holds the table */
+        .pane-scroll {
+            flex: 1;
+            min-height: 0;          /* required so flex children can shrink */
+            overflow: auto;         /* wheel scroll lives here */
+            border: 1px solid #e5e5e5;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 8px;           /* small inner padding so borders don’t hug table */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .pane-scroll::-webkit-scrollbar{ width:10px; }
+        .pane-scroll::-webkit-scrollbar-track{ background:#f3f4f6; border-radius:10px; }
+        .pane-scroll::-webkit-scrollbar-thumb{
+        background:#cfd8e3; border-radius:10px; border:2px solid #f3f4f6;
+        }
+        .pane-scroll:hover::-webkit-scrollbar-thumb{ background:#b7c4d6; }
+
+        /* Sticky bottom bar (Back + actions) */
+        .button-container {
+            position: sticky;
+            bottom: 0;
+            z-index: 3;
+            background: #fff;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+        }
+
+        /* Make table headers stick inside the pane while scrolling */
+        .pane-scroll thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
+        }
+
+        /* Optional: keep section headers visible just under the table header */
+        .pane-scroll .section-header td {
+            position: sticky;
+            top: 37px; /* ~ thead height */
+            background: #f9fbff;
+            z-index: 1;
+        }
+
+        #leed-table-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        #leed-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #leed-table th, #leed-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+        #leed-table th {
+            background-color: #e9ecef;
+        }
+        #leed-table .section-header {
+            background-color: #d0e2f2;
+            font-weight: bold;
+        }
+        #leed-table input[type="number"] {
+            width:90px;
+            border:1px solid var(--border);
+            border-radius:8px;
+            padding:6px 8px;
+            outline:none;
+            transition:border .15s, box-shadow .15s;
+        }
+        #leed-table input[type="number"]:focus{
+            border-color:#b7e2c3;
+            box-shadow:0 0 0 3px rgba(76,175,80,.12);
+        }
+        #leed-table input[type="number"]::-webkit-outer-spin-button,
+        #leed-table input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+        #leed-table input[type="number"]{ -moz-appearance: textfield; }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            background:#fff;
+            border-top:1px solid var(--border);
+            box-shadow: 0 -4px 12px rgba(0,0,0,.04);
+        }
+        .button-container .back-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Style for the submit button */
+        .button-container #leed-submit-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        
+        }
+    
+        .rubrics-list textarea[readonly] {
+            background-color: transparent;
+            cursor: default;
+        }
+        
+        .chat-container.dragover {
+            background-color: #c8e6c9;
+        }
+        /* Rubrics */
+        .rubric-item {
+            width: 95%;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: block;
+        }
+        .rubric-title {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 90%;
+            position: relative;
+        }
+
+        
+        .rubric-title::after { content:'\25BA'; position:absolute; right:10px; transition:transform .3s; }
+        .rubric-title.expanded::after { transform: rotate(90deg); }
+
+
+        .rubric-title .title-text {
+            flex-grow: 1;
+        }
+        .rubric-title .rubric-score {
+            margin-left: 10px;
+        }
+        .rubric-content {
+            display: none;
+            flex-direction: column;
+            padding: 0;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .rubric-content.visible {
+            display: block;
+        }
+        .message {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .message.red {
+            color: red;
+        }
+        .message.green {
+            color: green;
+        }
+        .rubric-criteria-item {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .rubric-criteria-item div {
+            margin-bottom: 5px;
+        }
+        .rubric-subcontent {
+            padding: 10px 20px;
+            margin: 0;
+            background-color: #fff;
+            border-left: 3px solid #ccc;
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            flex-direction: column;
+        }
+        .rubric-subcontent.visible {
+            display: flex;
+        }
+        .rubric-subtitle {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px;
+            margin: 0;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        .rubric-subtitle::after {
+            content: '\25BA'; 
+            position: absolute;
+            right: 10px;
+            transition: transform 0.3s;
+        }
+        .rubric-subtitle.expanded::after {
+            transform: rotate(90deg); 
+        }
+        .rubric-score {
+            font-weight: bold;
+        }
+        .rubrics-total-score {
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .leed-rubric-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            position: relative; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .resubmit-button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px; 
+            transition: all 0.3s ease; 
+        }
+        @media (max-width: 600px) {
+            .resubmit-button {
+                font-size: 12px;
+                padding: 4px 8px;
+                border-radius: 2px;
+                position: static;
+                margin-top: 10px;
+            }
+        }
+        @media (max-width: 400px) {
+            .resubmit-button {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+        }
+        .resubmit-button:hover {
+            background-color: #c0392b;
+        }
+        .rubric-criteria-item.highlight {
+            background-color: #d0e2f2;
+            border-left: 3px solid #4a76a8;
+        }
+
+        .logout-container {
+            position: fixed;
+            bottom: 20px; 
+            right: 20px;  
+            z-index: 1000; 
+        }
+
+        .logout-button {
+            padding: 10px 20px;
+            background-color: #e74c3c; 
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c0392b; 
+        }
+        .edit-button {
+            margin-left: 10px;
+            padding: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            background-color: #4CAF50; 
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        /* Loading animation style */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #4a76a8;
+            animation: spin 1s linear infinite;
+            margin: 10px; 
+        }
+        .input-hint {
+            font-size: 12px;
+            color: #888;
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Hide individual rubric scores and total scores */
+         .rubric-score,rubrics-total-score {display: none;}
+
+        .stepper { 
+            display:flex; 
+            gap:12px;
+            margin-bottom:12px; 
+            gap:10px;
+        }
+        .stepper button { 
+            padding:6px 10px; 
+            border:1px solid #ddd; 
+            border-radius:8px; 
+            background:#f7f7f7; 
+            cursor:pointer; 
+            background:#fff;
+            border:1px solid var(--border);
+            color:#374151;
+            border-radius:999px;
+            padding:8px 12px;
+            box-shadow: var(--shadow);
+        }
+        .stepper button.active { 
+            background:#eef6ff; 
+            border-color:#9cc4ff; 
+            background:#eefbf0;
+            border-color:#cdebd3;
+            color:#1f7a34;
+        }
+        .tag { 
+            font-size:12px; 
+            padding:2px 6px; 
+            border-radius:6px; 
+            background:#eee; 
+        }
+        .tag.req { 
+            background:#ffe7e7; 
+            color:#b10000; 
+        }
+        .muted { 
+            color:#777; 
+        }
+        .actions { 
+            display:flex; 
+            gap:8px; 
+            flex-wrap:wrap; 
+            margin:10px 0; 
+        }
+        .progress { 
+            --goal-left: 80%;
+            --goal-shift: -2px;   
+            height:14px;
+            background:
+                linear-gradient(to right,
+                #f0f0f0 0%, #f0f0f0 80%,
+                #eef6ff 80%, #eef6ff 100% /* 右侧淡蓝，提示“过线区” */
+                );
+            border-radius:999px;
+            overflow:hidden;
+            position:relative;
+        }
+        .progress > div { 
+            height:100%; 
+            background:#4caf50; 
+            width:0%; 
+            transition:width .3s; 
+        }
+        .progress > div{ background:#f59e0b; }    
+        .progress > div.passed{ background:#4caf50; }
+
+        .progress > div{            
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress .goal-mark{
+            position:absolute;
+            left: var(--goal-left);
+            top: 0; bottom: -6px;
+            width: 8px;
+            background:#1d4ed8;
+            border-radius:6px;
+            box-shadow: 0 0 0 3px rgba(29,78,216,.28), 0 0 0 6px rgba(29,78,216,.12);
+            transform: translate3d(-50%,0,0);   /* GPU 固定像素，消除轻微左右晃 */
+            pointer-events:none; z-index:2;
+        }
+        .progress .goal-mark.pulse{
+            animation:pulseMark 1.6s ease-out infinite;
+        }
+        .progress .goal-mark.reached{
+            background:#16a34a;
+            box-shadow: 0 0 0 3px rgba(22,163,74,.28), 0 0 0 6px rgba(22,163,74,.10);
+        }
+
+        .progress .goal-mark.pulse{ animation:pulseMark 1.6s ease-out infinite; }
+        .progress .goal-mark.reached{
+        background:#16a34a;
+        box-shadow:
+            0 0 0 3px rgba(22,163,74,.28),
+            0 0 0 6px rgba(22,163,74,.10);
+        }
+        .progress .goal-label{
+            position:absolute;
+            left: var(--goal-left);
+            top: 100%;
+            margin-top: 6px;
+            transform: translateX(calc(-50% + var(--goal-shift)));
+            /* 绝对置中 */
+            display: inline-grid; place-items: center;
+            height: 22px; min-width: 34px; padding: 0 10px;
+            line-height: 1;
+            font-size:12px; font-weight:700; color:#1f2937;
+            background:#eef2ff; border:1px solid #c7d2fe;
+            border-radius:999px; box-shadow:0 1px 2px rgba(0,0,0,.06);
+            white-space:nowrap; pointer-events:none; z-index:2;
+        }
+        .progress .goal-label.reached{
+            background:#ecfdf5; border-color:#bbf7d0;
+        }
+
+        table { 
+            width:100%; 
+            border-collapse:collapse; 
+            margin-top:10px; 
+        }
+        th, td { 
+            border:1px solid #eee; 
+            padding:6px 8px; 
+            text-align:left; 
+        }
+        tr.prereq { 
+            background:#fafafa; 
+            color:#888; 
+        }
+        .hidden { 
+            display:none; 
+        }
+
+        #step1.hidden, #step2.hidden { display: none !important; }
+
+        .primary-button { background:#4CAF50; color:#fff; }
+
+
+        :root{
+            --card:#fff;
+            --bg:#f7f9fc;
+            --border:#e5e7eb;
+            --text:#111827;
+            --muted:#6b7280;
+            --primary:#4CAF50;
+            --primary-600:#43a047;
+            --primary-700:#388e3c;
+            --radius:12px;
+            --shadow:0 6px 24px rgba(0,0,0,.06);
+        }
+        body{ background:var(--bg); color:var(--text); }
+
+        #btnRefreshPlan{
+            background:#fff;
+            color:#374151;
+            border:1px solid var(--border);
+            border-radius:8px;
+            padding:6px 10px;
+        }
+        #btnRefreshPlan:hover{ background:#f7f7f7; }
+        
+        .leed-prompt{
+            background:#fff8e1;
+            border:1px solid #ffe4a3;
+            color:#9a6a00 !important;
+            border-radius:10px;
+            padding:8px 12px !important;
+        }
+
+        .back-button{
+            background:#e9f0ff;
+            color:#1f3b7a;
+            border:none;
+            border-radius:10px;
+            padding:10px 16px;
+            min-width:110px;
+            box-shadow: var(--shadow);
+            }
+            .back-button:hover{ filter:brightness(.98); }
+            .primary-button{
+            background:var(--primary);
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            padding:10px 16px;
+            min-width:110px;
+            box-shadow: var(--shadow);
+            }
+            .primary-button:hover{ background:var(--primary-600); }
+            .primary-button:active{ background:var(--primary-700); }
+                
+            table{ border-collapse:separate; border-spacing:0; }
+            thead th{
+            background: linear-gradient(180deg,#f9fafb 0%, #f2f6fb 100%);
+            font-weight:600;
+            color:#374151;
+            border-bottom:1px solid var(--border) !important;
+            }
+            tbody tr:not(.section-header):nth-child(even){ background:#fafcff; }
+            tbody tr:not(.section-header):hover{ background:#f3f8ff; }
+
+            @media (max-width: 720px){
+                #leed-content { padding: 10px; }
+                table thead th:nth-child(2),
+                table tbody td:nth-child(2){ display:none; }
+            }
+
+            .pane-scroll .section-header td{
+                position: sticky;
+                top: 37px;          
+                z-index: 1;
+                background: #f0fdf4;
+                color: #065f46;
+                font-weight: 700;
+                font-size: 14px;
+                padding: 10px 12px;
+                border-top: 1px solid #cdebd3;
+                border-bottom: 1px solid #cdebd3;
+                border-left: 6px solid var(--primary);
+                border-right: 1px solid #e5e7eb;
+                border-radius: 6px;
+            }
+
+            #totalPoints{
+                display:inline-block;
+                font-variant-numeric: tabular-nums;     
+                font-feature-settings: "tnum" 1, "lnum" 1;
+                width: 6ch;                              
+                text-align: right;                       /* 右对齐，数位变化不影响左侧布局 */
+            }
+
+            
+    </style>
+
+    <script>
+        let WRITING_RUBRIC = []; 
+    </script>
+
+    <script id="LEED_DATA_JSON" type="application/json">
+        {{ leed_table_data|tojson }}
+    </script>
+
+    <script>
+        const isAdmin = {{ 'true' if is_admin else 'false' }};
+    </script>
+
+    <script>
+        // hydrate LEED_TABLE_DATA from embedded JSON (robust)
+        (function () {
+            let parsed = [];
+            try {
+            const raw = document.getElementById('LEED_DATA_JSON')?.textContent?.trim();
+            parsed = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+            parsed = [];
+            console.warn('Failed to parse LEED_DATA_JSON:', e);
+            }
+            if (!Array.isArray(parsed)) {
+            if (parsed && Array.isArray(parsed.sections)) parsed = parsed.sections;
+            else parsed = [];
+            }
+            window.LEED_TABLE_DATA = parsed;
+            console.log('LEED_TABLE_DATA loaded. length =', parsed.length);
+        })();
+    </script>
+
+</head>
+<body>
+    <div class="main-container" id="main-container">
+        <!-- Left button section (hidden)） -->
+        <div class="left-menu">
+        </div>
+
+        <div class="content">
+            <div class="chat-container" id="chat-container">
+                <div class="chat-message ai">Welcome to the AI feedback system! Feel free to drag and drop your assignment here!</div>
+            </div>
+            <div class="input-container">
+                <label class="upload-button">
+                    Upload
+                    <input type="file" id="file-input" accept=".docx,.pdf" onchange="sendMessage()">
+                </label>
+                <textarea id="user-input" placeholder="Type your message here..." oninput="autoResizeTextarea(this)"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+            <div class="input-hint">
+                Press <b>Ctrl+Enter</b> to send message
+            </div>
+        </div>
+
+        <!-- Rubrics section on the right -->
+        <div class="rubrics-container" id="rubrics-container">
+            <div class="leed-rubric-header" id="leed-rubric-header">
+                LEED Narrative Assignment Rubric
+                <button class="resubmit-button" onclick="resubmitLeed()">LEED Certification Form</button>
+            </div>
+            <div class="rubrics-total-score" id="rubrics-total-score">
+                Total Score: 0/15
+            </div>
+            <!-- LEED Rubrics List -->
+            <div class="rubrics-list" id="leed-rubrics-list">
+                <!-- LEED rubrics will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- LEED -->
+    <div id="leed-page" class="main-container" style="display:none;">
+        <div class="content" id="leed-content">
+            <h2>LEED Certification Planner</h2>
+
+            <!-- Stepper lives INSIDE the LEED page -->
+            <div class="stepper" id="leed-stepper">
+                <button id="btnStep1" class="active" type="button">Step 1: Priority review</button>
+                <button id="btnStep2" type="button">Step 2: Low-cost top-ups</button>
+            </div>
+
+            <!-- Plan summary -->
+            <div id="planSummary" class="actions">
+                <div><strong>Total points (so far):</strong> <span id="totalPoints">0</span> / 40</div>
+                <div style="flex:1;">
+                    <div class="progress"><div id="progressBar"></div></div>
+                </div>
+                <button id="btnRefreshPlan" type="button">Refresh</button>
+            </div>
+
+            <!-- Step 1: full catalog with numeric inputs -->
+            <section id="step1">
+                <div class="pane-scroll">
+                    <div id="catalogStep1"></div>
+                </div>
+            </section>
+
+            <!-- Step 2: the same full catalog, prefilled with the same scores -->
+            <section id="step2" class="hidden">
+                <div class="pane-scroll">
+                    <div id="catalogStep2"></div>
+                </div>
+            </section>
+
+            <!-- Optional free text for feedback generation -->
+            <div class="actions">
+                <textarea id="feedbackMessage" rows="4" style="width:100%;"
+                    placeholder="(Optional) Add any context you want me to consider when generating feedback."></textarea>
+            </div>
+
+            <div class="button-container">
+                <button class="back-button" onclick="returnToMain()">Back</button>
+                <button id="wizardPrimaryBtn" class="back-button primary-button" type="button">Next </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let currentChatHistoryId = null;  
+        let currentMode = 'LEED'; 
+
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight * 0.5) + 'px';
+        }
+
+        // Get the current Rubrics (in Writing mode only)
+        function getCurrentRubrics() {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            const rubricTextareas = rubricsList.querySelectorAll('textarea');
+            let rubrics = '';
+            rubricTextareas.forEach(textarea => {
+                rubrics += textarea.value + '\n\n';
+            });
+            return rubrics.trim();
+        }
+
+        function sendMessage() {
+            // Get user input and file input 
+            const input = document.getElementById('user-input');
+            const fileInput = document.getElementById('file-input');
+            const message = input.value;
+            const file = fileInput.files[0];
+        
+            if (!message.trim() && !file) {
+                alert("Please enter a message or upload a file.");
+                return;
+            }
+        
+            // Create a FormData object to send to the backend
+            const formData = new FormData();
+            formData.append('message', message);
+        
+            // Depending on the current model (LEED or other), attach the corresponding data
+            if (currentMode === 'LEED') {
+                const raw1 = sessionStorage.getItem('leedScores_p1');
+                const raw2 = sessionStorage.getItem('leedScores_p2');
+                const s1 = raw1 ? JSON.parse(raw1) : {};
+                const s2 = raw2 ? JSON.parse(raw2) : {};
+                const allScores = Object.assign({}, s1, s2);
+                formData.append('leed_scores', JSON.stringify(allScores));
+                // Even if there is no score, it will still be sent, and the backend will use the selected items 
+            } else {
+                const rubrics = getCurrentRubrics();
+                formData.append('rubrics', rubrics);
+            }
+        
+            // If the user selects a file, add it to FormData
+            if (file) {
+                console.log('Selected file:', file);
+                formData.append('file', file);
+            } else {
+                console.log('No file selected.');
+            }
+        
+            // debug
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            }
+        
+            // Get the chat container 
+            const chatContainer = document.getElementById('chat-container');
+        
+            // Display User Messages
+            if (message.trim()) {
+                const userMessageElem = document.createElement('div');
+                userMessageElem.classList.add('chat-message', 'user');
+                userMessageElem.textContent = message;
+                chatContainer.appendChild(userMessageElem);
+            } else if (file) {
+                const userMessageElem = document.createElement('div');
+                userMessageElem.classList.add('chat-message', 'user');
+                userMessageElem.textContent = `Uploaded file: ${file.name}`;
+                chatContainer.appendChild(userMessageElem);
+            }
+        
+            // Add AI reply bubble, showing loading animation
+            const aiMessageElem = document.createElement('div');
+            aiMessageElem.classList.add('chat-message', 'ai');
+        
+            // Creating a loading animation element
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.classList.add('loading-spinner');
+            aiMessageElem.appendChild(loadingSpinner);
+        
+            // Adding the AI ​​Message element to the chat container
+            chatContainer.appendChild(aiMessageElem);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+            // Clear the input box and file input
+            input.value = '';
+            input.style.height = '50px';
+            fileInput.value = '';
+        
+            // Sending request to the backend
+            fetch('/get_feedback', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+                .then(async (res) => {
+                    if (!res.ok) {
+                        const text = await res.text();             // 500 时通常是 HTML/trace
+                        throw new Error(`HTTP ${res.status}: ${text.slice(0, 500)}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success === false) {
+                        throw new Error(data.error || 'Unknown error');
+                        alert(data.error);
+                        // Remove loading animation
+                        aiMessageElem.remove();
+                        return;
+                    }
+        
+                    console.log("Scores from backend (frontend):", data.scores);
+                    // Updated AI reply bubble content, replacing loading animation with actual reply
+                    aiMessageElem.innerHTML = ''; 
+        
+                    const aiContent = document.createElement('div');
+                    aiContent.textContent = data.feedback; 
+        
+                    aiMessageElem.appendChild(aiContent);
+        
+                    // Feedback Button
+                    const feedbackBtn = document.createElement('button');
+                    feedbackBtn.classList.add('feedback-button');
+                    feedbackBtn.textContent = 'Feedback';
+                    feedbackBtn.onclick = function () {
+                        toggleFeedbackPanel(aiMessageElem, data.chat_history_id, feedbackBtn);
+                    };
+                    aiMessageElem.appendChild(feedbackBtn);
+        
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+                    // Updated Rubrics rating display
+                    if (currentMode === 'LEED') {
+                        updateLeedRubricScores(data.scores);
+                    } else {
+                        updateWritingRubricScores(data.scores);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your request.');
+        
+                    // Remove loading animation
+                    aiMessageElem.remove();
+                });
+        }
+        
+        // Update LEED Rubrics Ratings
+        function updateLeedRubricScores(scores) {
+            const rubricsList = document.getElementById('leed-rubrics-list');
+            const rubricItems = rubricsList.querySelectorAll('.rubric-item');
+        
+            let totalScore = 0; 
+            let totalPossibleScore = 0; 
+        
+            rubricItems.forEach(rubricElem => {
+                const titleElem = rubricElem.querySelector('.rubric-title');
+                const rubricName = titleElem.getAttribute('data-rubric-name');
+        
+                if (scores && scores[rubricName]) {
+                    let scoreElem = titleElem.querySelector('.rubric-score');
+                    if (!scoreElem) {
+                        scoreElem = document.createElement('span');
+                        scoreElem.classList.add('rubric-score');
+                        titleElem.appendChild(scoreElem);
+                    }
+                    const scoreValue = scores[rubricName].score;
+                    const totalValue = scores[rubricName].total;
+                    // Item Score
+                    scoreElem.textContent = `Score: ${scoreValue}/${totalValue}`;
+        
+                    // Set color according to scores
+                    const scoreColor = getScoreColor(scoreValue, totalValue);
+                    scoreElem.style.color = scoreColor;
+        
+                    // Highlight the corresponding scoring criteria
+                    const criteriaItems = rubricElem.querySelectorAll('.rubric-criteria-item');
+                    criteriaItems.forEach(criteriaItem => {
+                        const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
+                        criteriaItem.classList.remove('highlight'); 
+        
+                        if (criteriaPoints === scoreValue) {
+                            criteriaItem.classList.add('highlight');
+                        }
+                    });
+        
+                    // Handling the case where there is no exact match
+                    const exactMatch = Array.from(criteriaItems).some(item => {
+                        return parseFloat(item.getAttribute('data-points')) === scoreValue;
+                    });
+        
+                    if (!exactMatch) {
+                        // Find the closest upper and lower rating scale
+                        let lowerCriteria = null;
+                        let higherCriteria = null;
+                        criteriaItems.forEach(criteriaItem => {
+                            const criteriaPoints = parseFloat(criteriaItem.getAttribute('data-points'));
+                            if (criteriaPoints < scoreValue) {
+                                if (!lowerCriteria || criteriaPoints > parseFloat(lowerCriteria.getAttribute('data-points'))) {
+                                    lowerCriteria = criteriaItem;
+                                }
+                            } else if (criteriaPoints > scoreValue) {
+                                if (!higherCriteria || criteriaPoints < parseFloat(higherCriteria.getAttribute('data-points'))) {
+                                    higherCriteria = criteriaItem;
+                                }
+                            }
+                        });
+        
+                        // Highlight the closest upper and lower scoring criteria
+                        if (lowerCriteria) lowerCriteria.classList.add('highlight');
+                        if (higherCriteria) higherCriteria.classList.add('highlight');
+                    }
+                    console.log("Rubric:", rubricName, "Score:", scores[rubricName].score, "Total:", scores[rubricName].total);
+                    totalScore += scoreValue;
+                    totalPossibleScore += totalValue;
+                }
+            });
+            
+
+            // Update total score
+            const totalScoreElem = document.getElementById('rubrics-total-score');
+            totalScoreElem.textContent = `Total Score: ${totalScore}/15`;
+
+            const totalScoreColor = getScoreColor(totalScore, 15);
+            totalScoreElem.style.color = totalScoreColor;
+        }
+
+        function displayScoreMessage(totalScore) {
+            let messageElem = document.getElementById('leed-score-message');
+            if (!messageElem) {
+                messageElem = document.createElement('div');
+                messageElem.id = 'leed-score-message';
+                messageElem.style.fontWeight = 'bold';
+                messageElem.style.marginTop = '10px';
+                messageElem.style.textAlign = 'center';
+                document.getElementById('rubrics-container').appendChild(messageElem);
+            }
+        
+            if (totalScore >= 40) {
+                messageElem.textContent = `Congratulations! Your total LEED score is ${totalScore}, which meets the minimum requirement for LEED certification.`;
+                messageElem.style.color = 'green';
+            } else {
+                messageElem.textContent = `Your total LEED score is ${totalScore}. You need at least 40 points to achieve LEED certification.`;
+                messageElem.style.color = 'red';
+            }
+            const headerElem = document.getElementById('leed-rubric-header');
+            const totalScoreElem = document.getElementById('rubrics-total-score');
+
+            if (headerElem && totalScoreElem) {
+                if (messageElem.parentNode !== headerElem.parentNode || messageElem.nextSibling !== totalScoreElem) {
+                    headerElem.parentNode.insertBefore(messageElem, totalScoreElem);
+                }
+            }
+        }
+
+        function getScoreColor(score, maxScore) {
+            const percentage = (score / maxScore) * 100;
+            if (percentage < 50) {
+                return '#FF0000';
+            } else if (percentage >= 50 && percentage < 80) {
+                return '#FFA500';
+            } else {
+                return '#008000';
+            }
+        }
+
+        // Update the ratings for Writing Rubrics
+        function updateWritingRubricScores(scores) {
+            const rubricsList = document.getElementById('writing-rubrics-list');
+            const rubricItems = rubricsList.querySelectorAll('.rubric-item');
+
+            rubricItems.forEach(rubricElem => {
+                const textarea = rubricElem.querySelector('textarea');
+                const rubricName = textarea.getAttribute('data-rubric-name');
+
+                if (scores && scores[rubricName]) {
+                    let scoreElem = rubricElem.querySelector('.rubric-score');
+                    if (!scoreElem) {
+                        scoreElem = document.createElement('span');
+                        scoreElem.classList.add('rubric-score');
+                        rubricElem.appendChild(scoreElem);
+                    }
+                    scoreElem.textContent = `Score: ${scores[rubricName].score}/${scores[rubricName].total}`;
+                }
+            });
+        }
+
+        // Toggle display of the feedback panel
+        function toggleFeedbackPanel(aiMessageElem, chatHistoryId, feedbackBtn) {
+            let feedbackPanel = aiMessageElem.querySelector('.feedback-panel');
+            if (feedbackPanel) {
+                feedbackPanel.remove();
+            } else {
+                feedbackPanel = document.createElement('div');
+                feedbackPanel.classList.add('feedback-panel');
+
+                // Close button
+                const closeButton = document.createElement('button');
+                closeButton.classList.add('close-button');
+                closeButton.innerHTML = '&times;';
+                closeButton.onclick = function() {
+                    feedbackPanel.remove();
+                };
+                feedbackPanel.appendChild(closeButton);
+
+                const title = document.createElement('h4');
+                title.textContent = 'How do you like this response?';
+                feedbackPanel.appendChild(title);
+
+                // Star Rating
+                const starsDiv = document.createElement('div');
+                starsDiv.classList.add('stars');
+                for (let i = 1; i <= 5; i++) {
+                    const starSpan = document.createElement('span');
+                    starSpan.textContent = '★';
+                    starSpan.dataset.value = i;
+                    starSpan.onclick = function() {
+                        selectStars(starsDiv, i);
+                    };
+                    starsDiv.appendChild(starSpan);
+                }
+                feedbackPanel.appendChild(starsDiv);
+
+                // Feedback text box
+                const feedbackTextarea = document.createElement('textarea');
+                feedbackTextarea.placeholder = 'Enter your feedback...';
+                feedbackPanel.appendChild(feedbackTextarea);
+
+                // Submit Button
+                const submitButton = document.createElement('button');
+                submitButton.classList.add('submit-feedback');
+                submitButton.textContent = 'Submit';
+                submitButton.onclick = function() {
+                    submitFeedback(chatHistoryId, getSelectedStars(starsDiv), feedbackTextarea.value);
+                    feedbackPanel.remove();
+                    feedbackBtn.style.display = 'none';
+                };
+                feedbackPanel.appendChild(submitButton);
+
+                aiMessageElem.appendChild(feedbackPanel);
+
+                // Check if the feedback panel exceeds the visible area and adjust its position
+                const rect = feedbackPanel.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    feedbackPanel.style.left = 'auto';
+                    feedbackPanel.style.right = 'calc(100% + 10px)';
+                }
+            }
+        }
+
+        // Select star rating
+        function selectStars(starsDiv, rating) {
+            const stars = starsDiv.querySelectorAll('span');
+            stars.forEach(star => {
+                if (parseInt(star.dataset.value) <= rating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        // Get the number of selected stars
+        function getSelectedStars(starsDiv) {
+            const selectedStars = starsDiv.querySelectorAll('span.selected');
+            return selectedStars.length;
+        }
+
+        // Submit user feedback on AI responses
+        function submitFeedback(chatHistoryId, rating, feedback) {
+            fetch('/submit_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_history_id: chatHistoryId,
+                    rating: rating,
+                    feedback: feedback
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thank you for your feedback!');
+                } else {
+                    alert('Failed to submit feedback: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting your feedback.');
+            });
+        }
+
+        // Function to display LEED Rubrics (updated)
+        function displayLeedRubrics(rubrics) {
+            const rubricsList = document.getElementById('leed-rubrics-list');
+            rubricsList.innerHTML = ''; 
+
+            rubrics.forEach((rubricData, rubricIndex)=> {
+                const rubricElem = document.createElement('div');
+                rubricElem.classList.add('rubric-item');
+                rubricElem.style.display = 'block';  // Ensure vertical alignment
+
+                // Rubric Title 
+                const titleElem = document.createElement('div');
+                titleElem.classList.add('rubric-title');
+                titleElem.setAttribute('data-rubric-name', rubricData.name);
+
+                // Title Text
+                const titleTextElem = document.createElement('span');
+                titleTextElem.classList.add('title-text');
+                titleTextElem.textContent = `${rubricData.name}`;
+
+                // Score
+                const scoreElem = document.createElement('span');
+                scoreElem.classList.add('rubric-score');
+                scoreElem.textContent = 'Score: 0/0'; // 初始得分
+
+                // Add title text and fraction to title element
+                titleElem.appendChild(titleTextElem);
+                titleElem.appendChild(scoreElem);
+
+                // If admin, add `+/-` buttons
+                // ADD EDIT BUTTON CODE HERE
+                if (isAdmin) {
+                    const editButton = document.createElement('button');
+                    editButton.textContent = 'Edit';
+                    editButton.classList.add('edit-button');
+                    editButton.onclick = (event) => {
+                        event.stopPropagation(); 
+                        editRubric(rubricIndex);
+                    };
+                    titleElem.appendChild(editButton);
+                }
+
+                // Content container (used to store scoring criteria)
+                const contentElem = document.createElement('div');
+                contentElem.classList.add('rubric-content');
+                contentElem.style.display = 'none'; 
+
+                // Fill in the scoring criteria
+                if (Array.isArray(rubricData.scoringCriteria) && rubricData.scoringCriteria.length > 0) {
+                    rubricData.scoringCriteria.forEach((criteria, criteriaIndex) => {
+                        const criteriaItemElem = document.createElement('div');
+                        criteriaItemElem.classList.add('rubric-criteria-item');
+                        criteriaItemElem.setAttribute('data-points', criteria.points);
+
+                        // The title of the grading criteria (e.g. "2 Points")
+                        const criteriaItemTitle = document.createElement('div');
+                        criteriaItemTitle.textContent = `${criteria.points} Points`;
+                        criteriaItemTitle.style.fontWeight = 'bold';
+
+                        // Description of scoring criteria
+                        const criteriaItemContent = document.createElement('div');
+                        criteriaItemContent.textContent = `${criteria.description}`;
+
+                        // Add a title and description to a rubric item
+                        criteriaItemElem.appendChild(criteriaItemTitle);
+                        criteriaItemElem.appendChild(criteriaItemContent);
+
+                        // If admin, add an edit button
+                        if (isAdmin) {
+                            const editCriteriaButton = document.createElement('button');
+                            editCriteriaButton.textContent = 'Edit';
+                            editCriteriaButton.classList.add('edit-button');
+                            editCriteriaButton.onclick = (event) => {
+                                event.stopPropagation();
+                                editScoringCriteria(rubricIndex, criteriaIndex);
+                            };
+                            criteriaItemElem.appendChild(editCriteriaButton);
+                        }
+
+                        // Add a rubric item to a content container
+                        contentElem.appendChild(criteriaItemElem);
+                    });
+                } else {
+                    contentElem.textContent = 'No scoring criteria available.';
+                }
+
+                // Toggle content display when clicking on title
+                titleElem.addEventListener('click', function() {
+                    if (contentElem.style.display === 'none') {
+                        contentElem.style.display = 'block';
+                        titleElem.classList.add('expanded');
+                    } else {
+                        contentElem.style.display = 'none';
+                        titleElem.classList.remove('expanded');
+                    }
+                });
+
+                // Adding a title and content to a Rubric element
+                rubricElem.appendChild(titleElem);
+                rubricElem.appendChild(contentElem);
+
+                // Adding a Rubric Element to the Rubrics List
+                rubricsList.appendChild(rubricElem);
+            });
+        }
+
+        // When the page loads
+        window.onload = function() {
+            // 1. Get the last feedback and insert it after the welcome message
+            fetch('/get_last_feedback', {
+                method: 'GET',
+                credentials: 'include' // Make sure to carry cookies to verify login status
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Last feedback data:", data);
+                if (data.success && data.feedback) {
+                    const chatContainer = document.getElementById('chat-container');
+                    if (chatContainer) {
+                        // Locate the default welcome message
+                        const welcomeElem = chatContainer.querySelector('.chat-message.ai');
+                        const feedbackElem = document.createElement('div');
+                        feedbackElem.classList.add('chat-message', 'ai');
+                        feedbackElem.textContent = data.feedback;
+                        // If the welcome message is found, insert the feedback after it; otherwise insert it at the beginning
+                        if (welcomeElem && welcomeElem.nextSibling) {
+                            chatContainer.insertBefore(feedbackElem, welcomeElem.nextSibling);
+                        } else if (welcomeElem) {
+                            chatContainer.appendChild(feedbackElem);
+                        } else {
+                            chatContainer.insertBefore(feedbackElem, chatContainer.firstChild);
+                        }
+                    } else {
+                        console.error("chat-container not found");
+                    }
+                } else {
+                    console.log("No last feedback:", data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching last feedback:", error);
+            });
+            
+            // Load LEED data or Rubrics data based on user role
+            fetch('/get_WRITING_RUBRICs')
+                .then(r => r.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                    WRITING_RUBRIC = data;   // 这里需要 WRITING_RUBRIC 是 let
+                    } else if (data && Array.isArray(data.rubrics)) {
+                    WRITING_RUBRIC = data.rubrics;
+                    }
+                    displayLeedRubrics(WRITING_RUBRIC);
+                })
+                .catch(err => {
+                    console.error('Error fetching rubrics:', err);
+                    displayLeedRubrics(WRITING_RUBRIC); // 回退到内置
+                });
+            
+            // Initialize the drag and drop upload function
+            initDragAndDrop();
+            
+            // Bind Ctrl+Enter shortcut key to send message
+            const userInput = document.getElementById('user-input');
+            if (userInput) {
+                userInput.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+            }
+        };
+
+        function returnToMain() {
+            // Show main interface, hide LEED page
+            document.getElementById('main-container').style.display = 'flex';
+            document.getElementById('leed-page').style.display = 'none';
+
+            // Show LEED Rubrics
+            document.getElementById('leed-rubric-header').style.display = 'flex';
+            document.getElementById('leed-rubrics-list').style.display = 'flex';
+
+            loadScoresFromStorage();
+            displayScoreMessage(computeTotalPoints());
+        }
+
+
+        function initDragAndDrop() {
+
+            const chatContainer = document.getElementById('chat-container');
+            const inputContainer = document.querySelector('.input-container');
+            const mainContainer = document.getElementById('main-container');
+
+                // Listen for drag events on mainContainer
+            [chatContainer, inputContainer, mainContainer].forEach(element => {
+                element.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.add('dragover');
+                });
+
+                element.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.remove('dragover');
+                });
+
+                element.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    chatContainer.classList.remove('dragover');
+
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const fileInput = document.getElementById('file-input');
+                        const dt = new DataTransfer();
+                        dt.items.add(files[0]);           
+                        document.getElementById('file-input').files = dt.files;
+                        sendMessage();
+                    }
+                });
+            });
+            /* const chatContainer = document.getElementById('chat-container');
+            const fileInput = document.getElementById('file-input');
+
+            chatContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.add('dragover');
+            });
+
+            chatContainer.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.remove('dragover');
+            });
+
+            chatContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                chatContainer.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    sendMessage();
+                }
+            });*/
+        }
+
+        function addRubric() {
+            const rubricName = prompt('Enter new rubric name:');
+            if (rubricName) {
+                WRITING_RUBRIC.push({
+                    name: rubricName,
+                    scoringCriteria: []
+                });
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function removeRubric(rubricIndex) {
+            if (confirm('Are you sure you want to delete this rubric?')) {
+                WRITING_RUBRIC.splice(rubricIndex, 1);
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function editRubric(rubricIndex) {
+            const rubric = WRITING_RUBRIC[rubricIndex];
+            const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
+            const titleElem = rubricElem.querySelector('.rubric-title');
+            const titleTextElem = titleElem.querySelector('.title-text');
+        
+            // Create an input box to replace the title text
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = rubric.name;
+            input.style.width = '100%';
+        
+            // Replace title text with input box
+            titleElem.replaceChild(input, titleTextElem);
+        
+            // Focus the input box and select text
+            input.focus();
+            input.select();
+        
+            // When the input box loses focus or the Enter key is pressed, the changes are saved
+            input.onblur = function() {
+                saveRubricName(rubricIndex, input.value);
+            };
+        
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    input.blur();
+                }
+            };
+        }
+        
+        function saveRubricName(rubricIndex, newName) {
+            // Update Rubric Name
+            WRITING_RUBRIC[rubricIndex].name = newName;
+        
+            // Re-display Rubrics
+            displayLeedRubrics(WRITING_RUBRIC);
+        
+            // Automatically save changes
+            saveLeedRubrics();
+        }
+        
+        function addScoringCriteria(rubricIndex) {
+            const points = prompt('Enter points for the scoring criteria:');
+            const description = prompt('Enter description for the scoring criteria:');
+            if (points && description) {
+                WRITING_RUBRIC[rubricIndex].scoringCriteria.push({
+                    points: parseFloat(points),
+                    description: description
+                });
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function removeScoringCriteria(rubricIndex, criteriaIndex) {
+            if (confirm('Are you sure you want to delete this scoring criteria?')) {
+                WRITING_RUBRIC[rubricIndex].scoringCriteria.splice(criteriaIndex, 1);
+                displayLeedRubrics(WRITING_RUBRIC);
+            }
+        }
+        
+        function editScoringCriteria(rubricIndex, criteriaIndex) {
+            const criteria = WRITING_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex];
+            const rubricElem = document.querySelectorAll('.rubric-item')[rubricIndex];
+            const criteriaItemElem = rubricElem.querySelectorAll('.rubric-criteria-item')[criteriaIndex];
+            const criteriaItemContent = criteriaItemElem.querySelector('div:nth-child(2)'); // 第二个子元素为描述
+        
+            // Create a text area to replace the description text
+            const textarea = document.createElement('textarea');
+            textarea.value = criteria.description;
+            textarea.style.width = '100%';
+        
+            // Replace description text with text area
+            criteriaItemElem.replaceChild(textarea, criteriaItemContent);
+        
+            // Focus the text area and select the text
+            textarea.focus();
+            textarea.select();
+        
+            // Save changes when the text area loses focus or the Enter key is pressed
+            textarea.onblur = function() {
+                saveScoringCriteriaDescription(rubricIndex, criteriaIndex, textarea.value);
+            };
+        
+            textarea.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    textarea.blur();
+                }
+            };
+        }
+        function saveScoringCriteriaDescription(rubricIndex, criteriaIndex, newDescription) {
+            // Update Scoring Criteria description
+            WRITING_RUBRIC[rubricIndex].scoringCriteria[criteriaIndex].description = newDescription;
+        
+            // Re-display Rubrics
+            displayLeedRubrics(WRITING_RUBRIC);
+        
+            // Automatically save changes
+            saveLeedRubrics();
+        }
+        
+        function saveLeedRubrics() {
+            fetch('/save_WRITING_RUBRICs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                // This interface expects the entire rubrics data body to be passed as JSON
+                body: JSON.stringify(WRITING_RUBRIC)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.message) {
+                console.log('Rubrics saved.');
+                } else if (data && data.error) {
+                alert('Failed to save rubrics: ' + data.error);
+                } else {
+                console.log('Rubrics saved.');
+                }
+            })
+            .catch(err => {
+                console.error('Error saving rubrics:', err);
+            });
+        }
+
+    // -------- Shared in-memory store mirrored to sessionStorage ----------
+    let SCORES_P1 = {}; // Step 1 (priority)
+    let SCORES_P2 = {}; // Step 2 (supplement)
+
+    function loadScoresFromStorage() {
+        try { SCORES_P1 = JSON.parse(sessionStorage.getItem('leedScores_p1') || '{}') || {}; } catch { SCORES_P1 = {}; }
+        try { SCORES_P2 = JSON.parse(sessionStorage.getItem('leedScores_p2') || '{}') || {}; } catch { SCORES_P2 = {}; }
+    }
+    function saveScoresToStorage() {
+        sessionStorage.setItem('leedScores_p1', JSON.stringify(SCORES_P1));
+        sessionStorage.setItem('leedScores_p2', JSON.stringify(SCORES_P2));
+        sessionStorage.setItem('leedTotalScore', computeTotalPoints().toFixed(1));
+    }
+
+    function sumObj(obj) {
+        let t = 0;
+        for (const v of Object.values(obj)) {
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) t += n;
+        }
+        return t;
+    }
+
+    function computeTotalPoints() {
+        let t = 0;
+        for (const v of Object.values(SCORES_P2 || {})) {
+            const n = parseFloat(v);
+            if (Number.isFinite(n)) t += n;
+        }
+        return t;
+    }
+
+    const norm = s => (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
+
+    function filterSuppForDisplay(step1Arr, step2Arr, mode = 'upgrade') {
+        const map1 = Object.create(null);
+        (step1Arr || []).forEach(it => {
+            const key = norm(it?.name);
+            const p = Number(it?.points) || 0;
+            if (key) map1[key] = Math.max(map1[key] || 0, p);
+        });
+
+        if (mode === 'all') return step2Arr || [];
+
+        const out = [];
+        (step2Arr || []).forEach(it => {
+            const key = norm(it?.name);
+            const p2 = Number(it?.points) || 0;
+            const p1 = map1[key] || 0;
+
+            if (mode === 'delta') {
+                if (p1 === 0 && p2 > 0) out.push({ ...it, points: p2 });
+            } else if (mode === 'upgrade') {
+                if (p2 > p1) out.push({ ...it, points: p2 });
+            }
+        });
+        return out;
+    }
+
+    function getMaxPoints(points) {
+        if (typeof points === 'number') return points;
+        if (Array.isArray(points)) return Math.max(...points);
+        if (typeof points === 'object' && points !== null) {
+        let vals = [];
+        for (const v of Object.values(points)) {
+            if (Array.isArray(v)) vals = vals.concat(v);
+            else if (typeof v === 'number') vals.push(v);
+        }
+        if (!vals.length) return 0;
+        return Math.max(...vals);
+        }
+        if (String(points).toLowerCase() === 'required') return 0;
+        return 0;
+    }
+    function isRequiredItem(item) {
+        return (item.type && String(item.type).toLowerCase() === 'prereq')
+            || String(item.points).toLowerCase() === 'required';
+    }
+
+    // --------- Render a full catalog table with numeric inputs ----------
+    function renderCatalog(containerId, store) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr>
+                <th style="width:40%">Item</th>
+                <th style="width:15%">Type</th>
+                <th style="width:15%">Max points</th>
+                <th style="width:30%">Your points</th>
+            </tr>`;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        const DATA = Array.isArray(window.LEED_TABLE_DATA) ? window.LEED_TABLE_DATA : [];
+        if (DATA.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="4" class="muted">No LEED items found. Check leed_table_data on server.</td>`;
+            tbody.appendChild(tr);
+        }
+
+        DATA.forEach(section => {
+            const trHead = document.createElement('tr');
+            trHead.classList.add('section-header');
+            const th = document.createElement('td');
+            th.colSpan = 4;
+            th.textContent = section.section;
+            trHead.appendChild(th);
+            tbody.appendChild(trHead);
+
+            (section.items || section["items"] || []).forEach(item => {
+                const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.textContent = item.name || '';
+                tr.appendChild(tdName);
+
+                const tdType = document.createElement('td');
+                tdType.textContent = isRequiredItem(item) ? 'Prereq' : (item.type || 'Credit');
+                tr.appendChild(tdType);
+
+                const tdMax = document.createElement('td');
+                const maxP = getMaxPoints(item.points);
+                tdMax.textContent = isRequiredItem(item) ? 'Required' : (maxP || 0);
+                tr.appendChild(tdMax);
+
+                const tdEarned = document.createElement('td');
+                if (isRequiredItem(item)) {
+                    tdEarned.textContent = 'Required';
+                } else {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = 0;                 
+                    input.max = maxP;              
+                    input.step = 1;                
+                    input.name = item.name;
+                    input.value = store[item.name] ?? '';
+                    
+                    const clampAndSave = () => {
+                        let v = parseInt(input.value, 10);
+                        const max = Number.isFinite(maxP) ? Math.floor(maxP) : 0;
+
+                        if (!Number.isFinite(v)) {
+                            delete store[item.name];
+                            input.value = '';
+                        } else {
+                            v = Math.max(0, Math.min(max, v));  
+                            input.value = String(v);
+                            if (v > 0) store[item.name] = v;
+                            else delete store[item.name];       
+                        }
+                        saveScoresToStorage();
+                        updateProgressBar();
+                        };
+
+                    input.addEventListener('input', clampAndSave);
+                    input.addEventListener('change', clampAndSave);
+                    input.addEventListener('blur', clampAndSave);
+
+                    tdEarned.appendChild(input);
+                }
+                tr.appendChild(tdEarned);
+
+                tbody.appendChild(tr);
+            });
+        });
+
+        table.appendChild(tbody);
+        container.appendChild(table);
+    }
+
+    // -------- Progress bar ----------
+    function updateProgressBar() {
+        const GOAL_POINTS = 40;    
+        const GOAL_POS = 0.8;      
+        const FULL_AT = 45;       
+
+        const total = computeTotalPoints();
+
+        const el   = document.getElementById('totalPoints');
+        const bar  = document.getElementById('progressBar');
+        const wrap = bar?.parentElement; // .progress
+
+        if (el) el.textContent = total.toFixed(1);
+
+        let pct;
+        if (total <= GOAL_POINTS) {
+            pct = (total / GOAL_POINTS) * (GOAL_POS * 100);
+        } else {
+            const denom = Math.max(1, FULL_AT - GOAL_POINTS);
+            const extra = Math.min(total - GOAL_POINTS, FULL_AT - GOAL_POINTS);
+            pct = (GOAL_POS + (extra / denom) * (1 - GOAL_POS)) * 100;
+        }
+        pct = Math.max(0, Math.min(100, pct)); // clamp
+
+
+        bar.style.width = pct + '%';
+        const passed = total >= GOAL_POINTS;
+        if (total >= GOAL_POINTS) {
+            bar.classList.add('passed');  
+        } else {
+            bar.classList.remove('passed'); 
+        }
+
+        if (wrap) {
+            let mark = wrap.querySelector('.goal-mark');
+            let label = wrap.querySelector('.goal-label');
+            if (!mark)  { mark  = document.createElement('div'); mark.className  = 'goal-mark';  wrap.appendChild(mark); }
+            if (!label) { label = document.createElement('div'); label.className = 'goal-label'; label.textContent = '40'; wrap.appendChild(label); }
+            const left = (GOAL_POS * 100) + '%';
+            mark.style.left  = left;
+            label.style.left = left;
+
+            label.textContent = passed ? '✓ 40' : '🎯 40';
+            mark.classList.toggle('pulse', !passed);      
+            mark.classList.toggle('reached', passed);     
+            label.classList.toggle('reached', passed); 
+        }
+    }
+
+
+    // -------- Show LEED page and init wizard ----------
+    function showLeedPage() {
+        console.log('[LEED] showLeedPage');
+        // swap views
+        document.getElementById('main-container').style.display = 'none';
+        document.getElementById('leed-page').style.display = 'flex';
+
+        // hide right rubric column while in planner
+        document.getElementById('leed-rubric-header').style.display = 'none';
+        document.getElementById('leed-rubrics-list').style.display = 'none';
+
+        // one-time notice
+        const leedContent = document.getElementById('leed-content');
+        if (!document.querySelector('.leed-prompt')) {
+        const promptDiv = document.createElement('div');
+        promptDiv.className = 'leed-prompt';
+        promptDiv.textContent = 'Tip: You don’t need to fill every item. Only enter points for credits your project will pursue; others stay at 0.';
+        promptDiv.style.color = 'red';
+        leedContent.insertBefore(promptDiv, document.getElementById('leed-stepper'));
+        }
+
+        initLeedWizard();
+    }
+
+    function initLeedWizard() {
+        loadScoresFromStorage();
+
+
+        (async () => {
+            if (Object.keys(SCORES_P1).length === 0 && Object.keys(SCORES_P2).length === 0) {
+                try {
+                    const r = await fetch('/leed/plan_single');
+                    const data = await r.json();
+                    if (data && data.success && Array.isArray(data.plan)) {
+                        data.plan.forEach(it => {
+                            const n = parseFloat(it.points);
+                            if (Number.isFinite(n) && n > 0) SCORES_P2[it.name || ''] = n;
+                        });
+                        saveScoresToStorage();
+                    }
+                } catch (e) { console.warn('prefill from server failed', e); }
+            }
+            renderCatalog('catalogStep1', SCORES_P1);
+            renderCatalog('catalogStep2', SCORES_P2);
+            updateProgressBar();
+        })();
+
+
+        const btnStep1 = document.getElementById('btnStep1');
+        const btnStep2 = document.getElementById('btnStep2');
+        const step1   = document.getElementById('step1');
+        const step2   = document.getElementById('step2');
+
+        try {
+            const stepperEl = document.getElementById('leed-stepper');
+            if (stepperEl) stepperEl.style.display = 'none';
+            const step1El = document.getElementById('step1');
+            const step2El = document.getElementById('step2');
+            if (step1El) step1El.classList.add('hidden');   
+            if (step2El) step2El.classList.remove('hidden'); 
+        } catch (e) { console.warn(e); }
+
+        function switchStep(n) {
+            const onStep1 = n === 1;
+
+            if (!onStep1) {
+                let changed = false;
+                for (const [k, v] of Object.entries(SCORES_P1 || {})) {
+                    if (SCORES_P2[k] == null && Number.isFinite(parseFloat(v))) {
+                        SCORES_P2[k] = parseFloat(v);
+                        changed = true;
+                    }
+                }
+                if (changed) {
+                    saveScoresToStorage();  
+                }
+            }
+
+            step1.classList.toggle('hidden', !onStep1);
+            step2.classList.toggle('hidden', onStep1);
+            btnStep1.classList.toggle('active', onStep1);
+            btnStep2.classList.toggle('active', !onStep1);
+
+            renderCatalog(onStep1 ? 'catalogStep1' : 'catalogStep2', onStep1 ? SCORES_P1 : SCORES_P2);
+
+            // Total Sync Bottom Button
+            setPrimaryForStep(n);
+            }
+
+        // 
+        btnStep1.onclick = () => switchStep(1);
+        btnStep2.onclick = () => switchStep(2);
+
+        const primaryBtn = document.getElementById('wizardPrimaryBtn');
+        const btnRefresh = document.getElementById('btnRefreshPlan');
+        if (btnRefresh) {
+            btnRefresh.onclick = () => {
+                SCORES_P1 = {};
+                SCORES_P2 = {};
+                saveScoresToStorage();
+                const onStep1 = !document.getElementById('step1').classList.contains('hidden');
+                renderCatalog(onStep1 ? 'catalogStep1' : 'catalogStep2', onStep1 ? SCORES_P1 : SCORES_P2);
+                updateProgressBar();
+            };
+        }
+        setPrimaryForStep(2);
+    }
+
+    function setPrimaryForStep(n) {
+        // Single-step mode: The button is fixed to Submit, submitting the score in step 2
+        const primaryBtn = document.getElementById('wizardPrimaryBtn');
+        primaryBtn.textContent = 'Submit';
+        primaryBtn.onclick = async () => {
+            try {
+            // Use SCORES_P2 as the single-step score storage
+            if (typeof SCORES_P2 !== 'object' || SCORES_P2 === null) {
+                window.SCORES_P2 = {};
+            }
+
+            // 1) Submit Save
+            const res = await fetch('/leed/submit_single', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    scores: SCORES_P2,
+                    replace: true
+                })
+            });
+            const submit = await res.json();
+            if (!submit.success) {
+                throw new Error(submit.error || 'Save failed');
+            }
+
+            // 2) Read back the merge plan from the database (used to print "saved" in the chat area)
+            let plan = null;
+            try {
+                const r = await fetch('/leed/plan_single', { credentials: 'include' });
+                plan = await r.json();
+            } catch (e) {
+                console.warn('Readback failed:', e);
+            }
+
+            // 3) Return to the main interface and print (pass the "read plan" to the print function)
+            returnToMain();
+            printSavedPlanToChat(plan);
+        } catch (e) {
+            console.warn(e);
+            returnToMain();
+            // Failure fallback: print a prompt
+            printSavedPlanToChat(null, 'Submission failed, but your local scores were preserved.');
+            }
+        };
+    }
+
+    function printSavedPlanToChat(plan, fallbackMsg) {
+        const chat = document.getElementById('chat-container');
+        if (!chat) return;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-message ai';
+
+        if (fallbackMsg) {
+            wrap.textContent = fallbackMsg;
+            chat.appendChild(wrap);
+            chat.scrollTop = chat.scrollHeight;
+            return;
+        }
+
+        const title = document.createElement('div');
+        title.style.fontWeight = 'bold';
+        title.style.marginBottom = '6px';
+        //title.textContent = 'Scores saved to the database (read back from the server):';
+        wrap.appendChild(title);
+
+        const renderSection = (label, arr) => {
+            const h = document.createElement('div');
+            h.style.margin = '6px 0';
+            h.innerHTML = `<span style="font-weight:600">${label}</span>`;
+            wrap.appendChild(h);
+
+            if (!arr || !arr.length) {
+                const none = document.createElement('div');
+                none.className = 'muted';
+                none.textContent = 'null';
+                wrap.appendChild(none);
+                return;
+            }
+
+            const tbl = document.createElement('table');
+            tbl.style.width = '100%';
+            tbl.style.borderCollapse = 'collapse';
+            tbl.style.marginBottom = '8px';
+
+            const thead = document.createElement('thead');
+            thead.innerHTML = `<tr>
+                <th style="text-align:left;border-bottom:1px solid #eee;padding:4px 6px;">Item</th>
+                <th style="text-align:left;border-bottom:1px solid #eee;padding:4px 6px;">Points</th>
+            </tr>`;
+            tbl.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            let total = 0;
+            arr.forEach(it => {
+                const name = it.name ?? '';
+                const pts = Number(it.points) || 0;
+                total += pts;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="border-bottom:1px solid #f2f2f2;padding:4px 6px;">${name}</td>
+                    <td style="border-bottom:1px solid #f2f2f2;padding:4px 6px;">${pts}</td>`;
+                tbody.appendChild(tr);
+            });
+
+            const trSum = document.createElement('tr');
+            trSum.innerHTML = `
+                <td style="padding:6px 6px;font-weight:600;">Subtotal</td>
+                <td style="padding:6px 6px;font-weight:600;">${total}</td>`;
+            tbody.appendChild(trSum);
+
+            tbl.appendChild(tbody);
+            wrap.appendChild(tbl);
+        };
+
+        // ✅ New format (single step): plan.plan
+        if (plan && plan.success && Array.isArray(plan.plan)) {
+            renderSection('Selected credits', plan.plan);
+            const total = Number(plan.total_points) || 0;
+            const totalDiv = document.createElement('div');
+            totalDiv.style.fontWeight = '600';
+            totalDiv.style.marginTop = '6px';
+            totalDiv.textContent = `Total: ${total}`;
+            wrap.appendChild(totalDiv);
+        }
+        // Compatible with old formats (two steps)
+        else if (plan && plan.success) {
+            const step1Arr = Array.isArray(plan.priority) ? plan.priority : [];
+            const step2Arr = Array.isArray(plan.supplement) ? plan.supplement : [];
+            renderSection('Step 1 (priority)', step1Arr);
+            const step2Display = filterSuppForDisplay(step1Arr, step2Arr, 'upgrade');
+            renderSection('Step 2 (supplement)', step2Display);
+        }
+        else {
+            const err = document.createElement('div');
+            err.textContent = 'Failed to read the plan from the server.';
+            wrap.appendChild(err);
+        }
+
+        chat.appendChild(wrap);
+
+        let costMsg = null;
+        let report = plan && plan.cost_report;
+
+        if (!report) {
+            const picked = Array.isArray(plan?.plan) ? plan.plan
+                        : Array.isArray(plan?.supplement) ? plan.supplement
+                        : Array.isArray(plan?.priority) ? plan.priority
+                        : [];
+            report = clientCostReportFromSelection(picked);
+        }
+        if (report && (report.has_warning || report.high_cost_points > 0)) {
+            costMsg = report.message ||
+                `Heads up: you're relying on ${report.high_cost_points} points from high-cost credits. Consider balancing with medium/low-cost ones.`;
+        }
+        if (costMsg) {
+            const warn = document.createElement('div');
+            warn.className = 'leed-prompt';
+            warn.style.marginTop = '8px';
+            warn.textContent = costMsg;
+            wrap.appendChild(warn);
+        }
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+
+
+    // Keep existing resubmitLeed() to call showLeedPage()
+    function resubmitLeed() {
+        console.log('[LEED] resubmitLeed clicked');
+        sessionStorage.removeItem('leedSubmitted');
+    // DO NOT clear scores now; teacher asked to preserve across steps
+       showLeedPage();
+     }
+    </script>
+
+    {% if current_user %}
+        <div class="logout-container">
+            <a href="{{ url_for('logout') }}" class="logout-button">Log Out</a>
+        </div>
+    {% endif %}
+</body>
+</html>

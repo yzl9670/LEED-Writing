@@ -1,0 +1,111 @@
+[
+    {
+        "name": "LEED Certification Achievement",
+        "scoringCriteria": [
+            {
+                "points": 3,
+                "description": "The narrative clearly demonstrates that the project achieves at least LEED Certified status (40-49 points). This includes selecting the necessary credits and meeting all prerequisite requirements as outlined in LEED v4 BD+C. The student’s narrative must show that the combination of credits chosen would, in reality, enable the project to achieve certification, with no missing or misinterpreted prerequisites or credits.1111111111111111111111111111111"
+            },
+            {
+                "points": 2,
+                "description": "The project demonstrates an effort to achieve LEED certification but falls short of meeting all the prerequisite credits or does not fully align the credit selection with the required number of points for certification. There may be minor misunderstandings about specific credit requirements or a lack of clarity about how the project will meet the minimum certification threshold."
+            },
+            {
+                "points": 1,
+                "description": "The project fails to adequately address key LEED prerequisites or selected credits are significantly misaligned with achieving certification. It may attempt to claim certification without showing how the credit requirements are realistically met."
+            },
+            {
+                "points": 0,
+                "description": "The narrative does not address how the project will achieve LEED certification, or no credit selections are provided."
+            }
+        ]
+    },
+    {
+        "name": "Reflection of Credit Requirements",
+        "scoringCriteria": [
+            {
+                "points": 4,
+                "description": "The narrative must accurately reflect the specific requirements for each credit selected, including the minimum thresholds, performance metrics, and technical criteria as outlined in LEED v4 BD+C. For example, if the student claims points for Water Efficiency, the narrative should describe how the project meets the exact reductions in water use required for the chosen credit level. Each credit should be fully justified with a clear explanation of how the project meets all quantifiable and qualitative requirements necessary to claim the credit’s points."
+            },
+            {
+                "points": 3,
+                "description": "Most credit requirements are correctly identified and explained, though some credits may lack the level of detail needed to fully demonstrate compliance with LEED standards. There may be minor misinterpretations of the performance thresholds or metrics for a few credits."
+            },
+            {
+                "points": 2,
+                "description": "Several credit requirements are not adequately reflected, with important aspects of LEED compliance misunderstood or missing. The narrative may generalize credit requirements rather than explaining how the specific thresholds or criteria are met."
+            },
+            {
+                "points": 1,
+                "description": "The narrative mentions credits but provides little to no explanation of how the project will meet the detailed requirements. The understanding of LEED requirements is either vague or incorrect."
+            },
+            {
+                "points": 0,
+                "description": "The narrative does not reflect any LEED credit requirements, or no credits are discussed."
+            }
+        ]
+    },
+    {
+        "name": "Formatting: Credit Names and Points Claimed",
+        "scoringCriteria": [
+            {
+                "points": 3,
+                "description": "The narrative must clearly list the name of each credit pursued and the points claimed for each one, following the LEED v4 BD+C structure. The credit names should be accurately listed as they appear in the LEED reference guide, and the corresponding points should reflect the exact level claimed based on the project's anticipated performance (e.g., low, medium, or high point tiers for Energy Performance). The formatting should make it easy to identify each credit and its associated points within the narrative."
+            },
+            {
+                "points": 2,
+                "description": "Most credits are clearly named and points claimed, but there may be some minor inconsistencies in how credits or point totals are presented. Formatting may require some clarification but still allows the reader to generally follow the credit selection."
+            },
+            {
+                "points": 1,
+                "description": "The credit names or points claimed are incomplete or inconsistent, making it difficult to understand which credits are being pursued or how many points the student aims to achieve. The formatting lacks clarity, and important details are missing."
+            },
+            {
+                "points": 0,
+                "description": "No credit names or points claimed are provided, or the formatting is so unclear that it is difficult to determine which credits are being pursued."
+            }
+        ]
+    },
+    {
+        "name": "Realistic and Detailed Implementation of Credits",
+        "scoringCriteria": [
+            {
+                "points": 3,
+                "description": "The narrative must provide a realistic and detailed explanation of how the project will achieve each credit selected. The explanation should not only outline general strategies but also address specific technical requirements, such as system performance, material selections, or site strategies that align with LEED’s detailed credit standards. For instance, if claiming points for Indoor Environmental Quality, the student should specify exactly how ventilation, material off-gassing limits, or lighting controls will meet LEED thresholds."
+            },
+            {
+                "points": 2,
+                "description": "The narrative provides a generally realistic description of how credits will be achieved but lacks some depth in the technical or detailed aspects. Some strategies may be too general or not fully aligned with LEED’s specific performance or compliance standards."
+            },
+            {
+                "points": 1,
+                "description": "The explanation of how credits will be achieved is vague or unrealistic, with minimal attention to the detailed requirements necessary for LEED compliance. The strategies may be impractical for the project's scope."
+            },
+            {
+                "points": 0,
+                "description": "The student does not provide any realistic strategies for achieving the credits, or no explanation is provided."
+            }
+        ]
+    },
+    {
+        "name": "Grammar, Structure, and Clarity",
+        "scoringCriteria": [
+            {
+                "points": 2,
+                "description": "The narrative is clearly written, well-organized, and free of significant grammatical or spelling errors. The structure is logical, with headings and subheadings that make it easy to navigate through the different credits and their explanations. The use of technical language is appropriate, and the narrative maintains a professional tone throughout."
+            },
+            {
+                "points": 1.5,
+                "description": "The narrative is mostly well-written and organized, but may contain a few minor grammatical or structural issues. Headings and subheadings are generally used but may not always be clear or consistent."
+            },
+            {
+                "points": 1,
+                "description": "The narrative contains several grammatical or structural errors that impact readability. The organization is somewhat unclear, and the structure of the document may be confusing or inconsistent."
+            },
+            {
+                "points": 0,
+                "description": "The narrative is poorly written, difficult to follow, and lacks organization. Grammar and spelling errors significantly impair the reader’s ability to understand the content."
+            }
+        ]
+    }
+]
