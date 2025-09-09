@@ -159,7 +159,6 @@ LEED_TABLE_DATA = load_json(LEED_TABLE_PATH, DEFAULT_LEED_TABLE)
 
 RUBRICS_PATH = DATA_DIR / "rubrics.json"
 PLAN_PATH = DATA_DIR / "plan.json"
-LAST_FEEDBACK_PATH = DATA_DIR / "last_feedback.json"
 if not RUBRICS_PATH.exists():
     dump_json(RUBRICS_PATH, DEFAULT_WRITING_RUBRIC)
 
@@ -384,10 +383,22 @@ def save_rubrics():
 # --- Routes: Feedback --------------------------------------------------------
 
 @app.get("/get_last_feedback")
+@login_required
 def get_last_feedback():
-    payload = load_json(LAST_FEEDBACK_PATH, {"feedback": ""})
-    return jsonify({"success": True, "feedback": payload.get("feedback", "")})
-
+    user = get_current_user()
+    rec = (Interaction.query
+           .filter(Interaction.user_id == user.id,
+                   Interaction.feedback_text.isnot(None))
+           .order_by(Interaction.feedback_time.desc())
+           .first())
+    return jsonify({
+        "success": True,
+        "feedback": rec.feedback_text if rec else ""
+    })
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0, private"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
 
 @app.post("/get_feedback")
 @login_required
@@ -485,8 +496,6 @@ def get_feedback():
         priority_items=priority_items,          #  Step 1
         supplement_items=supplement_items,      #  Step 2
     )
-
-    dump_json(LAST_FEEDBACK_PATH, {"feedback": feedback_text})
 
     chat_id = str(uuid.uuid4())
     rec = Interaction(
