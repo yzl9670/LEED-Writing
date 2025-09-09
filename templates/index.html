@@ -2235,13 +2235,6 @@
                     <td style="border-bottom:1px solid #f2f2f2;padding:4px 6px;">${pts}</td>`;
                 tbody.appendChild(tr);
             });
-
-            const trSum = document.createElement('tr');
-            trSum.innerHTML = `
-                <td style="padding:6px 6px;font-weight:600;">Subtotal</td>
-                <td style="padding:6px 6px;font-weight:600;">${total}</td>`;
-            tbody.appendChild(trSum);
-
             tbl.appendChild(tbody);
             wrap.appendChild(tbl);
         };
