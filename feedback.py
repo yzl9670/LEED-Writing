@@ -52,21 +52,16 @@ else:
 def generate_feedback(
         
     message: str = "",
-    leed_scores: Optional[Dict[str, Any]] = None,      # 平面字典：{ "EA Optimize Energy": 12, ... }
-    rubrics_text: str = "",                             # 兼容占位（未使用；写作 rubrics 从 JSON 读）
-    uploaded_filename: Optional[str] = None,            # 未使用
-    priority_items: Optional[List[Dict[str, Any]]] = None,   # 兼容旧入参
-    supplement_items: Optional[List[Dict[str, Any]]] = None, # 兼容旧入参
-    prev_shortcomings: Optional[str] = None,                 # 上一次短板摘要（用于进步鼓励）
-    writing_rubrics_path: Optional[str] = None               # 覆盖 rubrics 路径（默认 data/rubrics.json）
+    leed_scores: Optional[Dict[str, Any]] = None,      
+    rubrics_text: str = "",                             
+    uploaded_filename: Optional[str] = None,            
+    priority_items: Optional[List[Dict[str, Any]]] = None,   
+    supplement_items: Optional[List[Dict[str, Any]]] = None, 
+    prev_shortcomings: Optional[str] = None,                 
+    writing_rubrics_path: Optional[str] = None               
 ) -> Tuple[str, Dict[str, Any], str]:
-    """
-    单步提交版本：
-    - 学生在前端提交一个合并后的 credits 列表（或 flat dict），这里统一按单列表评审；
-    - 同时按写作 Rubric（从 data/rubrics.json 读取）给出写作分与建议；
-    - 返回 (feedback_markdown, scores_dict, shortcomings_summary)。
-    """
-    # ---------- 本地 helpers（尽量不改动你文件其它函数） ----------
+
+    # ---------- local helpers ----------
     def _render_header_claimed(claimed: float, degraded: bool = False) -> str:
         title = "**LEED Check Summary**" if not degraded else "**LEED Check (degraded mode)**"
         badge = "✅ On track for 40+" if claimed >= 40 else "⚠️ Below 40 — add credible points"
@@ -83,7 +78,6 @@ def generate_feedback(
         return round(total, 1)
 
     def _render_credit_block(rows: List[Dict[str, Any]]) -> str:
-        # 基于你原来的 _render_priority_block 风格，但标题改成“Credits”
         out = ["\n**Credits — evidence vs. claimed**"]
         for r in rows:
             name = r.get("name", "")
@@ -114,7 +108,6 @@ def generate_feedback(
         return "\n".join(out)
 
     def _render_writing_block(writing_rows: List[Dict[str, Any]], rubrics: List[Dict[str, Any]]) -> str:
-        # 组装写作评分块；若模型没回写作评分，就给占位说明
         if not writing_rows:
             max_total = sum(_safe_points(r.get("max_points") or r.get("total")) for r in (rubrics or []))
             return f"**Writing Feedback**\n- (No model scores returned.) Max total = {max_total:.0f}."
@@ -138,7 +131,6 @@ def generate_feedback(
         return "\n".join(out)
 
     def _build_writing_scores_dict(writing_rows: List[Dict[str, Any]], rubrics: List[Dict[str, Any]]) -> Dict[str, Any]:
-        # 前端右栏需要 { name: {score, total} }，保证名称对齐
         d: Dict[str, Any] = {}
         if writing_rows:
             for r in writing_rows:
@@ -150,7 +142,6 @@ def generate_feedback(
                     "total": _safe_points(r.get("total"))
                 }
         else:
-            # 模型没回写作评分，则用 rubrics 给 0/满分
             for r in rubrics or []:
                 name = str(r.get("name") or "").strip()
                 if not name:
@@ -160,7 +151,6 @@ def generate_feedback(
         return d
 
     def _progress_note(prev_short: Optional[str], new_short: str) -> str:
-        # 非严格文本 diff：如果新的 Gap 下降或“missing:”更少，就给鼓励
         try:
             def _gap(txt: str) -> float:
                 m = re.search(r"Gap to 40:\s*([0-9]+(?:\.[0-9])?)", txt or "", flags=re.I)
@@ -180,8 +170,6 @@ def generate_feedback(
             return ""
 
     def _load_writing_rubrics(path: Optional[str]) -> List[Dict[str, Any]]:
-        # 从 JSON 读取写作 rubrics；容错支持两种结构：
-        # 1) 顶层数组；2) {"rubrics": [...]}；并尽量推断 max_points
         p = path or os.path.join("data", "rubrics.json")
         try:
             with open(p, "r", encoding="utf-8") as f:
@@ -196,12 +184,12 @@ def generate_feedback(
                 continue
             mx = _safe_points(x.get("max_points") or x.get("total"))
             if mx <= 0 and isinstance(x.get("scoringCriteria"), list):
-                # 如果是 {scoringCriteria:[{points, description}, ...]}
+                # {scoringCriteria:[{points, description}, ...]}
                 mx = max([_safe_points(it.get("points")) for it in x["scoringCriteria"]] or [0])
             out.append({"name": name, "max_points": mx})
         return out
 
-    # ---------- 主流程 ----------
+    # ----------  ----------
     text = (message or "").strip()
     if not text:
         return (
@@ -212,13 +200,11 @@ def generate_feedback(
 
     narrative = _truncate(text, NARRATIVE_CLIP)
 
-    # —— 单步提交：把所有条目合并为 credits（兼容旧入参）——
     credits: List[Dict[str, Any]] = []
     credits += _normalize_items(priority_items)
     credits += _normalize_items(supplement_items)
     credits = _dedup_by_name_max(credits)
 
-    # 若没传 items，则从 flat dict 提取
     if not credits and isinstance(leed_scores, dict):
         credits = [
             {"name": k, "points": _safe_points(v)}
@@ -233,20 +219,27 @@ def generate_feedback(
             "No credit selections present; cannot compute shortcomings."
         )
 
-    # —— 读取写作 rubrics（默认 data/rubrics.json）——
     writing_rubrics = _load_writing_rubrics(writing_rubrics_path)
-
-    # —— 构造 LLM 请求 —— 
+ 
     payload = {
-        "narrative_excerpt": narrative,
+        "narrative_excerpt": narrative,  # full text (truncated by NARRATIVE_CLIP)
         "credits": [{"name": it["name"], "claimed_points": it["points"]} for it in credits],
         "writing_rubrics": [{"name": r["name"], "max_points": r["max_points"]} for r in writing_rubrics],
         "rules": [
-            "Judge only based on content in the narrative excerpt; do not assume facts that are not present.",
-            "For CREDITS, focus on whether evidence supports the claimed points (meet | partial | miss | unclear).",
-            "When 'partial', estimate a realistic max_supported_points number (<= claimed).",
-            "For WRITING, score each rubric (0..max_points) with a concise rationale and one improvement suggestion.",
-            "Keep rationales <= 30 words; suggestions <= 20 words; be concrete."
+            # Holistic read & grounding
+            "First, skim the entire narrative to form a coherent mental model of the project.",
+            "Judge based on the narrative content only; never assume facts not present.",
+            "Do NOT keyword-spot or grant points for mere mentions of terms/credit names.",
+            # Credit scoring
+            "For CREDITS, label judgement as meet | partial | miss | unclear.",
+            "If 'meet' or 'partial', include 1–2 verbatim evidence quotes (<=18 words each) that support the score.",
+            "If you cannot find an adequate quote, set judgement to 'unclear' or 'miss' and list what’s missing.",
+            "When 'partial', estimate a realistic max_supported_points (<= claimed).",
+            # Writing scoring (holistic)
+            "For WRITING, score each rubric (0..max) based on global qualities (organization, coherence, specificity, consistency), not term counts.",
+            "Penalize bullet lists or shopping-lists without methods, baselines, calculations, or credible implementation details.",
+            # Brevity
+            "Rationales <= 25 words; suggestions <= 16 words; be concrete.",
         ],
         "output_schema": {
             "credits": [
@@ -255,23 +248,25 @@ def generate_feedback(
                     "claimed_points": "number",
                     "judgement": "one of: meet | partial | miss | unclear",
                     "max_supported_points": "number (0..claimed_points)",
-                    "rationale": "string (<= 30 words)",
+                    "rationale": "string (<= 25 words)",
                     "missing": ["string"],
-                    "suggestion": "string (<= 20 words)"
+                    "suggestion": "string (<= 16 words)",
+                    "evidence_quotes": ["string (1–2 quotes, each <= 18 words)"]
                 }
             ],
             "writing": [
                 {
                     "name": "string",
                     "score": "number (0..max for this rubric)",
-                    "total": "number (the rubric max for this item)",
-                    "rationale": "string (<= 30 words)",
-                    "suggestion": "string (<= 20 words)"
+                    "total": "number (the rubric max)",
+                    "rationale": "string (<= 25 words)",
+                    "suggestion": "string (<= 16 words)",
+                    "evidence_quotes": ["string (0–2 quotes from narrative)"]
                 }
             ],
             "overall": {
                 "supported_points": "number",
-                "notes": "string (<= 30 words)"
+                "notes": "string (<= 25 words)"
             }
         }
     }
@@ -285,7 +280,6 @@ def generate_feedback(
                 "Model error; shortcomings unavailable.")
 
 
-    # —— LLM 不可用：降级输出 —— 
     if not model_json:
         claimed_total = _sum_claimed(credits)
         header = (
@@ -303,7 +297,6 @@ def generate_feedback(
         scores_dict = _build_writing_scores_dict([], writing_rubrics)  # 右栏 0/满分
         return feedback_text, scores_dict, shortcomings
 
-    # —— 解析模型输出（容错别名） —— 
     rows: List[Dict[str, Any]] = (
         model_json.get("credits", [])
         or model_json.get("priority", [])
@@ -312,16 +305,12 @@ def generate_feedback(
     )
     writing_rows: List[Dict[str, Any]] = model_json.get("writing", []) or []
     overall = model_json.get("overall", {}) or {}
-
-    # —— 计算 supported 分数 —— 
     supported = _safe_points(
         overall.get("supported_points")
-        or overall.get("priority_supported_points")  # 兼容旧字段
+        or overall.get("priority_supported_points")  
         or 0
     )
     if supported <= 0 and rows:
-        # 基于逐项：meet/partial 记 max_supported_points，miss/unclear 记 0；
-        # 若 partial 未给 max_supported_points，保守按 0.5×claimed
         tot = 0.0
         for r in rows:
             j = str(r.get("judgement", "")).lower()
@@ -382,8 +371,13 @@ def _ask_llm_for_json(payload: dict) -> dict | None:
     client = OpenAI(api_key=api_key)
 
     sys_msg = (
-        "You are a LEED reviewer. Reply ONLY with a single JSON object that matches the caller's output_schema. "
-        "Do not add code fences or extra text."
+        "You are a rigorous LEED reviewer.\n"
+        "READ THE ENTIRE NARRATIVE ONCE BEFORE SCORING.\n"
+        "Base all judgments on an integrated understanding of the narrative, not on keywords or term frequency.\n"
+        "Award points ONLY when the narrative explicitly provides sufficient evidence; do not infer unstated details.\n"
+        "For each scored item, include 1–2 short, verbatim evidence quotes from the narrative.\n"
+        "If no adequate quote exists, mark the item as 'unclear' or 'miss'.\n"
+        "Reply ONLY with a single JSON object that matches the caller's output_schema. No extra text."
     )
     user_msg = json.dumps(payload, ensure_ascii=False)
 
@@ -464,8 +458,15 @@ def _render_credit_block(rows: List[Dict[str, Any]]) -> str:
         suggestion = _trim(r.get("suggestion", ""), 100)
 
         icon = {"meet": "✅", "partial": "🟠", "miss": "❌", "unclear": "❓"}.get(judge, "•")
-        line = f"- {icon} **{name}** — claimed {claim:g} pts; supported ≈ {maxpt:.1f} pts\n  - Scoring Reason: {rationale}"
-        out.append(line)
+        out.append(
+            f"- {icon} **{name}** — claimed {claim:g} pts; supported ≈ {maxpt:.1f} pts\n"
+            f"  - Scoring Reason: {rationale}"
+        )
+
+        quotes = [q for q in (r.get("evidence_quotes") or []) if isinstance(q, str)][:2]
+        if quotes:
+            out.append("  - Evidence: " + " | ".join(f"“{_trim(q, 120)}”" for q in quotes))
+
         if missing:
             out.append("  - Missing: " + "; ".join(_trim(m, 80) for m in missing))
         if suggestion:
@@ -495,6 +496,11 @@ def _render_writing_block(writing_rows: List[Dict[str, Any]], rubrics: List[Dict
         rationale = _trim(w.get("rationale", ""), 180)
         suggestion = _trim(w.get("suggestion", ""), 100)
         lines.append(f"- **{name}**: {s:.1f}/{t:.1f}")
+
+        quotes = [q for q in (w.get("evidence_quotes") or []) if isinstance(q, str)][:2]
+        if quotes:
+            lines.append("  - Evidence: " + " | ".join(f"“{_trim(q, 120)}”" for q in quotes))
+
         if rationale:
             lines.append(f"  - Why: {rationale}")
         if suggestion:
@@ -586,7 +592,6 @@ def _progress_note(prev_shortcomings: Optional[str], new_shortcomings: Optional[
     if g_new is None:
         return None
     if g_prev is None:
-        # 第一次没有历史
         return None
 
     delta = g_prev - g_new
@@ -606,14 +611,12 @@ def _load_writing_rubrics(path: str) -> List[Dict[str, Any]]:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         if isinstance(data, list):
-            # 顶层就是数组
             return _normalize_rubric_list(data)
         if isinstance(data, dict) and isinstance(data.get("rubrics"), list):
             return _normalize_rubric_list(data["rubrics"])
     except Exception as e:
         log.warning(f"Failed to load rubrics from {path}: {e}")
 
-    # 兜底（根据你提供的 15 分 Rubric）
     fallback = [
         {"name": "LEED Certification Achievement", "max_points": 3},
         {"name": "Reflection of Credit Requirements", "max_points": 4},
