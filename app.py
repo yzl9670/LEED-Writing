@@ -249,11 +249,11 @@ def _inject_tpl_vars():
 
 @app.route("/")
 def index():
-    try:
-        u = get_current_user()   
-    except Exception:
-        flash('Please log in first.', 'danger')
+
+    if not getattr(g, 'current_user', None):
         return redirect(url_for('login'))
+    
+    u = get_current_user()
 
     try:
         user_rubrics = Rubric.query.filter_by(user_id=u.id).all()
@@ -264,7 +264,7 @@ def index():
     return render_template(
         "index.html",
         rubrics=rubrics,
-        leed_table_data=LEED_TABLE_DATA   
+        leed_table_data=LEED_TABLE_DATA
     )
 
 # --- Utilities ---------------------------------------------------------------
@@ -326,7 +326,7 @@ def register():
 
     return render_template('register.html')
 
-def get_current_user():
+def get_or_create_demo_user():
     uid = session.get('user_id')
     if not uid:
         abort(401)
