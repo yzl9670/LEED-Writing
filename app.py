@@ -164,15 +164,31 @@ if not RUBRICS_PATH.exists():
     dump_json(RUBRICS_PATH, DEFAULT_WRITING_RUBRIC)
 
 
-DB_PATH = ROOT / "instance" / "users.db"
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-
+# --- App init ---------------------------------------------------------------
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret")  
 app.config["JSON_AS_ASCII"] = False
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+from datetime import timedelta
+app.permanent_session_lifetime = timedelta(days=14)
+
+# --- DB config --------------------------------------------------------------
+INSTANCE_DIR = ROOT / "instance"
+INSTANCE_DIR.mkdir(exist_ok=True)  
+DB_PATH = INSTANCE_DIR / "users.db"
+db_url = os.getenv("DATABASE_URL")
+
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+
+app.config.update(
+    SQLALCHEMY_DATABASE_URI = db_url or f"sqlite:///{DB_PATH}",
+    SQLALCHEMY_TRACK_MODIFICATIONS = False,
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 300},  
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=True
+)
 db = SQLAlchemy(app)
 
 app.logger.info(f"DB -> {app.config['SQLALCHEMY_DATABASE_URI']}")
@@ -222,12 +238,17 @@ class Interaction(db.Model):
 
 with app.app_context():
     db.create_all()  
-    from sqlalchemy import text
-    rows = db.session.execute(text("PRAGMA table_info('interaction')")).fetchall()
-    cols = {r[1] for r in rows}
+    from sqlalchemy import inspect
+    insp = inspect(db.engine)
+    try:
+        cols = {c["name"] for c in insp.get_columns("interaction")}
+    except Exception:
+        cols = set()
+
     if "feedback_summary" not in cols:
-        db.session.execute(text("ALTER TABLE interaction ADD COLUMN feedback_summary TEXT"))
-        db.session.commit()
+        with db.engine.begin() as conn:
+            conn.execute(text("ALTER TABLE interaction ADD COLUMN feedback_summary TEXT"))
+    
 
 
 @app.before_request
@@ -246,20 +267,20 @@ def _inject_tpl_vars():
         "is_admin": bool(cu and getattr(cu, "role", "") == "admin"),
     }
 # --- Routes: Pages -----------------------------------------------------------
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not getattr(g, "current_user", None):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return wrapper
 
 @app.route("/")
-def index():
-
-    if not getattr(g, 'current_user', None):
-        return redirect(url_for('login'))
-    
+@login_required
+def index():    
     u = get_current_user()
 
-    try:
-        user_rubrics = Rubric.query.filter_by(user_id=u.id).all()
-        rubrics = [r.text for r in user_rubrics]
-    except Exception:
-        rubrics = []
+    rubrics = load_json(RUBRICS_PATH, DEFAULT_WRITING_RUBRIC)
 
     return render_template(
         "index.html",
@@ -268,9 +289,11 @@ def index():
     )
 
 # --- Utilities ---------------------------------------------------------------
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if 'user_id' in session and Account.query.get(session['user_id']):
+    if 'user_id' in session and db.session.get(Account, session['user_id']):
         return redirect(url_for('index'))
 
     if request.method == 'POST':
@@ -283,6 +306,7 @@ def login():
             return redirect(url_for('login'))
 
         session['user_id'] = acc.id
+        session.permanent = True
         flash('Welcome back!', 'success')
         return redirect(url_for('index'))
 
@@ -326,16 +350,6 @@ def register():
 
     return render_template('register.html')
 
-def get_or_create_demo_user():
-    uid = session.get('user_id')
-    if not uid:
-        abort(401)
-    acc = Account.query.get(uid)
-    if not acc:
-        session.pop('user_id', None)
-        abort(401)
-    return SimpleNamespace(id=acc.id, username=acc.username, role=getattr(acc, 'role', 'student'))
-
 # --- Routes: Rubrics ---------------------------------------------------------
 
 @app.get("/get_WRITING_RUBRICs")
@@ -376,6 +390,7 @@ def get_last_feedback():
 
 
 @app.post("/get_feedback")
+@login_required
 def get_feedback():
 
     msg = request.form.get("message", "").strip()
@@ -504,6 +519,7 @@ def get_feedback():
 
 
 @app.post("/submit_feedback")
+@login_required
 def submit_feedback():
     try:
         data = request.get_json(force=True) or {}
@@ -591,6 +607,7 @@ def _merge_credits(*lists: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 @app.post("/leed/submit_single")
+@login_required
 def leed_submit_single():
     try:
         body = request.get_json(force=True) or {}
@@ -643,6 +660,7 @@ def leed_submit_single():
 
 
 @app.get("/leed/plan_single")
+@login_required
 def leed_plan_single():
     """
     Returns the "Merge Plan" in the single-step view:
@@ -683,6 +701,7 @@ def _load_plan() -> Dict[str, List[Dict[str, Any]]]:
 
 
 @app.post("/leed/scores")
+@login_required
 def leed_scores():
     try:
         body = request.get_json(force=True) or {}
@@ -748,6 +767,7 @@ def leed_scores():
 
 
 @app.post("/leed/selection")
+@login_required
 def leed_selection():
     """
     Body: { phase: "priority" | "supplement", credits: [{category,name,points}] }
@@ -784,6 +804,7 @@ def leed_selection():
 
 
 @app.get("/leed/plan")
+@login_required
 def leed_plan():
     user = get_current_user()
     draft = get_or_create_draft(user.id)
@@ -811,6 +832,7 @@ def leed_plan():
 
 
 @app.post("/leed/suggestions")
+@login_required
 def leed_suggestions():
     user = get_current_user()
     draft = get_or_create_draft(user.id)
@@ -839,14 +861,15 @@ def leed_suggestions():
 
 
 def get_current_user():
-    username = session.get("username") or "guest"
-    acc = Account.query.filter_by(username=username).first()
+    uid = session.get('user_id')
+    if not uid:
+        abort(401)
+    acc = db.session.get(Account, uid) 
     if not acc:
-        acc = Account(username=username, role="student")
-        acc.set_password("guest")  
-        db.session.add(acc)
-        db.session.commit()
-    return acc
+        session.pop('user_id', None)
+        abort(401)
+    return SimpleNamespace(id=acc.id, username=acc.username, role=getattr(acc, 'role', 'student'))
+
 
 def get_or_create_draft(user_id: int) -> Interaction:
     draft = Interaction.query.filter_by(user_id=user_id, status="draft") \
