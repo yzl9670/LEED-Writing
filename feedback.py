@@ -47,12 +47,10 @@ else:
     log.warning("Feedback LLM disabled (no OPENAI_API_KEY or OpenAI SDK missing).")
 
 TIP_HTML = """
-<div style="margin-top:14px;padding:12px 14px;border-left:6px solid #ffb300;background:#fff7d1;border-radius:8px;">
-  <div style="font-weight:800;margin-bottom:6px;font-size:15px;">🔁 Action Needed</div>
-  <div style="font-size:14px;line-height:1.45;">
-    If your new writing changes which credits you are targeting, please re-submit the
-    <strong>LEED Certification form</strong> so your selections stay in sync.
-  </div>
+<div class="leed-prompt" style="margin-top:8px;">
+  <strong>Note:</strong>
+  If your new writing <strong>changes which credits you are targeting</strong>, please <strong>re-submit</strong> the
+  LEED Certification form to get more accurate feedback.
 </div>
 """
 # ===========================================================
@@ -365,9 +363,9 @@ def generate_feedback(
         header,
         writing_block,
         credit_block,
-        TIP_HTML,   
         actions,
-        progress_block
+        progress_block,
+        TIP_HTML
     ]).strip()
     # Rubrics score structure on the right side of the front
     scores_dict = _build_writing_scores_dict(writing_rows, writing_rubrics)
