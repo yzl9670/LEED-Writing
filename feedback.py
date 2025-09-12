@@ -46,6 +46,15 @@ if USE_LLM:
 else:
     log.warning("Feedback LLM disabled (no OPENAI_API_KEY or OpenAI SDK missing).")
 
+TIP_HTML = """
+<div style="margin-top:14px;padding:12px 14px;border-left:6px solid #ffb300;background:#fff7d1;border-radius:8px;">
+  <div style="font-weight:800;margin-bottom:6px;font-size:15px;">🔁 Action Needed</div>
+  <div style="font-size:14px;line-height:1.45;">
+    If your new writing changes which credits you are targeting, please re-submit the
+    <strong>LEED Certification form</strong> so your selections stay in sync.
+  </div>
+</div>
+"""
 # ===========================================================
 #                       PUBLIC API
 # ===========================================================
@@ -272,10 +281,13 @@ def generate_feedback(
     try:
         model_json = _ask_llm_for_json(payload)
     except Exception as e:
-        return (f"**LEED Check (degraded mode)**\n- Error: {e}\n"
-                "Falling back to claims-only.\n\n" + _render_credit_claims_only(credits),
-                _build_writing_scores_dict([], writing_rubrics),
-                "Model error; shortcomings unavailable.")
+        degraded_text = (
+            f"**LEED Check (degraded mode)**\n- Error: {e}\n"
+            "Falling back to claims-only.\n\n" + _render_credit_claims_only(credits)
+        )
+        degraded_text += "\n" + TIP_HTML
+        return degraded_text, _build_writing_scores_dict([], writing_rubrics), "Model error; shortcomings unavailable."
+
 
 
     if not model_json:
@@ -288,6 +300,7 @@ def generate_feedback(
         feedback_text = "\n".join([
             header,
             _render_credit_claims_only(credits),
+            TIP_HTML,
             "**Next Steps**\n- Tighten evidence for each claimed credit; cite baselines, calcs, and required docs."
         ]).strip()
         gap = max(0.0, 40.0 - claimed_total)
@@ -348,10 +361,14 @@ def generate_feedback(
     progress_note = _progress_note(prev_shortcomings, shortcomings)
     progress_block = f"\n**Progress Note**\n- {progress_note}" if progress_note else ""
 
-    TIP_MSG = "\n**Tip**\n- If your new writing changes which credits you are targeting, please re-submit the **LEED Certification form** so your selections stay in sync."
-
-    feedback_text = "\n".join([p for p in [header, writing_block, credit_block, actions, progress_block] if p]).strip()
-    feedback_text += TIP_MSG
+    feedback_text = "\n".join([
+        header,
+        writing_block,
+        credit_block,
+        TIP_HTML,   
+        actions,
+        progress_block
+    ]).strip()
     # Rubrics score structure on the right side of the front
     scores_dict = _build_writing_scores_dict(writing_rows, writing_rubrics)
 
@@ -500,9 +517,6 @@ def _render_writing_block(writing_rows: List[Dict[str, Any]], rubrics: List[Dict
         quotes = [q for q in (w.get("evidence_quotes") or []) if isinstance(q, str)][:2]
         if quotes:
             lines.append("  - Evidence: " + " | ".join(f"“{_trim(q, 120)}”" for q in quotes))
-
-        if rationale:
-            lines.append(f"  - Why: {rationale}")
         if suggestion:
             lines.append(f"  - Next: {suggestion}")
 

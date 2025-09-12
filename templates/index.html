@@ -1123,10 +1123,9 @@
                     aiMessageElem.innerHTML = ''; 
         
                     const aiContent = document.createElement('div');
-                    aiContent.textContent = data.feedback; 
-        
+                    aiContent.innerHTML = sanitizeHTML(data.feedback);
                     aiMessageElem.appendChild(aiContent);
-        
+
                     // Feedback Button
                     const feedbackBtn = document.createElement('button');
                     feedbackBtn.classList.add('feedback-button');
@@ -1525,7 +1524,7 @@
                         const welcomeElem = chatContainer.querySelector('.chat-message.ai');
                         const feedbackElem = document.createElement('div');
                         feedbackElem.classList.add('chat-message', 'ai');
-                        feedbackElem.textContent = data.feedback;
+                        feedbackElem.innerHTML = sanitizeHTML(data.feedback);
                         // If the welcome message is found, insert the feedback after it; otherwise insert it at the beginning
                         if (welcomeElem && welcomeElem.nextSibling) {
                             chatContainer.insertBefore(feedbackElem, welcomeElem.nextSibling);
@@ -2291,6 +2290,17 @@
     }
 
 
+    function sanitizeHTML(html) {
+        const tpl = document.createElement('template');
+        tpl.innerHTML = html || '';
+        tpl.content.querySelectorAll('script,iframe,object,embed').forEach(el => el.remove());
+        tpl.content.querySelectorAll('*').forEach(el => {
+            [...el.attributes].forEach(attr => {
+            if (/^on/i.test(attr.name)) el.removeAttribute(attr.name);
+            });
+        });
+        return tpl.innerHTML;
+    }
 
     // Keep existing resubmitLeed() to call showLeedPage()
     function resubmitLeed() {
