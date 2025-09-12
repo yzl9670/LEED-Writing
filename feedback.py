@@ -123,8 +123,6 @@ def generate_feedback(
             rationale = _trim(r.get("rationale", ""), 180)
             suggestion = _trim(r.get("suggestion", ""), 100)
             out.append(f"- **{name}**: {sc:g}/{tot:g}")
-            if rationale:
-                out.append(f"  - Scoring Reason: {rationale}")
             if suggestion and suggestion.lower() != "none.":
                 out.append(f"  - Next: {suggestion}")
         out.insert(1, f"_Total: {total_scored:.1f}/{total_max:.0f}_")
@@ -160,7 +158,7 @@ def generate_feedback(
             old_gap, new_gap = _gap(prev_short), _gap(new_short)
             if new_gap < old_gap:
                 return f"Nice! Gap dropped from {old_gap:.1f} → {new_gap:.1f} pts."
-            # 次要：missing 片段减少
+
             old_miss = len(re.findall(r":", prev_short))
             new_miss = len(re.findall(r":", new_short))
             if new_miss < old_miss:
@@ -350,8 +348,10 @@ def generate_feedback(
     progress_note = _progress_note(prev_shortcomings, shortcomings)
     progress_block = f"\n**Progress Note**\n- {progress_note}" if progress_note else ""
 
-    feedback_text = "\n".join([p for p in [header, writing_block, credit_block, actions, progress_block] if p]).strip()
+    TIP_MSG = "\n**Tip**\n- If your new writing changes which credits you are targeting, please re-submit the **LEED Certification form** so your selections stay in sync."
 
+    feedback_text = "\n".join([p for p in [header, writing_block, credit_block, actions, progress_block] if p]).strip()
+    feedback_text += TIP_MSG
     # Rubrics score structure on the right side of the front
     scores_dict = _build_writing_scores_dict(writing_rows, writing_rubrics)
 
